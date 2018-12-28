@@ -1,0 +1,588 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		471602321DD4305800727CBD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471602311DD4305800727CBD /* AppDelegate.swift */; };
+		471602371DD4305800727CBD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 471602351DD4305800727CBD /* Main.storyboard */; };
+		471602391DD4305800727CBD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 471602381DD4305800727CBD /* Assets.xcassets */; };
+		4716023C1DD4305800727CBD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4716023A1DD4305800727CBD /* LaunchScreen.storyboard */; };
+		471602791DD433A700727CBD /* DelugeClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471602761DD433A700727CBD /* DelugeClient.swift */; };
+		4716027A1DD433A700727CBD /* Torrent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471602771DD433A700727CBD /* Torrent.swift */; };
+		4716027B1DD433A700727CBD /* TableViewTorrent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471602781DD433A700727CBD /* TableViewTorrent.swift */; };
+		471602811DD4345100727CBD /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471602801DD4345100727CBD /* Protocols.swift */; };
+		477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7ADA21D3299300F78CE1 /* ClientConfig.swift */; };
+		477D7B2521D3595400F78CE1 /* libNSBencodeSerialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 477D7AE921D34CE800F78CE1 /* libNSBencodeSerialization.a */; };
+		477D7B3221D3EFE000F78CE1 /* ClientManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3121D3EFE000F78CE1 /* ClientManager.swift */; };
+		477D7B3421D5716000F78CE1 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3321D5716000F78CE1 /* Extensions.swift */; };
+		477D7B3621D605C200F78CE1 /* SessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3521D605C200F78CE1 /* SessionStatus.swift */; };
+		47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */; };
+		47BE37421DDC3EE5002A6042 /* CustomAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47BE37411DDC3EE5002A6042 /* CustomAlert.swift */; };
+		47BE37441DDD1FAF002A6042 /* AddClientViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */; };
+		47D035631DD81B34003BB2A0 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035621DD81B34003BB2A0 /* MainTableViewController.swift */; };
+		47D035651DD81BA4003BB2A0 /* DetailedTorrentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035641DD81BA4003BB2A0 /* DetailedTorrentViewController.swift */; };
+		47D035691DD81F31003BB2A0 /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035681DD81F31003BB2A0 /* MainTableViewCell.swift */; };
+		4CE6290D2BE9BFD9EBB91CC7 /* Pods_Deluge_Remote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB6CE69A1698C94F6A70ACE6 /* Pods_Deluge_Remote.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		477D7AE821D34CE800F78CE1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 477D7AE421D34CE800F78CE1 /* NSBencodeSerialization.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 23A8686318BF2FE20066E383;
+			remoteInfo = NSBencodeSerialization;
+		};
+		477D7AEA21D34CED00F78CE1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 477D7AE421D34CE800F78CE1 /* NSBencodeSerialization.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 23A8686218BF2FE20066E383;
+			remoteInfo = NSBencodeSerialization;
+		};
+		477D7B2C21D3637300F78CE1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 477D7B2821D3637300F78CE1 /* M13OrderedDictionary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CAC53481167D3EA900E66DFC;
+			remoteInfo = M13OrderedDictionary;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		00454872045418AC9157473D /* Pods-Deluge Remote.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Deluge Remote.release.xcconfig"; path = "Pods/Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote.release.xcconfig"; sourceTree = "<group>"; };
+		4716022E1DD4305800727CBD /* Deluge Remote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Deluge Remote.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		471602311DD4305800727CBD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		471602361DD4305800727CBD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		471602381DD4305800727CBD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4716023B1DD4305800727CBD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		4716023D1DD4305800727CBD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		471602761DD433A700727CBD /* DelugeClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelugeClient.swift; sourceTree = "<group>"; };
+		471602771DD433A700727CBD /* Torrent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Torrent.swift; sourceTree = "<group>"; };
+		471602781DD433A700727CBD /* TableViewTorrent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewTorrent.swift; sourceTree = "<group>"; };
+		471602801DD4345100727CBD /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Protocols.swift; path = Resources/Protocols.swift; sourceTree = "<group>"; };
+		471602821DD5845500727CBD /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		477D7ADA21D3299300F78CE1 /* ClientConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfig.swift; sourceTree = "<group>"; };
+		477D7AE421D34CE800F78CE1 /* NSBencodeSerialization.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NSBencodeSerialization.xcodeproj; path = NSBencodeSerialization/NSBencodeSerialization.xcodeproj; sourceTree = "<group>"; };
+		477D7B1F21D3593000F78CE1 /* NSBencode-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBencode-Bridging-Header.h"; sourceTree = "<group>"; };
+		477D7B2821D3637300F78CE1 /* M13OrderedDictionary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = M13OrderedDictionary.xcodeproj; path = NSBencodeSerialization/M13OrderedDictionary/M13OrderedDictionary.xcodeproj; sourceTree = "<group>"; };
+		477D7B3121D3EFE000F78CE1 /* ClientManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientManager.swift; sourceTree = "<group>"; };
+		477D7B3321D5716000F78CE1 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		477D7B3521D605C200F78CE1 /* SessionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStatus.swift; sourceTree = "<group>"; };
+		47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ClientsTableViewController.swift; path = "Sources/View Controllers/ClientsTableViewController.swift"; sourceTree = "<group>"; };
+		47BE37411DDC3EE5002A6042 /* CustomAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CustomAlert.swift; path = Resources/CustomAlert.swift; sourceTree = "<group>"; };
+		47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddClientViewController.swift; path = "Sources/View Controllers/AddClientViewController.swift"; sourceTree = "<group>"; };
+		47D035621DD81B34003BB2A0 /* MainTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTableViewController.swift; path = "Sources/View Controllers/MainTableViewController.swift"; sourceTree = "<group>"; };
+		47D035641DD81BA4003BB2A0 /* DetailedTorrentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DetailedTorrentViewController.swift; path = "Sources/View Controllers/DetailedTorrentViewController.swift"; sourceTree = "<group>"; };
+		47D035681DD81F31003BB2A0 /* MainTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTableViewCell.swift; path = "Sources/View Controllers/MainTableViewCell.swift"; sourceTree = "<group>"; };
+		CBE414C0A48278AAA9218964 /* Pods-Deluge Remote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Deluge Remote.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote.debug.xcconfig"; sourceTree = "<group>"; };
+		FB6CE69A1698C94F6A70ACE6 /* Pods_Deluge_Remote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Deluge_Remote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4716022B1DD4305800727CBD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				477D7B2521D3595400F78CE1 /* libNSBencodeSerialization.a in Frameworks */,
+				4CE6290D2BE9BFD9EBB91CC7 /* Pods_Deluge_Remote.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1A4430DC2A1C2BBB6A0F51D4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FB6CE69A1698C94F6A70ACE6 /* Pods_Deluge_Remote.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		471602251DD4305800727CBD = {
+			isa = PBXGroup;
+			children = (
+				477D7B2821D3637300F78CE1 /* M13OrderedDictionary.xcodeproj */,
+				477D7AE421D34CE800F78CE1 /* NSBencodeSerialization.xcodeproj */,
+				471602301DD4305800727CBD /* Deluge Remote */,
+				4716022F1DD4305800727CBD /* Products */,
+				67A29AE78AB8790B56F14D72 /* Pods */,
+				1A4430DC2A1C2BBB6A0F51D4 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		4716022F1DD4305800727CBD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4716022E1DD4305800727CBD /* Deluge Remote.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		471602301DD4305800727CBD /* Deluge Remote */ = {
+			isa = PBXGroup;
+			children = (
+				477D7B1F21D3593000F78CE1 /* NSBencode-Bridging-Header.h */,
+				4716027F1DD433F400727CBD /* Resources */,
+				4716027C1DD433B000727CBD /* Sources */,
+				471602351DD4305800727CBD /* Main.storyboard */,
+				471602381DD4305800727CBD /* Assets.xcassets */,
+				4716023A1DD4305800727CBD /* LaunchScreen.storyboard */,
+				4716023D1DD4305800727CBD /* Info.plist */,
+			);
+			path = "Deluge Remote";
+			sourceTree = "<group>";
+		};
+		4716027C1DD433B000727CBD /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				471602821DD5845500727CBD /* MyPlayground.playground */,
+				471602311DD4305800727CBD /* AppDelegate.swift */,
+				47200D771DD85FB400D61EC0 /* Models */,
+				4716027E1DD433D800727CBD /* View Controllers */,
+				4716027D1DD433CF00727CBD /* Deluge API */,
+				477D7B3121D3EFE000F78CE1 /* ClientManager.swift */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		4716027D1DD433CF00727CBD /* Deluge API */ = {
+			isa = PBXGroup;
+			children = (
+				471602761DD433A700727CBD /* DelugeClient.swift */,
+			);
+			name = "Deluge API";
+			sourceTree = "<group>";
+		};
+		4716027E1DD433D800727CBD /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				47D035621DD81B34003BB2A0 /* MainTableViewController.swift */,
+				47D035641DD81BA4003BB2A0 /* DetailedTorrentViewController.swift */,
+				47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */,
+				47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		4716027F1DD433F400727CBD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				471602801DD4345100727CBD /* Protocols.swift */,
+				47BE37411DDC3EE5002A6042 /* CustomAlert.swift */,
+				477D7B3321D5716000F78CE1 /* Extensions.swift */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		47200D771DD85FB400D61EC0 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				471602771DD433A700727CBD /* Torrent.swift */,
+				471602781DD433A700727CBD /* TableViewTorrent.swift */,
+				47D035681DD81F31003BB2A0 /* MainTableViewCell.swift */,
+				477D7ADA21D3299300F78CE1 /* ClientConfig.swift */,
+				477D7B3521D605C200F78CE1 /* SessionStatus.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		477D7AE521D34CE800F78CE1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				477D7AE921D34CE800F78CE1 /* libNSBencodeSerialization.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		477D7B2921D3637300F78CE1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				477D7B2D21D3637300F78CE1 /* M13OrderedDictionary.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		67A29AE78AB8790B56F14D72 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				CBE414C0A48278AAA9218964 /* Pods-Deluge Remote.debug.xcconfig */,
+				00454872045418AC9157473D /* Pods-Deluge Remote.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4716022D1DD4305800727CBD /* Deluge Remote */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 471602401DD4305800727CBD /* Build configuration list for PBXNativeTarget "Deluge Remote" */;
+			buildPhases = (
+				3AF8E106B2580CF5A2487982 /* [CP] Check Pods Manifest.lock */,
+				4716022A1DD4305800727CBD /* Sources */,
+				4716022B1DD4305800727CBD /* Frameworks */,
+				4716022C1DD4305800727CBD /* Resources */,
+				07908983BEDB98E18BF71D0C /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				477D7AEB21D34CED00F78CE1 /* PBXTargetDependency */,
+			);
+			name = "Deluge Remote";
+			productName = "Deluge Remote";
+			productReference = 4716022E1DD4305800727CBD /* Deluge Remote.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		471602261DD4305800727CBD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0810;
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = "Rudy Bermudez";
+				TargetAttributes = {
+					4716022D1DD4305800727CBD = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = NZ8449Y9W6;
+						LastSwiftMigration = 1010;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 471602291DD4305800727CBD /* Build configuration list for PBXProject "Deluge Remote" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 471602251DD4305800727CBD;
+			productRefGroup = 4716022F1DD4305800727CBD /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 477D7B2921D3637300F78CE1 /* Products */;
+					ProjectRef = 477D7B2821D3637300F78CE1 /* M13OrderedDictionary.xcodeproj */;
+				},
+				{
+					ProductGroup = 477D7AE521D34CE800F78CE1 /* Products */;
+					ProjectRef = 477D7AE421D34CE800F78CE1 /* NSBencodeSerialization.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				4716022D1DD4305800727CBD /* Deluge Remote */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		477D7AE921D34CE800F78CE1 /* libNSBencodeSerialization.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libNSBencodeSerialization.a;
+			remoteRef = 477D7AE821D34CE800F78CE1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		477D7B2D21D3637300F78CE1 /* M13OrderedDictionary.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = M13OrderedDictionary.app;
+			remoteRef = 477D7B2C21D3637300F78CE1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4716022C1DD4305800727CBD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4716023C1DD4305800727CBD /* LaunchScreen.storyboard in Resources */,
+				471602391DD4305800727CBD /* Assets.xcassets in Resources */,
+				471602371DD4305800727CBD /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		07908983BEDB98E18BF71D0C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3AF8E106B2580CF5A2487982 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Deluge Remote-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4716022A1DD4305800727CBD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47BE37421DDC3EE5002A6042 /* CustomAlert.swift in Sources */,
+				47BE37441DDD1FAF002A6042 /* AddClientViewController.swift in Sources */,
+				477D7B3221D3EFE000F78CE1 /* ClientManager.swift in Sources */,
+				477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */,
+				4716027B1DD433A700727CBD /* TableViewTorrent.swift in Sources */,
+				47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */,
+				4716027A1DD433A700727CBD /* Torrent.swift in Sources */,
+				477D7B3621D605C200F78CE1 /* SessionStatus.swift in Sources */,
+				471602811DD4345100727CBD /* Protocols.swift in Sources */,
+				47D035691DD81F31003BB2A0 /* MainTableViewCell.swift in Sources */,
+				471602791DD433A700727CBD /* DelugeClient.swift in Sources */,
+				471602321DD4305800727CBD /* AppDelegate.swift in Sources */,
+				47D035631DD81B34003BB2A0 /* MainTableViewController.swift in Sources */,
+				47D035651DD81BA4003BB2A0 /* DetailedTorrentViewController.swift in Sources */,
+				477D7B3421D5716000F78CE1 /* Extensions.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		477D7AEB21D34CED00F78CE1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NSBencodeSerialization;
+			targetProxy = 477D7AEA21D34CED00F78CE1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		471602351DD4305800727CBD /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				471602361DD4305800727CBD /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		4716023A1DD4305800727CBD /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4716023B1DD4305800727CBD /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		4716023E1DD4305800727CBD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4716023F1DD4305800727CBD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		471602411DD4305800727CBD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CBE414C0A48278AAA9218964 /* Pods-Deluge Remote.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = NZ8449Y9W6;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",
+					"$(SRCROOT)/NSBencodeSerialization/M13OrderedDictionary",
+				);
+				INFOPLIST_FILE = "Deluge Remote/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "co.rudybermudez.Deluge-Remote";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Deluge Remote/NSBencode-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		471602421DD4305800727CBD /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 00454872045418AC9157473D /* Pods-Deluge Remote.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = NZ8449Y9W6;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",
+					"$(SRCROOT)/NSBencodeSerialization/M13OrderedDictionary",
+				);
+				INFOPLIST_FILE = "Deluge Remote/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "co.rudybermudez.Deluge-Remote";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Deluge Remote/NSBencode-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		471602291DD4305800727CBD /* Build configuration list for PBXProject "Deluge Remote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4716023E1DD4305800727CBD /* Debug */,
+				4716023F1DD4305800727CBD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		471602401DD4305800727CBD /* Build configuration list for PBXNativeTarget "Deluge Remote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				471602411DD4305800727CBD /* Debug */,
+				471602421DD4305800727CBD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 471602261DD4305800727CBD /* Project object */;
+}
