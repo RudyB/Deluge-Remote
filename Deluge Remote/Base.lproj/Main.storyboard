@@ -421,6 +421,7 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="hostnameTextField" destination="kRL-PI-PWI" id="6Qm-n5-Gw7"/>
+                        <outlet property="networkSecurityControl" destination="Lcw-bU-OV5" id="7n1-v1-HgQ"/>
                         <outlet property="nicknameTextField" destination="gR7-yB-iAd" id="VKL-b6-bSU"/>
                         <outlet property="passwordTextField" destination="HOz-MH-3oF" id="GPM-kC-UWv"/>
                         <outlet property="portTableViewCell" destination="bpt-Tz-A1W" id="7mN-eO-grI"/>

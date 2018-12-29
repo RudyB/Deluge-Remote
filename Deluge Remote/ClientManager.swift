@@ -37,17 +37,11 @@ final class ClientManager {
     }
 
     // MARK: Methods
-    init() {
+    private init() {
         guard
             let data = UserDefaults.standard.data(forKey: "ActiveClient"),
             let config = try? JSONDecoder().decode(ClientConfig.self, from: data)
         else { return }
         self.activeClient = DelugeClient(config: config)
-    }
-
-    deinit {
-        if let activeClient = activeClient, let data = try? JSONEncoder().encode(activeClient.config) {
-
-        }
     }
 }

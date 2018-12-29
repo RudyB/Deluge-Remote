@@ -89,4 +89,42 @@ class ClientsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         tableView.cellForRow(at: indexPath)?.accessoryType = .none
     }
+
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let edit = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: AddClientViewController.storyboardIdentifier) as! AddClientViewController
+            vc.config = self.configs[index.row]
+
+            if (vc.config == ClientManager.shared.activeClient?.config) {
+                vc.onConfigAdded = { [weak self] (config) in
+                    self?.configs[index.row] = config
+                    ClientManager.shared.activeClient = DelugeClient(config: config)
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            } else {
+                vc.onConfigAdded = { [weak self] (config) in
+                    self?.configs[index.row] = config
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            }
+            self.navigationController?.pushViewController(vc, animated: true)
+            print("Edit button tapped")
+        }
+        edit.backgroundColor = .orange
+
+        let delete = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
+            print("Delete button tapped")
+
+            ClientManager.shared.activeClient = nil
+            self.configs.remove(at: index.row)
+            tableView.deleteRows(at: [index], with: .automatic)
+        }
+        delete.backgroundColor = .red
+
+        return [delete, edit]
+    }
 }

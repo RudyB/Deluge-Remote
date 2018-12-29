@@ -16,6 +16,7 @@ class AddClientViewController: UITableViewController {
 	@IBOutlet weak var portTextField: UITextField!
 	@IBOutlet weak var passwordTextField: UITextField!
 	@IBOutlet weak var portTableViewCell: UITableViewCell!
+    @IBOutlet weak var networkSecurityControl: UISegmentedControl!
 
     @IBAction func doneAction(_ sender: UIBarButtonItem) {
 
@@ -92,6 +93,16 @@ class AddClientViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 		self.navigationItem.rightBarButtonItem?.isEnabled = false
+
+        if let config = config {
+            self.title = "Edit Client"
+            nicknameTextField.text = config.nickname
+            hostnameTextField.text = config.hostname
+            relativePathTextField.text = config.relativePath
+            portTextField.text = config.port
+            networkSecurityControl.selectedSegmentIndex = config.isHTTP ? 0 : 1
+            passwordTextField.text = config.password
+        }
     }
 
     override func didReceiveMemoryWarning() {
