@@ -49,25 +49,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if(url.isFileURL) {
             print("Handle Torrent File")
 
-            do {
-                let data = try Data(contentsOf: url)
-                let bencode = try NSBencodeSerialization.bencodedObject(with: data)
-
-                if let dict = bencode as? M13OrderedDictionary {
-                   print(dict)
-
-                    if let info = dict["info"] as? M13OrderedDictionary, let files = info["files"] as? NSMutableArray {
-                        for file in files {
-                            let fileDict = file as! M13OrderedDictionary
-                            let fileName = (fileDict["path"] as! NSMutableArray).firstObject as! NSString
-                            let size = fileDict["length"] as! NSNumber
-                            print("\(fileName) - \(size)")
-                        }
-                    }
-
+            if let bencode = Bencoder(torrentFileURL: url) {
+                print(bencode.getTorrentName() ?? "")
+                print(bencode.getTorrentSize()?.sizeString() ?? "")
+                for (file, size) in bencode.getTorrentFiles() ?? [] {
+                    print("\(file) - \(size.sizeString())")
                 }
-            } catch (let error) {
-                print(error)
             }
 
         } else {

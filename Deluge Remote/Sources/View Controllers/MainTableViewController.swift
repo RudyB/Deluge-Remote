@@ -205,7 +205,7 @@ class MainTableViewController: UITableViewController {
             }
         }
     }
-    
+
 	// TODO: Make method stop when cell is selected. Check to see if VC is present?
 	func downloadNewData() {
 		print("Attempting to get all torrents")
