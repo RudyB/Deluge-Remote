@@ -19,6 +19,7 @@ enum ClientError: Error {
     case unableToResumeTorrent(Error)
     case unableToParseTableViewTorrent
     case unableToDeleteTorrent
+    case unableToAddTorrent
 
     func domain() -> String {
         switch self {
@@ -38,6 +39,8 @@ enum ClientError: Error {
             return "The Data for Table View Torrent was unable to be parsed"
         case .unableToDeleteTorrent:
             return "The Torrent could not be deleted"
+        case .unableToAddTorrent:
+            return "The Torrent could not be added"
         }
     }
 }
@@ -451,7 +454,7 @@ class DelugeClient {
         }
     }
 
-    func addTorrent(url: URL) {
+    func addMagnetLink(url: URL) -> Promise<Void> {
 
         let options: [String: Any] = [
             "file_priorities": [],
@@ -467,10 +470,26 @@ class DelugeClient {
             "prioritize_first_last_pieces": false
         ]
 
-        let optionsAndPath: [String: Any] = [
-            "path": url.absoluteString,
-            "options": options
+        let parameters: Parameters = [
+            "id": arc4random(),
+            "method": "core.add_torrent_magnet",
+            "params": [url.absoluteString, options]
         ]
+
+        return Promise { fulfill, reject in
+            Alamofire.request(config.url, method: .post, parameters: parameters, encoding: JSONEncoding.default).validate().responseJSON { (response) in
+                switch response.result {
+                case .success(let json):
+                    guard let json = json as? [String: Any], let _ = json["result"] as? String else {
+                        reject(ClientError.unableToAddTorrent)
+                        return
+                    }
+                    fulfill(())
+                case .failure:
+                    reject(ClientError.unableToAddTorrent)
+                }
+            }
+        }
 
     }
     /**

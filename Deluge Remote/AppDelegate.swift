@@ -59,6 +59,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         } else {
             print("Handle Magnet Link")
+            ClientManager.shared.activeClient?.addMagnetLink(url: url).then {
+                print("Succeeded")
+                }.catch { _ in
+                    print("Failed")
+            }
         }
         print(url)
         return true

@@ -47,7 +47,7 @@ class DetailedTorrentViewController: UITableViewController {
                         UIView.animate(withDuration: 1.0) {
                             self.playPauseItem.image = #imageLiteral(resourceName: "icons8-pause")
                         }
-                        
+
                     case .failure:
                         showAlert(target: self, title: "Failed To Resume Torrent")
                     }
@@ -62,7 +62,7 @@ class DetailedTorrentViewController: UITableViewController {
                         UIView.animate(withDuration: 1.0) {
                             self.playPauseItem.image = #imageLiteral(resourceName: "play_filled")
                         }
-                        
+
                     case .failure:
                         showAlert(target: self, title: "Failed to Pause Torrent")
                     }
@@ -98,7 +98,7 @@ class DetailedTorrentViewController: UITableViewController {
         }
     }
 
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
         refreshTimer.invalidate()
     }
 
