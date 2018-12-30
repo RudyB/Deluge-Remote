@@ -10,6 +10,68 @@ import UIKit
 
 class DetailedTorrentViewController: UITableViewController {
 
+    @IBOutlet weak var deleteItem: UIBarButtonItem!
+    @IBOutlet weak var playPauseItem: UIBarButtonItem!
+
+    @IBAction func deleteAction(_ sender: UIBarButtonItem) {
+
+        let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .destructive) { (_) in
+            ClientManager.shared.activeClient?.removeTorrent(withHash: self.torrentHash!, removeData: false).then {_ in
+                self.navigationController?.popViewController(animated: true)
+                }.catch { (error) in
+                    showAlert(target: self, title: "Failed to Delete Torrent")
+            }
+        }
+
+        let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .destructive) { (_) in
+            ClientManager.shared.activeClient?.removeTorrent(withHash: self.torrentHash!, removeData: true).then {_ in
+                self.navigationController?.popViewController(animated: true)
+                }.catch { (error) in
+                    showAlert(target: self, title: "Failed to Delete Torrent")
+            }
+        }
+
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+
+        showAlert(target: self, title: "Remove the torrent?", style: .actionSheet, actionList: [deleteTorrent, deleteTorrentWithData, cancel])
+    }
+
+    @IBAction func playPauseAction(_ sender: UIBarButtonItem) {
+        guard let torrentData = torrentData else { return }
+
+        if torrentData.paused {
+            ClientManager.shared.activeClient?.resumeTorrent(withHash: torrentData.hash) { (result) in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        UIView.animate(withDuration: 1.0) {
+                            self.playPauseItem.image = #imageLiteral(resourceName: "icons8-pause")
+                        }
+                        
+                    case .failure:
+                        showAlert(target: self, title: "Failed To Resume Torrent")
+                    }
+                }
+
+            }
+        } else {
+            ClientManager.shared.activeClient?.pauseTorrent(withHash: torrentData.hash) { (result) in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        UIView.animate(withDuration: 1.0) {
+                            self.playPauseItem.image = #imageLiteral(resourceName: "play_filled")
+                        }
+                        
+                    case .failure:
+                        showAlert(target: self, title: "Failed to Pause Torrent")
+                    }
+                }
+            }
+        }
+
+    }
+
     enum Sections: Int, CaseIterable {
         case Basic
         case Detailed
@@ -49,6 +111,7 @@ class DetailedTorrentViewController: UITableViewController {
         ClientManager.shared.activeClient?.getTorrentDetails(withHash: hash).then { (torrent) -> Void in
             DispatchQueue.main.async {
                 self.torrentData = torrent
+                self.playPauseItem.image = torrent.paused ?  #imageLiteral(resourceName: "play_filled") : #imageLiteral(resourceName: "icons8-pause")
                 self.tableView.reloadData()
                 print("Updated Detail VC Data")
             }
@@ -94,7 +157,7 @@ class DetailedTorrentViewController: UITableViewController {
         switch Sections(rawValue: indexPath.section)! {
         case .Basic:
             switch indexPath.row {
-             case 0:
+            case 0:
                 cell.textLabel?.text = "State"
                 cell.detailTextLabel?.text = torrentData.state
 

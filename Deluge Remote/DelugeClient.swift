@@ -327,7 +327,7 @@ class DelugeClient {
      - Parameter onCompletion: An escaping block that returns a `APIResult<T>` when the request is completed.
      This block returns a `APIResult<Bool>`
      */
-    func pauseTorrent(withHash hash: String, onCompletion: @escaping (APIResult<Bool>) -> Void) {
+    func pauseTorrent(withHash hash: String, onCompletion: @escaping (APIResult<Void>) -> Void) {
         let parameters: Parameters =  [
             "id": arc4random(),
             "method": "core.pause_torrent",
@@ -336,7 +336,7 @@ class DelugeClient {
 
         Alamofire.request(config.url, method: .post, parameters: parameters, encoding: JSONEncoding.default).validate().responseJSON { (response) in
             switch response.result {
-            case .success: onCompletion(APIResult.success(true))
+            case .success: onCompletion(APIResult.success(()))
             case .failure(let error): onCompletion(APIResult.failure(ClientError.unableToPauseTorrent(error)))
             }
         }
@@ -381,7 +381,7 @@ class DelugeClient {
      - hash: the hash as a `String` of the torrent the user would like to resume
      - onCompletion: An escaping block that returns a `APIResult<T>` when the request is completed. This block returns a `APIResult<Bool>`
      */
-    func resumeTorrent(withHash hash: String, onCompletion: @escaping (APIResult<Bool>) -> Void) {
+    func resumeTorrent(withHash hash: String, onCompletion: @escaping (APIResult<Void>) -> Void) {
         let parameters: Parameters =  [
             "id": arc4random(),
             "method": "core.resume_torrent",
@@ -390,7 +390,7 @@ class DelugeClient {
 
         Alamofire.request(config.url, method: .post, parameters: parameters, encoding: JSONEncoding.default).validate().responseJSON { (response) in
             switch response.result {
-            case .success: onCompletion(APIResult.success(true))
+            case .success: onCompletion(APIResult.success(()))
             case .failure(let error): onCompletion(APIResult.failure(ClientError.unableToResumeTorrent(error)))
             }
         }

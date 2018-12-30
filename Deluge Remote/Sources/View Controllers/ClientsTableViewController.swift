@@ -33,9 +33,13 @@ class ClientsTableViewController: UITableViewController {
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(configs) {
-            UserDefaults.standard.set(encoded, forKey: "ClientConfigs")
+        if configs.isEmpty {
+            UserDefaults.standard.set(nil, forKey: "ClientConfigs")
+        } else {
+            let encoder = JSONEncoder()
+            if let encoded = try? encoder.encode(configs) {
+                UserDefaults.standard.set(encoded, forKey: "ClientConfigs")
+            }
         }
     }
 

@@ -489,6 +489,25 @@
                             <outlet property="delegate" destination="lav-RO-0t1" id="8eK-jk-C42"/>
                         </connections>
                     </tableView>
+                    <toolbarItems>
+                        <barButtonItem image="icons8-pause" style="plain" id="R55-Ff-3Cp">
+                            <color key="tintColor" red="0.0" green="0.47934520244598389" blue="0.99908632040023804" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <action selector="playPauseAction:" destination="lav-RO-0t1" id="MRk-nh-bIX"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="7xC-f0-Oof"/>
+                        <barButtonItem image="icons8-delete" id="dtq-Xa-qLh">
+                            <connections>
+                                <action selector="deleteAction:" destination="lav-RO-0t1" id="7M5-Y3-OaN"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="deleteItem" destination="dtq-Xa-qLh" id="2dK-uY-ltq"/>
+                        <outlet property="playPauseItem" destination="R55-Ff-3Cp" id="9C4-Ic-0jI"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BHV-j2-vaH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -519,6 +538,8 @@
     </scenes>
     <resources>
         <image name="filter" width="37.5" height="37.5"/>
+        <image name="icons8-delete" width="50" height="50"/>
+        <image name="icons8-pause" width="50" height="50"/>
         <image name="settings" width="50" height="50"/>
     </resources>
 </document>
