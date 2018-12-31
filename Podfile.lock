@@ -11,20 +11,24 @@ PODS:
     - PromiseKit/CorePromise
   - PromiseKit/UIKit (4.5.2):
     - PromiseKit/CorePromise
+  - Valet (3.2.2)
 
 DEPENDENCIES:
   - Alamofire (~> 4.0)
   - PromiseKit (~> 4.0)
+  - Valet
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
     - PromiseKit
+    - Valet
 
 SPEC CHECKSUMS:
   Alamofire: 3ec537f71edc9804815215393ae2b1a8ea33a844
   PromiseKit: 743e497a5f505a470d3bbbf4ce0663c1268af0a4
+  Valet: 0babf5737029004185a7a009c1135f0c073011d1
 
-PODFILE CHECKSUM: 85c089b44e41a50c1c631d5669e1a3d0672af3ce
+PODFILE CHECKSUM: cef0b339abdd00b6902ecb252bf7be2e8c9da762
 
 COCOAPODS: 1.5.3

@@ -454,7 +454,7 @@ class DelugeClient {
         }
     }
 
-    func addMagnetLink(url: URL) -> Promise<Void> {
+    func addTorrentMagnet(url: URL) -> Promise<Void> {
 
         let options: [String: Any] = [
             "file_priorities": [],
@@ -490,7 +490,43 @@ class DelugeClient {
                 }
             }
         }
+    }
 
+    func addTorrentFile(fileName: String, url: URL) -> Promise<Void> {
+        let options: [String: Any] = [
+            "file_priorities": [],
+            "add_paused": false,
+            "compact_allocation": false,
+            /*"download_location": "/home/yotam/Downloads",*/
+            "move_completed": false,
+            /*"move_completed_path": "/home/yotam/Downloads",*/
+            "max_connections": -1,
+            "max_download_speed": -1,
+            "max_upload_slots": -1,
+            "max_upload_speed": -1,
+            "prioritize_first_last_pieces": false
+        ]
+
+        let parameters: Parameters = [
+            "id": arc4random(),
+            "method": "core.add_torrent_file",
+            "params": [fileName, url.absoluteString, options]
+        ]
+
+        return Promise { fulfill, reject in
+            Alamofire.request(config.url, method: .post, parameters: parameters, encoding: JSONEncoding.default).validate().responseJSON { (response) in
+                switch response.result {
+                case .success(let json):
+                    guard let json = json as? [String: Any], let _ = json["result"] as? String else {
+                        reject(ClientError.unableToAddTorrent)
+                        return
+                    }
+                    fulfill(())
+                case .failure:
+                    reject(ClientError.unableToAddTorrent)
+                }
+            }
+        }
     }
     /**
      Gets the session status values `for keys`, these keys are taken

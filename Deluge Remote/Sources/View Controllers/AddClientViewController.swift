@@ -19,7 +19,6 @@ class AddClientViewController: UITableViewController {
     @IBOutlet weak var networkSecurityControl: UISegmentedControl!
 
     @IBAction func doneAction(_ sender: UIBarButtonItem) {
-
         print("Done Action")
         if let onConfigAdded = onConfigAdded, let config = config {
             onConfigAdded(config)

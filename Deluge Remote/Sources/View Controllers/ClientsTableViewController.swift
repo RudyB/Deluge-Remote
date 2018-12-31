@@ -7,10 +7,13 @@
 //
 
 import UIKit
+import Valet
 
 class ClientsTableViewController: UITableViewController {
 
     var configs = [ClientConfig]()
+    
+    private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.deluge")!, accessibility: .whenUnlocked)
 
     @IBAction func AddClientAction(_ sender: UIBarButtonItem) {
         showAddClientVC()
@@ -18,7 +21,7 @@ class ClientsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let ConfigData = UserDefaults.standard.object(forKey: "ClientConfigs") as? Data {
+        if let ConfigData = keychain.object(forKey: "ClientConfigs"){
             let decoder = JSONDecoder()
             if let configs = try? decoder.decode([ClientConfig].self, from: ConfigData) {
                 self.configs = configs
@@ -34,11 +37,11 @@ class ClientsTableViewController: UITableViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         if configs.isEmpty {
-            UserDefaults.standard.set(nil, forKey: "ClientConfigs")
+            keychain.removeObject(forKey: "ClientConfigs")
         } else {
             let encoder = JSONEncoder()
             if let encoded = try? encoder.encode(configs) {
-                UserDefaults.standard.set(encoded, forKey: "ClientConfigs")
+                keychain.set(object: encoded, forKey: "ClientConfigs")
             }
         }
     }
@@ -51,6 +54,10 @@ class ClientsTableViewController: UITableViewController {
     func showAddClientVC() {
         let vc = storyboard?.instantiateViewController(withIdentifier: AddClientViewController.storyboardIdentifier) as! AddClientViewController
         vc.onConfigAdded = { [weak self] (config) in
+            if self?.configs.isEmpty ?? false {
+                self?.tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.accessoryType = .checkmark
+                ClientManager.shared.activeClient = DelugeClient(config: config)
+            }
             self?.configs.append(config)
             self?.navigationController?.popViewController(animated: true)
             self?.tableView.reloadData()

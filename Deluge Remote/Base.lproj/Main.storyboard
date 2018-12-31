@@ -178,7 +178,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BvM-ds-ISk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3090" y="787"/>
+            <point key="canvasLocation" x="2428" y="806"/>
         </scene>
         <!--Add Client-->
         <scene sceneID="sp0-1E-TYr">
@@ -431,7 +431,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TwL-zY-yej" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3089" y="1594"/>
+            <point key="canvasLocation" x="3334" y="806"/>
         </scene>
         <!--Detailed Torrent View Controller-->
         <scene sceneID="oHC-sE-Ced">

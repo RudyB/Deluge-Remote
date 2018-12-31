@@ -7,6 +7,7 @@ target 'Deluge Remote' do
   swift_version = "4.2"
   pod 'Alamofire', '~> 4.0'
   pod "PromiseKit", "~> 4.0"
-  # Pods for Deluge Remote
+  pod 'Valet' 
+ # Pods for Deluge Remote
 
 end
