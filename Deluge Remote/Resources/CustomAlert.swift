@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 
+// swiftlint:disable line_length
 func showAlert(target: UIViewController, title: String, message: String? = nil, style: UIAlertControllerStyle = .alert, actionList: [UIAlertAction] = [UIAlertAction(title: "OK", style: .default, handler: nil)] ) {
 	let alert = UIAlertController(title: title, message: message, preferredStyle: style)
 	for action in actionList {

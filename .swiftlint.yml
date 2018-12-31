@@ -1,0 +1,13 @@
+disabled_rules:
+  - identifier_name
+opt_in_rules: # some rules are only opt-in
+  - empty_count
+  - sorted_imports
+  - unneeded_parentheses_in_closure_argument
+  - trailing_closure 
+  - empty_string
+included: # paths to include during linting. `--path` is ignored if present.
+  - Deluge Remote
+excluded: # paths to ignore during linting. Takes precedence over `included`.
+  - NSBencodeSerialization
+  - Pods

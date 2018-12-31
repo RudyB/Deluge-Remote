@@ -6,10 +6,11 @@
 //  Copyright © 2016 Rudy Bermudez. All rights reserved.
 //
 
-import UIKit
 import PromiseKit
+import UIKit
 
 class MainTableViewController: UITableViewController {
+    // swiftlint:disable:previous type_body_length
 
     // MARK: - Properties
 	let byteCountFormatter = ByteCountFormatter()
@@ -62,7 +63,7 @@ class MainTableViewController: UITableViewController {
 	var statusHeader: UILabel = {
 		let label = UILabel()
 		label.backgroundColor = UIColor(red: 0.0, green: 0.9, blue: 0.2, alpha: 0.85)
-        if let _ = ClientManager.shared.activeClient {
+        if ClientManager.shared.activeClient != nil {
             label.backgroundColor = UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0)
             label.text = "Attempting Connection"
         } else {
@@ -93,11 +94,15 @@ class MainTableViewController: UITableViewController {
         self.navigationItem.title = ClientManager.shared.activeClient?.config.nickname ?? "Deluge Remote"
         self.tableView.accessibilityScroll(UIAccessibilityScrollDirection.down)
 
-		NotificationCenter.default.addObserver(self, selector: #selector(self.updateHeader), name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(self.updateHeader),
+                                               name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
 
-		NotificationCenter.default.addObserver(self, selector: #selector(self.recieveUpdateTableNotifcation), name: NSNotification.Name(rawValue: "reloadTableView"), object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(self.recieveUpdateTableNotifcation),
+                                               name: NSNotification.Name(rawValue: "reloadTableView"), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleNewActiveClient), name: Notification.Name(ClientManager.NewActiveClientNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleNewActiveClient),
+                                               name: Notification.Name(ClientManager.NewActiveClientNotification),
+                                               object: nil)
 
         // Setup the Search Controller
         searchController.delegate = self
@@ -117,10 +122,10 @@ class MainTableViewController: UITableViewController {
         handleNewActiveClient()
 
         // Begin Data Download
-        Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { (timer) in
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { timer in
             self.downloadNewData()
             self.updateSessionStats()
-        })
+        }
 	}
 
 	override func viewWillAppear(_ animated: Bool) {
@@ -146,14 +151,14 @@ class MainTableViewController: UITableViewController {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTableView"), object: nil)
 
         _ = ClientManager.shared.activeClient?.authenticate()
-            .then { (isAuthenticated) -> Void in
+            .then { isAuthenticated -> Void in
                 self.isHostOnline = isAuthenticated
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
 
                 if !isAuthenticated {
                     showAlert(target: self, title: "Authentication Error", message: "Invalid Password")
                 }
-            }.catch { (error) in
+            }.catch { error in
                 self.isHostOnline = false
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
                 if let error = error as? ClientError {
@@ -175,8 +180,9 @@ class MainTableViewController: UITableViewController {
 	}
 
 	func recieveUpdateTableNotifcation() {
-		if (!cancelNextRefresh) {
-			if (self.shouldRefresh && !self.tableView.isEditing && !self.tableView.isDragging && !self.tableView.isDecelerating ) {
+		if !cancelNextRefresh {
+			if self.shouldRefresh && !self.tableView.isEditing &&
+                !self.tableView.isDragging && !self.tableView.isDecelerating {
 				print("Updating Table View")
 				self.tableView.performSelector(onMainThread: #selector(tableView.reloadData), with: nil, waitUntilDone: true)
                 if isFiltering() {
@@ -193,12 +199,12 @@ class MainTableViewController: UITableViewController {
 
     func updateSessionStats() {
         if !isHostOnline { return }
-        ClientManager.shared.activeClient?.getSessionStatus().then(execute: { (status) -> Void in
+        ClientManager.shared.activeClient?.getSessionStatus().then { status -> Void in
             DispatchQueue.main.async {
                 self.currentDownloadSpeedLabel.text = "↓ \(status.payload_download_rate.transferRateString())"
                 self.currentUploadSpeedLabel.text = "↑ \(status.payload_upload_rate.transferRateString())"
             }
-        }).catch { (error) in
+        }.catch { error in
             DispatchQueue.main.async {
                 self.currentDownloadSpeedLabel.text = "↓ 0 KiB/s"
                 self.currentUploadSpeedLabel.text = "↑ 0 KiB/s"
@@ -210,13 +216,13 @@ class MainTableViewController: UITableViewController {
 	func downloadNewData() {
 		print("Attempting to get all torrents")
         if !isHostOnline { return }
-		ClientManager.shared.activeClient?.getAllTorrents().then { (tableViewData) -> Void in
-			DispatchQueue.main.async(execute: {
+		ClientManager.shared.activeClient?.getAllTorrents().then { tableViewData -> Void in
+			DispatchQueue.main.async {
 				print("Torrent Data Successfully Downloaded")
 				self.tableViewDataSource = tableViewData
 				NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
-			})
-			}.catch { (error) in
+			}
+			}.catch { error in
 				self.isHostOnline = false
 				NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
 				if let error = error as? ClientError {
@@ -229,7 +235,7 @@ class MainTableViewController: UITableViewController {
 	}
 
 	func pauseAllTorrents() {
-		ClientManager.shared.activeClient?.pauseAllTorrents { (result) in
+		ClientManager.shared.activeClient?.pauseAllTorrents { result in
 			switch result {
 			case .success: print("All Torrents Paused")
 			case .failure(let error): print(error)
@@ -238,7 +244,7 @@ class MainTableViewController: UITableViewController {
 	}
 
 	func resumeAllTorrents() {
-		ClientManager.shared.activeClient?.resumeAllTorrents { (result) in
+		ClientManager.shared.activeClient?.resumeAllTorrents { result in
 			switch result {
 			case .success: print("All Torrents Resumed")
 			case .failure(let error): print(error)
@@ -247,9 +253,9 @@ class MainTableViewController: UITableViewController {
 	}
 
 	func removeTorrent(withHash hash: String, removeData: Bool, onSuccess: @escaping () -> Void) {
-		ClientManager.shared.activeClient?.removeTorrent(withHash: hash, removeData: removeData).then(execute: { (_) -> Void in
+		ClientManager.shared.activeClient?.removeTorrent(withHash: hash, removeData: removeData).then { _ -> Void in
 			onSuccess()
-		}).catch { (error) in
+		}.catch { error in
 			if let error = error as? ClientError {
 				showAlert(target: self, title: "Error", message: error.domain(), style: .alert)
 			}
@@ -288,7 +294,11 @@ class MainTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		guard let tableViewDataSource = tableViewDataSource, let cell = tableView.dequeueReusableCell(withIdentifier: "mainTableViewCell", for: indexPath) as? MainTableViewCell else {
+		guard
+            let tableViewDataSource = tableViewDataSource,
+            let cell = tableView.dequeueReusableCell(withIdentifier: "mainTableViewCell", for: indexPath)
+                as? MainTableViewCell
+            else {
 			return tableView.dequeueReusableCell(withIdentifier: "mainTableViewCell", for: indexPath)
 		}
 
@@ -302,8 +312,10 @@ class MainTableViewController: UITableViewController {
 		cell.nameLabel.text = currentItem.name
 		cell.progressBar.setProgress(Float(currentItem.progress/100), animated: true)
 		cell.currentStatusLabel.text = currentItem.state
-		cell.downloadSpeedLabel.text = "\(byteCountFormatter.string(fromByteCount: Int64(currentItem.download_payload_rate))) ↓"
-		cell.uploadSpeedLabel.text = "↑ \(byteCountFormatter.string(fromByteCount: Int64(currentItem.upload_payload_rate)))"
+		cell.downloadSpeedLabel.text =
+        "\(byteCountFormatter.string(fromByteCount: Int64(currentItem.download_payload_rate))) ↓"
+		cell.uploadSpeedLabel.text =
+        "↑ \(byteCountFormatter.string(fromByteCount: Int64(currentItem.upload_payload_rate)))"
 		cell.torrentHash = currentItem.hash
 		if currentItem.eta == 0 {
 			cell.etaLabel.text = "\(currentItem.ratio.roundTo(places: 3))"
@@ -325,16 +337,19 @@ class MainTableViewController: UITableViewController {
 		return true
 	}
 
+    // swiftlint:disable:next line_length
 	override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-		if (editingStyle == UITableViewCellEditingStyle.delete) {
+		if editingStyle == UITableViewCellEditingStyle.delete {
 			// handle delete (by removing the data from your array and updating the tableview)
 			if let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell {
 
-				let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { (action) in
-					self.removeTorrent(withHash: cell.torrentHash, removeData: false, onSuccess: {
+				let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { action in
+					self.removeTorrent(withHash: cell.torrentHash, removeData: false) {
                         DispatchQueue.main.async {
                             if self.isFiltering() {
-                                self.tableViewDataSource?.removeAll { $0 == self.filteredTableViewDataSource[indexPath.row]}
+                                self.tableViewDataSource?.removeAll {
+                                    $0 == self.filteredTableViewDataSource[indexPath.row]
+                                }
                                 self.filteredTableViewDataSource.remove(at: indexPath.row)
                                 tableView.deleteRows(at: [indexPath], with: .fade)
                             } else {
@@ -343,14 +358,16 @@ class MainTableViewController: UITableViewController {
                             }
                             self.tableView.setEditing(false, animated: true)
                         }
-					})
+					}
 				}
 
-				let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { (action) in
-					self.removeTorrent(withHash: cell.torrentHash, removeData: true, onSuccess: {
+				let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { action in
+					self.removeTorrent(withHash: cell.torrentHash, removeData: true) {
                         DispatchQueue.main.async {
                             if self.isFiltering() {
-                                self.tableViewDataSource?.removeAll { $0 == self.filteredTableViewDataSource[indexPath.row]}
+                                self.tableViewDataSource?.removeAll {
+                                    $0 == self.filteredTableViewDataSource[indexPath.row]
+                                }
                                 self.filteredTableViewDataSource.remove(at: indexPath.row)
                                 tableView.deleteRows(at: [indexPath], with: .fade)
                             } else {
@@ -359,14 +376,15 @@ class MainTableViewController: UITableViewController {
                             }
                             self.tableView.setEditing(false, animated: true)
                         }
-					})
+					}
 
 				}
-				let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+				let cancel = UIAlertAction(title: "Cancel", style: .cancel) { action in
 					self.tableView.setEditing(false, animated: true)
 				}
 
-				showAlert(target: self, title: "Remove the selected Torrent?", style: .alert, actionList: [deleteTorrent, deleteTorrentWithData, cancel])
+				showAlert(target: self, title: "Remove the selected Torrent?",
+                          style: .alert, actionList: [deleteTorrent, deleteTorrentWithData, cancel])
 			}
 		}
 	}
@@ -442,4 +460,4 @@ extension MainTableViewController: UISearchBarDelegate {
 
 extension MainTableViewController: UISearchControllerDelegate {
 
-}
+} // swiftlint:disable:this file_length

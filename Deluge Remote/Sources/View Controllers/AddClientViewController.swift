@@ -27,7 +27,7 @@ class AddClientViewController: UITableViewController {
     }
 
     @IBAction func changeSSL(_ sender: UISegmentedControl) {
-		if (sender.selectedSegmentIndex == 0) { sslEnabled = false } else { sslEnabled = true }
+		if sender.selectedSegmentIndex == 0 { sslEnabled = false } else { sslEnabled = true }
 		portTableViewCell.isHidden = sslEnabled
 		tableView.beginUpdates()
 		tableView.endUpdates()
@@ -62,15 +62,18 @@ class AddClientViewController: UITableViewController {
 
 		if !hostname.isEmpty && !password.isEmpty && !port.isEmpty && !nickname.isEmpty {
 			let url = buildURL(hostname: hostname, relativePath: relativePath, sslConfig: sslConfig)
-			DelugeClient.validateCredentials(url: url, password: password).then { (isValidScheme) -> Void in
+            // swiftlint:disable:next trailing_closure
+			DelugeClient.validateCredentials(url: url, password: password).then { isValidScheme -> Void in
 				if isValidScheme {
 					showAlert(target: self, title: "Connection successful")
-                    self.config = ClientConfig(nickname: nickname, hostname: hostname, relativePath: relativePath, port: port, password: password, isHTTP: !self.sslEnabled)
+                    self.config = ClientConfig(nickname: nickname, hostname: hostname,
+                                               relativePath: relativePath, port: port,
+                                               password: password, isHTTP: !self.sslEnabled)
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
 				} else {
 					showAlert(target: self, title: "Unable to Authenticate", message: "Invalid Password")
 				}
-			}.catch(execute: { (error) in
+			}.catch(execute: { error in
 				if let error = error as? ClientError {
 					showAlert(target: self, title: "Connection failure", message: error.domain())
 				} else {

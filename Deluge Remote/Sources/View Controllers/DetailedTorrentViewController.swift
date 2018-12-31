@@ -15,32 +15,33 @@ class DetailedTorrentViewController: UITableViewController {
 
     @IBAction func deleteAction(_ sender: UIBarButtonItem) {
 
-        let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .destructive) { (_) in
+        let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .destructive) { _ in
             ClientManager.shared.activeClient?.removeTorrent(withHash: self.torrentHash!, removeData: false).then {_ in
                 self.navigationController?.popViewController(animated: true)
-                }.catch { (error) in
+                }.catch { error in
                     showAlert(target: self, title: "Failed to Delete Torrent")
             }
         }
 
-        let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .destructive) { (_) in
+        let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .destructive) { _ in
             ClientManager.shared.activeClient?.removeTorrent(withHash: self.torrentHash!, removeData: true).then {_ in
                 self.navigationController?.popViewController(animated: true)
-                }.catch { (error) in
+                }.catch { error in
                     showAlert(target: self, title: "Failed to Delete Torrent")
             }
         }
 
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
 
-        showAlert(target: self, title: "Remove the torrent?", style: .actionSheet, actionList: [deleteTorrent, deleteTorrentWithData, cancel])
+        showAlert(target: self, title: "Remove the torrent?", style: .actionSheet,
+                  actionList: [deleteTorrent, deleteTorrentWithData, cancel])
     }
 
     @IBAction func playPauseAction(_ sender: UIBarButtonItem) {
         guard let torrentData = torrentData else { return }
 
         if torrentData.paused {
-            ClientManager.shared.activeClient?.resumeTorrent(withHash: torrentData.hash) { (result) in
+            ClientManager.shared.activeClient?.resumeTorrent(withHash: torrentData.hash) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
@@ -55,7 +56,7 @@ class DetailedTorrentViewController: UITableViewController {
 
             }
         } else {
-            ClientManager.shared.activeClient?.pauseTorrent(withHash: torrentData.hash) { (result) in
+            ClientManager.shared.activeClient?.pauseTorrent(withHash: torrentData.hash) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
@@ -108,19 +109,20 @@ class DetailedTorrentViewController: UITableViewController {
     }
 
     func getTorrentData(withHash hash: String) {
-        ClientManager.shared.activeClient?.getTorrentDetails(withHash: hash).then { (torrent) -> Void in
+        ClientManager.shared.activeClient?.getTorrentDetails(withHash: hash).then { torrent -> Void in
             DispatchQueue.main.async {
                 self.torrentData = torrent
                 self.playPauseItem.image = torrent.paused ?  #imageLiteral(resourceName: "play_filled") : #imageLiteral(resourceName: "icons8-pause")
                 self.tableView.reloadData()
                 print("Updated Detail VC Data")
             }
-            }.catch { (error) in
+            }.catch { error in
                 if let error = error as? ClientError {
-                    let okButton = UIAlertAction(title: "Bummer", style: .default) { (_) in
+                    let okButton = UIAlertAction(title: "Bummer", style: .default) { _ in
                         self.navigationController?.popViewController(animated: true)
                     }
-                    showAlert(target: self, title: "Error", message: error.domain(), style: .alert, actionList: [okButton])
+                    showAlert(target: self, title: "Error", message: error.domain(),
+                              style: .alert, actionList: [okButton])
 
                 }
         }
@@ -148,6 +150,7 @@ class DetailedTorrentViewController: UITableViewController {
         }
     }
 
+    // swiftlint:disable cyclomatic_complexity function_body_length
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TorrentDetailCell", for: indexPath)
         guard let torrentData = torrentData else {

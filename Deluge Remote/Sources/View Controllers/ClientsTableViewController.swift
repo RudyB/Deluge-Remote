@@ -12,8 +12,9 @@ import Valet
 class ClientsTableViewController: UITableViewController {
 
     var configs = [ClientConfig]()
-    
-    private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.deluge")!, accessibility: .whenUnlocked)
+
+    private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.deluge")!,
+                                       accessibility: .whenUnlocked)
 
     @IBAction func AddClientAction(_ sender: UIBarButtonItem) {
         showAddClientVC()
@@ -21,9 +22,9 @@ class ClientsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let ConfigData = keychain.object(forKey: "ClientConfigs"){
+        if let configData = keychain.object(forKey: "ClientConfigs") {
             let decoder = JSONDecoder()
-            if let configs = try? decoder.decode([ClientConfig].self, from: ConfigData) {
+            if let configs = try? decoder.decode([ClientConfig].self, from: configData) {
                 self.configs = configs
                 tableView.reloadData()
             }
@@ -52,8 +53,10 @@ class ClientsTableViewController: UITableViewController {
     }
 
     func showAddClientVC() {
-        let vc = storyboard?.instantiateViewController(withIdentifier: AddClientViewController.storyboardIdentifier) as! AddClientViewController
-        vc.onConfigAdded = { [weak self] (config) in
+        let vc = storyboard?.instantiateViewController(withIdentifier: AddClientViewController.storyboardIdentifier)
+            as! AddClientViewController // swiftlint:disable:this force_cast
+
+        vc.onConfigAdded = { [weak self] config in
             if self?.configs.isEmpty ?? false {
                 self?.tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.accessoryType = .checkmark
                 ClientManager.shared.activeClient = DelugeClient(config: config)
@@ -105,19 +108,22 @@ class ClientsTableViewController: UITableViewController {
         return true
     }
 
+    // swiftlint:disable:next line_length
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let edit = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
-            let vc = self.storyboard?.instantiateViewController(withIdentifier: AddClientViewController.storyboardIdentifier) as! AddClientViewController
+            let vc = self.storyboard?.instantiateViewController(withIdentifier:
+                AddClientViewController.storyboardIdentifier)
+                as! AddClientViewController // swiftlint:disable:this force_cast
             vc.config = self.configs[index.row]
 
-            if (vc.config == ClientManager.shared.activeClient?.config) {
-                vc.onConfigAdded = { [weak self] (config) in
+            if vc.config == ClientManager.shared.activeClient?.config {
+                vc.onConfigAdded = { [weak self] config in
                     self?.configs[index.row] = config
                     ClientManager.shared.activeClient = DelugeClient(config: config)
                     self?.navigationController?.popViewController(animated: true)
                 }
             } else {
-                vc.onConfigAdded = { [weak self] (config) in
+                vc.onConfigAdded = { [weak self] config in
                     self?.configs[index.row] = config
                     self?.navigationController?.popViewController(animated: true)
                 }

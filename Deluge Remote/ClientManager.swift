@@ -14,8 +14,10 @@ final class ClientManager {
     // MARK: Properties
     public static var shared = ClientManager()
     private var _activeClient: DelugeClient?
-    private let lockQueue = DispatchQueue(label: "io.rudybermudez.deluge.clientManager", qos: .default, attributes: .concurrent)
-    private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.deluge")!, accessibility: .whenUnlocked)
+    private let lockQueue = DispatchQueue(label: "io.rudybermudez.deluge.clientManager",
+                                          qos: .default, attributes: .concurrent)
+    private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.deluge")!,
+                                       accessibility: .whenUnlocked)
 
     public static let NewActiveClientNotification = "NewActiveClient"
     public var activeClient: DelugeClient? {
@@ -34,7 +36,8 @@ final class ClientManager {
                 keychain.removeObject(forKey: "ActiveClient")
             }
 
-            NotificationCenter.default.post(name: Notification.Name(ClientManager.NewActiveClientNotification), object: nil)
+            NotificationCenter.default
+                .post(name: Notification.Name(ClientManager.NewActiveClientNotification), object: nil)
         }
     }
 
