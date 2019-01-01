@@ -58,7 +58,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Process the URL.
         if url.isFileURL {
             print("Handle Torrent File")
-
+            ClientManager.shared.activeClient?.getTorrentInfo(fileURL: url).then { torrentInfo -> Void in
+                print("Name: \(torrentInfo.name)")
+                print("Files: ")
+                torrentInfo.files.prettyPrint()
+            }
             if let bencode = Bencoder(torrentFileURL: url) {
                 print(bencode.getTorrentName() ?? "")
                 print(bencode.getTorrentSize()?.sizeString() ?? "")

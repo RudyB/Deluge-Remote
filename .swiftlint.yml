@@ -11,3 +11,4 @@ included: # paths to include during linting. `--path` is ignored if present.
 excluded: # paths to ignore during linting. Takes precedence over `included`.
   - NSBencodeSerialization
   - Pods
+  - Deluge Remote/MyPlayground.playground/Contents.swift

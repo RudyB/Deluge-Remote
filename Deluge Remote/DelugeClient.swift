@@ -20,9 +20,14 @@ enum ClientError: Error {
     case unableToParseTableViewTorrent
     case unableToDeleteTorrent
     case unableToAddTorrent
+    case uploadFailed
+    case unableToParseTorrentInfo
+    case failedToConvertTorrentToData
 
     func domain() -> String {
         switch self {
+        case .uploadFailed:
+            return "Unable to Upload Torrent"
         case .incorrectPassword:
             return "Incorrect Password, Unable to Authenticate"
         case .torrentCouldNotBeParsed:
@@ -41,6 +46,10 @@ enum ClientError: Error {
             return "The Torrent could not be deleted"
         case .unableToAddTorrent:
             return "The Torrent could not be added"
+        case .unableToParseTorrentInfo:
+            return "The Torrent Info could not be parsed"
+        case .failedToConvertTorrentToData:
+            return "Conversion from URL to Data failed"
         }
     }
 }
@@ -443,6 +452,96 @@ class DelugeClient {
             }
         }
     }
+
+    private func upload(fileUrl: URL) -> Promise<String> {
+
+        return Promise { fulfill, reject in
+
+            let headers = [
+                "Content-Type": "multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__"
+                ]
+            guard let torrentData = try? Data(contentsOf: fileUrl) else {
+                reject(ClientError.failedToConvertTorrentToData)
+                return
+            }
+
+            Alamofire.upload(multipartFormData: ({ multipartFormData in
+                multipartFormData.append(torrentData, withName: "file")
+            }), to: "http://stardust.whatbox.ca:12547/upload", method: .post, headers: headers) { encodingResult in
+                switch encodingResult {
+
+                case .success(let request, _, _):
+                    request.responseJSON(queue: self.utilityQueue) { response in
+                        switch response.result {
+
+                        case .success(let json):
+                            if let json = json as? JSON,
+                                let filePathArray = json["files"] as? [String],
+                                let filePath = filePathArray.first {
+                                fulfill(filePath)
+                            } else {
+                                reject(ClientError.uploadFailed)
+                            }
+                        case .failure(let error):
+                            reject(error)
+                        }
+                    }
+                case .failure(let error):
+                    reject(error)
+                }
+            }
+        }
+    }
+
+    func getTorrentInfo(fileURL: URL) -> Promise<TorrentInfo> {
+        return Promise { fulfill, reject in
+            firstly { upload(fileUrl: fileURL) }
+                .then { fileName -> Void in
+                    let parameters: Parameters = [
+                        "id": arc4random(),
+                        "method": "web.get_torrent_info",
+                        "params": [fileName]
+                    ]
+                    Alamofire.request(self.config.url, method: .post,
+                                      parameters: parameters, encoding: JSONEncoding.default)
+                        .validate().responseJSON(queue: self.utilityQueue) { response in
+                            switch response.result {
+                            case .success(let json):
+                                guard
+                                    let dict = json as? JSON,
+                                    let result = dict["result"] as? JSON,
+                                    let torrentName = result["name"] as? String,
+                                    let torrentHash = result["info_hash"] as? String,
+                                    let fileTree = result["files_tree"] as? JSON,
+                                    let fileTreeContents = fileTree["contents"] as? JSON,
+                                    let rootKey = fileTreeContents.keys.first,
+                                    let rootJSON = fileTreeContents[rootKey] as? JSON
+                                else {
+                                    if let errorJSON = json as? JSON,
+                                        let error = errorJSON["error"] as? JSON,
+                                        let message = error["message"] as? String {
+                                        reject(ClientError.unexpectedError(message))
+                                        return
+                                    }
+                                    reject(ClientError.unexpectedResponse); break }
+
+                                let type = fileTree["type"] as? String
+                                let files = FileNode(fileName: rootKey, json: rootJSON)
+
+                                let info = TorrentInfo(name: torrentName, hash: torrentHash,
+                                                       isDirectory: type == "dir", files: files)
+                                fulfill(info)
+                            case .failure(let error):
+                                reject(error)
+                            }
+                    }
+
+                }.catch { error in
+                    reject(error)
+            }
+        }
+    }
+
     /**
      Gets the session status values `for keys`, these keys are taken
      from libtorrent's session status.
