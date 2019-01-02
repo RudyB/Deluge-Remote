@@ -191,7 +191,7 @@
                         <sections>
                             <tableViewSection id="qmx-9s-OfQ">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="4R9-K0-aCU" userLabel="Nickname">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="4R9-K0-aCU" userLabel="Nickname">
                                         <rect key="frame" x="0.0" y="35" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="4R9-K0-aCU" id="O2U-b4-R9F">
@@ -304,7 +304,7 @@
                                                         <segment title="Use HTTPS"/>
                                                     </segments>
                                                     <connections>
-                                                        <action selector="changeSSL:" destination="JQf-ll-XtU" eventType="valueChanged" id="vbG-gB-IaQ"/>
+                                                        <action selector="changeSSL:" destination="JQf-ll-XtU" eventType="valueChanged" id="yqN-LE-OMJ"/>
                                                     </connections>
                                                 </segmentedControl>
                                             </subviews>

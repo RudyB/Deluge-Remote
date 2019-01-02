@@ -26,7 +26,7 @@ struct ClientConfig: Codable, Comparable {
         if isHTTP {
             sslConfig = NetworkSecurity.http(port: port)
         } else {
-            sslConfig = NetworkSecurity.https
+            sslConfig = NetworkSecurity.https(port: port)
         }
         return "\(sslConfig.name())\(hostname):\(sslConfig.port())\(relativePath)/json"
     }

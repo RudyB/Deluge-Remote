@@ -56,13 +56,13 @@ enum ClientError: Error {
 }
 
 enum NetworkSecurity {
-    case https
+    case https(port: String)
     case http(port: String)
 
     func port() -> String {
         switch self {
-        case .https:
-            return "443"
+        case .https(let port):
+            return port
         case .http(let port):
             return port
         }
@@ -93,6 +93,22 @@ class DelugeClient {
     //  swiftlint:disable:previous type_body_length
     let clientConfig: ClientConfig
 
+    private lazy var Manager: Alamofire.SessionManager = {
+        // Create the server trust policies
+        let serverTrustPolicies: [String: ServerTrustPolicy] = [
+            self.clientConfig.hostname: .disableEvaluation
+        ]
+        // Create custom manager
+        let configuration = URLSessionConfiguration.default
+        configuration.httpAdditionalHeaders = Alamofire.SessionManager.defaultHTTPHeaders
+        let man = Alamofire.SessionManager(
+            configuration: configuration,
+            serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
+        )
+        return man
+    }()
+    private static var _manager: Alamofire.SessionManager?
+
     /// Dispatch Queue used for JSON Serialization
     let utilityQueue: DispatchQueue
 
@@ -111,16 +127,30 @@ class DelugeClient {
      - ClientError.unexpectedResponse if the json cannot be parsed
      - ClientError.incorrectPassword if the server responds the responce was false
      */
-    static func validateCredentials(url: String, password: String) -> Promise<Bool> {
+    static func validateCredentials(host: String, url: String, password: String) -> Promise<Bool> {
+
+        // Create the server trust policies
+        let serverTrustPolicies: [String: ServerTrustPolicy] = [
+            host: .disableEvaluation
+        ]
+        // Create custom manager
+        let configuration = URLSessionConfiguration.default
+        configuration.httpAdditionalHeaders = Alamofire.SessionManager.defaultHTTPHeaders
+        _manager = Alamofire.SessionManager(
+            configuration: configuration,
+            serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
+        )
+
+        let parameters: Parameters = [
+            "id": arc4random(),
+            "method": "auth.login",
+            "params": [password]
+        ]
+
         return Promise { fulfill, reject in
-            let parameters: Parameters = [
-                "id": arc4random(),
-                "method": "auth.login",
-                "params": [password]
-            ]
-            let utilityQueue = DispatchQueue.global(qos: .utility)
-            Alamofire.request(url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
+
+            _manager?.request(url, method: .post, parameters: parameters,
+                              encoding: JSONEncoding.default).validate().responseJSON { response in
                 switch response.result {
                 case .success(let data):
                     let json = data as? JSON
@@ -152,7 +182,7 @@ class DelugeClient {
      
      */
     func authenticate() -> Promise<Bool> {
-        return DelugeClient.validateCredentials(url: clientConfig.url, password: clientConfig.password)
+        return DelugeClient.validateCredentials(host: clientConfig.hostname, url: clientConfig.url, password: clientConfig.password)
     }
 
     /**
@@ -173,7 +203,7 @@ class DelugeClient {
                 "params": [hash, []]
             ]
 
-            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+            Manager.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default)
                 .validate().responseData(queue: utilityQueue) { response in
 
@@ -211,7 +241,7 @@ class DelugeClient {
                 "params": [[], ["name", "hash", "upload_payload_rate", "download_payload_rate", "ratio",
                                 "progress", "total_wanted", "state", "tracker_host", "label", "eta"]]
             ]
-            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+            Manager.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default).validate().responseData(queue: utilityQueue) { response in
                 switch response.result {
                 case .success(let data):
@@ -247,7 +277,7 @@ class DelugeClient {
             "params": [[hash]]
         ]
 
-        Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+        Manager.request(clientConfig.url, method: .post, parameters: parameters,
                           encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
             switch response.result {
             case .success: onCompletion(APIResult.success(()))
@@ -280,7 +310,7 @@ class DelugeClient {
             "params": []
         ]
 
-        Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+        Manager.request(clientConfig.url, method: .post, parameters: parameters,
                           encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
             switch response.result {
             case .success: onCompletion(.success(Any.self))
@@ -306,7 +336,7 @@ class DelugeClient {
             "params": [[hash]]
         ]
 
-        Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+        Manager.request(clientConfig.url, method: .post, parameters: parameters,
                           encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
             switch response.result {
             case .success: onCompletion(APIResult.success(()))
@@ -330,7 +360,7 @@ class DelugeClient {
             "params": []
         ]
 
-        Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+        Manager.request(clientConfig.url, method: .post, parameters: parameters,
                           encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
             switch response.result {
             case .success: onCompletion(.success(Any.self))
@@ -359,7 +389,7 @@ class DelugeClient {
                 "method": "core.remove_torrent",
                 "params": [hash, removeData]
             ]
-            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+            Manager.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
                 switch response.result {
                 case .success(let data):
@@ -386,7 +416,7 @@ class DelugeClient {
         ]
 
         return Promise { fulfill, reject in
-            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+            Manager.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default)
                 .validate().responseJSON(queue: utilityQueue) { response in
                 switch response.result {
@@ -412,7 +442,7 @@ class DelugeClient {
         ]
 
         return Promise<(name: String, hash: String)> { fulfill, reject in
-            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+            Manager.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default)
                 .validate().responseJSON(queue: utilityQueue) { response in
                     switch response.result {
@@ -456,7 +486,7 @@ class DelugeClient {
         ]
 
         return Promise { fulfill, reject in
-            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+            Manager.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default)
                 .validate().responseJSON(queue: utilityQueue) { response in
                 switch response.result {
@@ -486,7 +516,7 @@ class DelugeClient {
                 return
             }
 
-            Alamofire.upload(multipartFormData: ({ multipartFormData in
+            Manager.upload(multipartFormData: ({ multipartFormData in
                 multipartFormData.append(torrentData, withName: "file")
             }), to: "http://stardust.whatbox.ca:12547/upload", method: .post, headers: headers) { encodingResult in
                 switch encodingResult {
@@ -523,7 +553,7 @@ class DelugeClient {
                         "method": "web.get_torrent_info",
                         "params": [fileName]
                     ]
-                    Alamofire.request(self.clientConfig.url, method: .post,
+                    self.Manager.request(self.clientConfig.url, method: .post,
                                       parameters: parameters, encoding: JSONEncoding.default)
                         .validate().responseJSON(queue: self.utilityQueue) { response in
                             switch response.result {
@@ -578,7 +608,7 @@ class DelugeClient {
         ]
 
         return Promise { fulfill, reject in
-            Alamofire.request(self.clientConfig.url, method: .post, parameters: parameters,
+            Manager.request(self.clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default)
                 .validate().responseData(queue: utilityQueue) { response in
                     switch response.result {
@@ -652,7 +682,7 @@ class DelugeClient {
                         "dht_total_allocations"
                         ]]]
 
-            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+            Manager.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default).validate().responseData(queue: utilityQueue) { response in
 
                 switch response.result {

@@ -27,15 +27,13 @@ class AddClientViewController: UITableViewController {
     }
 
     @IBAction func changeSSL(_ sender: UISegmentedControl) {
-		if sender.selectedSegmentIndex == 0 { sslEnabled = false } else { sslEnabled = true }
-		portTableViewCell.isHidden = sslEnabled
-		tableView.beginUpdates()
-		tableView.endUpdates()
+        sslEnabled = sender.selectedSegmentIndex == 1
 	}
 
 	@IBAction func testConnectionAction(_ sender: Any) {
 		var port: String = ""
 		var sslConfig: NetworkSecurity!
+        sslEnabled = networkSecurityControl.selectedSegmentIndex == 1
 
 		guard
             let nickname = nicknameTextField.text,
@@ -46,11 +44,10 @@ class AddClientViewController: UITableViewController {
 		}
 		let relativePath = relativePathTextField.text ?? ""
 
+        port = portTextField.text ?? port
 		if sslEnabled {
-			port = "443"
-			sslConfig = NetworkSecurity.https
+			sslConfig = NetworkSecurity.https(port: port)
 		} else {
-			port = portTextField.text ?? port
 			sslConfig = NetworkSecurity.http(port: port)
 		}
 
@@ -62,8 +59,7 @@ class AddClientViewController: UITableViewController {
 
 		if !hostname.isEmpty && !password.isEmpty && !port.isEmpty && !nickname.isEmpty {
 			let url = buildURL(hostname: hostname, relativePath: relativePath, sslConfig: sslConfig)
-            // swiftlint:disable:next trailing_closure
-			DelugeClient.validateCredentials(url: url, password: password).then { isValidScheme -> Void in
+            DelugeClient.validateCredentials(host: hostname, url: url, password: password).then { isValidScheme -> Void in
 				if isValidScheme {
 					showAlert(target: self, title: "Connection successful")
                     self.config = ClientConfig(nickname: nickname, hostname: hostname,
@@ -73,14 +69,14 @@ class AddClientViewController: UITableViewController {
 				} else {
 					showAlert(target: self, title: "Unable to Authenticate", message: "Invalid Password")
 				}
-			}.catch(execute: { error in
+			}.catch { error in
 				if let error = error as? ClientError {
 					showAlert(target: self, title: "Connection failure", message: error.domain())
 				} else {
 					showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
 				}
 
-			})
+			}
 		}
 	}
 
