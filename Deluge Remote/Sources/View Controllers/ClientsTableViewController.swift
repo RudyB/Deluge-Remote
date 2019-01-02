@@ -86,7 +86,7 @@ class ClientsTableViewController: UITableViewController {
         cell.selectionStyle = .none
         cell.accessoryType = .none
         if let client = ClientManager.shared.activeClient {
-            if  client.config == configs[indexPath.row] {
+            if  client.clientConfig == configs[indexPath.row] {
                 cell.accessoryType = .checkmark
             }
         }
@@ -110,13 +110,13 @@ class ClientsTableViewController: UITableViewController {
 
     // swiftlint:disable:next line_length
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let edit = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
+        let edit = UITableViewRowAction(style: .normal, title: "Edit") { _, index in
             let vc = self.storyboard?.instantiateViewController(withIdentifier:
                 AddClientViewController.storyboardIdentifier)
                 as! AddClientViewController // swiftlint:disable:this force_cast
             vc.config = self.configs[index.row]
 
-            if vc.config == ClientManager.shared.activeClient?.config {
+            if vc.config == ClientManager.shared.activeClient?.clientConfig {
                 vc.onConfigAdded = { [weak self] config in
                     self?.configs[index.row] = config
                     ClientManager.shared.activeClient = DelugeClient(config: config)
@@ -133,7 +133,7 @@ class ClientsTableViewController: UITableViewController {
         }
         edit.backgroundColor = .orange
 
-        let delete = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
+        let delete = UITableViewRowAction(style: .destructive, title: "Delete") { _, index in
             print("Delete button tapped")
 
             ClientManager.shared.activeClient = nil

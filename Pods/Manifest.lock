@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (4.8.0)
+  - Eureka (4.3.1)
   - PromiseKit (4.5.2):
     - PromiseKit/Foundation (= 4.5.2)
     - PromiseKit/QuartzCore (= 4.5.2)
@@ -14,21 +15,24 @@ PODS:
   - Valet (3.2.2)
 
 DEPENDENCIES:
-  - Alamofire (~> 4.0)
-  - PromiseKit (~> 4.0)
+  - Alamofire
+  - Eureka
+  - PromiseKit
   - Valet
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
+    - Eureka
     - PromiseKit
     - Valet
 
 SPEC CHECKSUMS:
   Alamofire: 3ec537f71edc9804815215393ae2b1a8ea33a844
+  Eureka: 28ea296f06710f6745266b71f17862048941a32d
   PromiseKit: 743e497a5f505a470d3bbbf4ce0663c1268af0a4
   Valet: 0babf5737029004185a7a009c1135f0c073011d1
 
-PODFILE CHECKSUM: cef0b339abdd00b6902ecb252bf7be2e8c9da762
+PODFILE CHECKSUM: 5317e072f543a8ea481d3e2fe41aefcc8dc874d6
 
 COCOAPODS: 1.5.3

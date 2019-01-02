@@ -2,12 +2,12 @@
  platform :ios, '12.1'
 
 target 'Deluge Remote' do
-  # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
+  # Pods for Deluge Remote
   use_frameworks!
   swift_version = "4.2"
-  pod 'Alamofire', '~> 4.0'
-  pod "PromiseKit", "~> 4.0"
+  pod 'Alamofire'
+  pod 'PromiseKit'
   pod 'Valet' 
- # Pods for Deluge Remote
+  pod 'Eureka'
 
 end

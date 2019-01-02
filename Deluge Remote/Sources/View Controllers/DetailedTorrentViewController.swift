@@ -18,7 +18,7 @@ class DetailedTorrentViewController: UITableViewController {
         let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .destructive) { _ in
             ClientManager.shared.activeClient?.removeTorrent(withHash: self.torrentHash!, removeData: false).then {_ in
                 self.navigationController?.popViewController(animated: true)
-                }.catch { error in
+                }.catch { _ in
                     showAlert(target: self, title: "Failed to Delete Torrent")
             }
         }
@@ -26,7 +26,7 @@ class DetailedTorrentViewController: UITableViewController {
         let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .destructive) { _ in
             ClientManager.shared.activeClient?.removeTorrent(withHash: self.torrentHash!, removeData: true).then {_ in
                 self.navigationController?.popViewController(animated: true)
-                }.catch { error in
+                }.catch { _ in
                     showAlert(target: self, title: "Failed to Delete Torrent")
             }
         }

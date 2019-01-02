@@ -24,6 +24,7 @@ enum ClientError: Error {
     case unableToParseTorrentInfo
     case failedToConvertTorrentToData
 
+    // swiftlint:disable:next cyclomatic_complexity
     func domain() -> String {
         switch self {
         case .uploadFailed:
@@ -90,13 +91,13 @@ enum APIResult <T> {
  */
 class DelugeClient {
     //  swiftlint:disable:previous type_body_length
-    let config: ClientConfig
+    let clientConfig: ClientConfig
 
     /// Dispatch Queue used for JSON Serialization
     let utilityQueue: DispatchQueue
 
     init(config: ClientConfig) {
-        self.config = config
+        self.clientConfig = config
         self.utilityQueue = DispatchQueue.global(qos: .utility)
     }
 
@@ -151,7 +152,7 @@ class DelugeClient {
      
      */
     func authenticate() -> Promise<Bool> {
-        return DelugeClient.validateCredentials(url: config.url, password: config.password)
+        return DelugeClient.validateCredentials(url: clientConfig.url, password: clientConfig.password)
     }
 
     /**
@@ -172,7 +173,7 @@ class DelugeClient {
                 "params": [hash, []]
             ]
 
-            Alamofire.request(config.url, method: .post, parameters: parameters,
+            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default)
                 .validate().responseData(queue: utilityQueue) { response in
 
@@ -210,7 +211,7 @@ class DelugeClient {
                 "params": [[], ["name", "hash", "upload_payload_rate", "download_payload_rate", "ratio",
                                 "progress", "total_wanted", "state", "tracker_host", "label", "eta"]]
             ]
-            Alamofire.request(config.url, method: .post, parameters: parameters,
+            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default).validate().responseData(queue: utilityQueue) { response in
                 switch response.result {
                 case .success(let data):
@@ -246,7 +247,7 @@ class DelugeClient {
             "params": [[hash]]
         ]
 
-        Alamofire.request(config.url, method: .post, parameters: parameters,
+        Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
                           encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
             switch response.result {
             case .success: onCompletion(APIResult.success(()))
@@ -279,7 +280,7 @@ class DelugeClient {
             "params": []
         ]
 
-        Alamofire.request(config.url, method: .post, parameters: parameters,
+        Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
                           encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
             switch response.result {
             case .success: onCompletion(.success(Any.self))
@@ -305,7 +306,7 @@ class DelugeClient {
             "params": [[hash]]
         ]
 
-        Alamofire.request(config.url, method: .post, parameters: parameters,
+        Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
                           encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
             switch response.result {
             case .success: onCompletion(APIResult.success(()))
@@ -329,7 +330,7 @@ class DelugeClient {
             "params": []
         ]
 
-        Alamofire.request(config.url, method: .post, parameters: parameters,
+        Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
                           encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
             switch response.result {
             case .success: onCompletion(.success(Any.self))
@@ -358,7 +359,7 @@ class DelugeClient {
                 "method": "core.remove_torrent",
                 "params": [hash, removeData]
             ]
-            Alamofire.request(config.url, method: .post, parameters: parameters,
+            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
                 switch response.result {
                 case .success(let data):
@@ -374,31 +375,20 @@ class DelugeClient {
         }
     }
 
-    func addTorrentMagnet(url: URL) -> Promise<Void> {
+    func addTorrentMagnet(url: URL, with config: TorrentConfig) -> Promise<Void> {
 
-        let options: [String: Any] = [
-            "file_priorities": [],
-            "add_paused": false,
-            "compact_allocation": false,
-            /*"download_location": "/home/yotam/Downloads",*/
-            "move_completed": false,
-            /*"move_completed_path": "/home/yotam/Downloads",*/
-            "max_connections": -1,
-            "max_download_speed": -1,
-            "max_upload_slots": -1,
-            "max_upload_speed": -1,
-            "prioritize_first_last_pieces": false
-        ]
+        // TODO: Add File Priorities
 
         let parameters: Parameters = [
             "id": arc4random(),
             "method": "core.add_torrent_magnet",
-            "params": [url.absoluteString, options]
+            "params": [url.absoluteString, config.toParams()]
         ]
 
         return Promise { fulfill, reject in
-            Alamofire.request(config.url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default).validate().responseJSON { response in
+            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+                              encoding: JSONEncoding.default)
+                .validate().responseJSON(queue: utilityQueue) { response in
                 switch response.result {
                 case .success(let json):
                     // swiftlint:disable:next unused_optional_binding
@@ -410,6 +400,36 @@ class DelugeClient {
                 case .failure:
                     reject(ClientError.unableToAddTorrent)
                 }
+            }
+        }
+    }
+
+    func getMagnetInfo(url: URL) -> Promise<(name: String, hash: String)> {
+        let parameters: Parameters = [
+            "id": arc4random(),
+            "method": "web.get_magnet_info",
+            "params": [url.absoluteString]
+        ]
+
+        return Promise<(name: String, hash: String)> { fulfill, reject in
+            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+                              encoding: JSONEncoding.default)
+                .validate().responseJSON(queue: utilityQueue) { response in
+                    switch response.result {
+                    case .success(let json):
+                        guard
+                            let json = json as? JSON,
+                            let result = json["result"] as? JSON,
+                            let name = result["name"] as? String,
+                            let hash = result["info_hash"] as? String
+                        else {
+                            reject(ClientError.unexpectedResponse)
+                            return
+                        }
+                        fulfill(name: name, hash: hash)
+                    case .failure(let error):
+                        reject(error)
+                    }
             }
         }
     }
@@ -436,8 +456,9 @@ class DelugeClient {
         ]
 
         return Promise { fulfill, reject in
-            Alamofire.request(config.url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
+            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
+                              encoding: JSONEncoding.default)
+                .validate().responseJSON(queue: utilityQueue) { response in
                 switch response.result {
                 case .success(let json):
                     // swiftlint:disable:next unused_optional_binding
@@ -502,7 +523,7 @@ class DelugeClient {
                         "method": "web.get_torrent_info",
                         "params": [fileName]
                     ]
-                    Alamofire.request(self.config.url, method: .post,
+                    Alamofire.request(self.clientConfig.url, method: .post,
                                       parameters: parameters, encoding: JSONEncoding.default)
                         .validate().responseJSON(queue: self.utilityQueue) { response in
                             switch response.result {
@@ -517,13 +538,9 @@ class DelugeClient {
                                     let rootKey = fileTreeContents.keys.first,
                                     let rootJSON = fileTreeContents[rootKey] as? JSON
                                 else {
-                                    if let errorJSON = json as? JSON,
-                                        let error = errorJSON["error"] as? JSON,
-                                        let message = error["message"] as? String {
-                                        reject(ClientError.unexpectedError(message))
-                                        return
-                                    }
-                                    reject(ClientError.unexpectedResponse); break }
+                                    reject(ClientError.unexpectedResponse)
+                                    return
+                                }
 
                                 let type = fileTree["type"] as? String
                                 let files = FileNode(fileName: rootKey, json: rootJSON)
@@ -539,6 +556,45 @@ class DelugeClient {
                 }.catch { error in
                     reject(error)
             }
+        }
+    }
+
+    func getAddTorrentConfig() -> Promise<TorrentConfig> {
+        let parameters: Parameters = [
+            "id": arc4random(),
+            "method": "core.get_config_values",
+            "params": [[
+                "add_paused",
+                "compact_allocation",
+                "download_location",
+                "max_connections_per_torrent",
+                "max_download_speed_per_torrent",
+                "move_completed",
+                "move_completed_path",
+                "max_upload_slots_per_torrent",
+                "max_upload_speed_per_torrent",
+                "prioritize_first_last_pieces"
+            ]]
+        ]
+
+        return Promise { fulfill, reject in
+            Alamofire.request(self.clientConfig.url, method: .post, parameters: parameters,
+                              encoding: JSONEncoding.default)
+                .validate().responseData(queue: utilityQueue) { response in
+                    switch response.result {
+                    case .success(let data):
+                        do {
+                            let response = try JSONDecoder()
+                                .decode(DelugeResponse<TorrentConfig>.self, from: data)
+                            fulfill(response.result)
+                        } catch let error {
+                            print(error)
+                            reject(ClientError.torrentCouldNotBeParsed)
+                        }
+
+                    case .failure(let error): reject(error)
+                    }
+                }
         }
     }
 
@@ -596,7 +652,7 @@ class DelugeClient {
                         "dht_total_allocations"
                         ]]]
 
-            Alamofire.request(config.url, method: .post, parameters: parameters,
+            Alamofire.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default).validate().responseData(queue: utilityQueue) { response in
 
                 switch response.result {

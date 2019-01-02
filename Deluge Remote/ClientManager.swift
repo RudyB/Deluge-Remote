@@ -30,7 +30,7 @@ final class ClientManager {
             lockQueue.async(flags: .barrier) {
                 self._activeClient = newValue
             }
-            if let newValue = newValue, let data = try? JSONEncoder().encode(newValue.config) {
+            if let newValue = newValue, let data = try? JSONEncoder().encode(newValue.clientConfig) {
                 keychain.set(object: data, forKey: "ActiveClient")
             } else {
                 keychain.removeObject(forKey: "ActiveClient")

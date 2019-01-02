@@ -91,7 +91,7 @@ class MainTableViewController: UITableViewController {
         self.initUploadDownloadLabels()
 		statusHeader.frame = CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: 22)
 		self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
-        self.navigationItem.title = ClientManager.shared.activeClient?.config.nickname ?? "Deluge Remote"
+        self.navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
         self.tableView.accessibilityScroll(UIAccessibilityScrollDirection.down)
 
 		NotificationCenter.default.addObserver(self, selector: #selector(self.updateHeader),
@@ -122,7 +122,7 @@ class MainTableViewController: UITableViewController {
         handleNewActiveClient()
 
         // Begin Data Download
-        Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { timer in
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
             self.downloadNewData()
             self.updateSessionStats()
         }
@@ -146,7 +146,7 @@ class MainTableViewController: UITableViewController {
         print("New Client")
         self.tableViewDataSource?.removeAll()
         self.isHostOnline = false
-        self.navigationItem.title = ClientManager.shared.activeClient?.config.nickname ?? "Deluge Remote"
+        self.navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTableView"), object: nil)
 
@@ -157,6 +157,9 @@ class MainTableViewController: UITableViewController {
 
                 if !isAuthenticated {
                     showAlert(target: self, title: "Authentication Error", message: "Invalid Password")
+                } else {
+                    self.downloadNewData()
+                    self.updateSessionStats()
                 }
             }.catch { error in
                 self.isHostOnline = false
@@ -170,6 +173,11 @@ class MainTableViewController: UITableViewController {
     }
 
 	func updateHeader() {
+        guard ClientManager.shared.activeClient != nil else {
+            self.statusHeader.text = "No Active Config"
+            self.statusHeader.backgroundColor = UIColor(red: 0.98, green: 0.196, blue: 0.196, alpha: 0.85)
+            return
+        }
 		if isHostOnline {
 			self.statusHeader.text = "Host Online"
 			self.statusHeader.backgroundColor = UIColor(red: 0.302, green: 0.584, blue: 0.772, alpha: 0.85)
@@ -204,7 +212,7 @@ class MainTableViewController: UITableViewController {
                 self.currentDownloadSpeedLabel.text = "↓ \(status.payload_download_rate.transferRateString())"
                 self.currentUploadSpeedLabel.text = "↑ \(status.payload_upload_rate.transferRateString())"
             }
-        }.catch { error in
+        }.catch { _ in
             DispatchQueue.main.async {
                 self.currentDownloadSpeedLabel.text = "↓ 0 KiB/s"
                 self.currentUploadSpeedLabel.text = "↑ 0 KiB/s"
@@ -343,7 +351,7 @@ class MainTableViewController: UITableViewController {
 			// handle delete (by removing the data from your array and updating the tableview)
 			if let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell {
 
-				let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { action in
+				let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { _ in
 					self.removeTorrent(withHash: cell.torrentHash, removeData: false) {
                         DispatchQueue.main.async {
                             if self.isFiltering() {
@@ -361,7 +369,7 @@ class MainTableViewController: UITableViewController {
 					}
 				}
 
-				let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { action in
+				let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { _ in
 					self.removeTorrent(withHash: cell.torrentHash, removeData: true) {
                         DispatchQueue.main.async {
                             if self.isFiltering() {
@@ -379,7 +387,7 @@ class MainTableViewController: UITableViewController {
 					}
 
 				}
-				let cancel = UIAlertAction(title: "Cancel", style: .cancel) { action in
+				let cancel = UIAlertAction(title: "Cancel", style: .cancel) { _ in
 					self.tableView.setEditing(false, animated: true)
 				}
 

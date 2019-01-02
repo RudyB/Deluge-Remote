@@ -28,6 +28,8 @@
 		47D035631DD81B34003BB2A0 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035621DD81B34003BB2A0 /* MainTableViewController.swift */; };
 		47D035651DD81BA4003BB2A0 /* DetailedTorrentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035641DD81BA4003BB2A0 /* DetailedTorrentViewController.swift */; };
 		47D035691DD81F31003BB2A0 /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035681DD81F31003BB2A0 /* MainTableViewCell.swift */; };
+		47F9C73321DC66790017281C /* TorrentConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F9C73221DC66790017281C /* TorrentConfig.swift */; };
+		47F9C73621DC6EB80017281C /* AddTorrentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */; };
 		4CE6290D2BE9BFD9EBB91CC7 /* Pods_Deluge_Remote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB6CE69A1698C94F6A70ACE6 /* Pods_Deluge_Remote.framework */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +85,8 @@
 		47D035621DD81B34003BB2A0 /* MainTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTableViewController.swift; path = "Sources/View Controllers/MainTableViewController.swift"; sourceTree = "<group>"; };
 		47D035641DD81BA4003BB2A0 /* DetailedTorrentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DetailedTorrentViewController.swift; path = "Sources/View Controllers/DetailedTorrentViewController.swift"; sourceTree = "<group>"; };
 		47D035681DD81F31003BB2A0 /* MainTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTableViewCell.swift; path = "Sources/View Controllers/MainTableViewCell.swift"; sourceTree = "<group>"; };
+		47F9C73221DC66790017281C /* TorrentConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentConfig.swift; sourceTree = "<group>"; };
+		47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTorrentViewController.swift; sourceTree = "<group>"; };
 		CBE414C0A48278AAA9218964 /* Pods-Deluge Remote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Deluge Remote.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote.debug.xcconfig"; sourceTree = "<group>"; };
 		FB6CE69A1698C94F6A70ACE6 /* Pods_Deluge_Remote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Deluge_Remote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -171,6 +175,7 @@
 				47D035641DD81BA4003BB2A0 /* DetailedTorrentViewController.swift */,
 				47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */,
 				47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */,
+				47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -194,6 +199,7 @@
 				477D7ADA21D3299300F78CE1 /* ClientConfig.swift */,
 				477D7B3521D605C200F78CE1 /* SessionStatus.swift */,
 				477D7B4221DA7DBC00F78CE1 /* TorrentInfo.swift */,
+				47F9C73221DC66790017281C /* TorrentConfig.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -332,12 +338,14 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/Eureka/Eureka.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Valet/Valet.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Eureka.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Valet.framework",
 			);
@@ -379,7 +387,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if which swiftlint >/dev/null; then\nswiftlint autocorrect\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -392,6 +400,7 @@
 				47BE37441DDD1FAF002A6042 /* AddClientViewController.swift in Sources */,
 				477D7B3221D3EFE000F78CE1 /* ClientManager.swift in Sources */,
 				477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */,
+				47F9C73321DC66790017281C /* TorrentConfig.swift in Sources */,
 				4716027B1DD433A700727CBD /* TableViewTorrent.swift in Sources */,
 				47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */,
 				4716027A1DD433A700727CBD /* Torrent.swift in Sources */,
@@ -404,6 +413,7 @@
 				471602321DD4305800727CBD /* AppDelegate.swift in Sources */,
 				47D035631DD81B34003BB2A0 /* MainTableViewController.swift in Sources */,
 				47D035651DD81BA4003BB2A0 /* DetailedTorrentViewController.swift in Sources */,
+				47F9C73621DC6EB80017281C /* AddTorrentViewController.swift in Sources */,
 				477D7B3421D5716000F78CE1 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

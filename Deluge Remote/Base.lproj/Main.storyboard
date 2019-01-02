@@ -144,10 +144,10 @@
             </objects>
             <point key="canvasLocation" x="2428" y="24.7376311844078"/>
         </scene>
-        <!--View Controller-->
+        <!--Add Torrent View Controller-->
         <scene sceneID="zw9-WK-ng4">
             <objects>
-                <viewController id="UWE-Tj-nSN" sceneMemberID="viewController">
+                <viewController id="UWE-Tj-nSN" customClass="AddTorrentViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="VX8-Lm-WNU"/>
                         <viewControllerLayoutGuide type="bottom" id="4hE-gf-SW7"/>
@@ -537,9 +537,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="filter" width="37.5" height="37.5"/>
-        <image name="icons8-delete" width="50" height="50"/>
-        <image name="icons8-pause" width="50" height="50"/>
-        <image name="settings" width="50" height="50"/>
+        <image name="filter" width="25" height="25"/>
+        <image name="icons8-delete" width="25" height="25"/>
+        <image name="icons8-pause" width="25" height="25"/>
+        <image name="settings" width="25" height="25"/>
     </resources>
 </document>
