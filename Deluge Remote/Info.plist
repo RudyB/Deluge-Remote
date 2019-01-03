@@ -8,7 +8,9 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeIconFiles</key>
-			<array/>
+			<array>
+				<string>FileIcon2@3X.png</string>
+			</array>
 			<key>CFBundleTypeName</key>
 			<string>Torrent File</string>
 			<key>CFBundleTypeRole</key>
@@ -94,7 +96,9 @@
 			<key>UTTypeDescription</key>
 			<string>Torrent File</string>
 			<key>UTTypeIconFiles</key>
-			<array/>
+			<array>
+				<string>FileIcon2@3X.png</string>
+			</array>
 			<key>UTTypeIdentifier</key>
 			<string>io.rudybermudez.deluge.torrent</string>
 			<key>UTTypeTagSpecification</key>

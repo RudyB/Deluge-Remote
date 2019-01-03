@@ -23,6 +23,8 @@
 		478D81C221DDF1CC0062A647 /* NewTorrentNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478D81C121DDF1CC0062A647 /* NewTorrentNotifier.swift */; };
 		47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */; };
 		47A716AD21DE86C200C7650C /* DelugeBool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A716AC21DE86C200C7650C /* DelugeBool.swift */; };
+		47A716B221DEB7E200C7650C /* TorrentFile@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 47A716B121DEB7E200C7650C /* TorrentFile@3x.png */; };
+		47A716B421DEB9B300C7650C /* FileIcon2@3X.png in Resources */ = {isa = PBXBuildFile; fileRef = 47A716B321DEB9B300C7650C /* FileIcon2@3X.png */; };
 		47BE37421DDC3EE5002A6042 /* CustomAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47BE37411DDC3EE5002A6042 /* CustomAlert.swift */; };
 		47BE37441DDD1FAF002A6042 /* AddClientViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */; };
 		47D035631DD81B34003BB2A0 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035621DD81B34003BB2A0 /* MainTableViewController.swift */; };
@@ -55,6 +57,8 @@
 		478D81C121DDF1CC0062A647 /* NewTorrentNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTorrentNotifier.swift; sourceTree = "<group>"; };
 		47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ClientsTableViewController.swift; path = "Sources/View Controllers/ClientsTableViewController.swift"; sourceTree = "<group>"; };
 		47A716AC21DE86C200C7650C /* DelugeBool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelugeBool.swift; sourceTree = "<group>"; };
+		47A716B121DEB7E200C7650C /* TorrentFile@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "TorrentFile@3x.png"; sourceTree = "<group>"; };
+		47A716B321DEB9B300C7650C /* FileIcon2@3X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "FileIcon2@3X.png"; sourceTree = "<group>"; };
 		47BE37411DDC3EE5002A6042 /* CustomAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CustomAlert.swift; path = Resources/CustomAlert.swift; sourceTree = "<group>"; };
 		47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddClientViewController.swift; path = "Sources/View Controllers/AddClientViewController.swift"; sourceTree = "<group>"; };
 		47D035621DD81B34003BB2A0 /* MainTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTableViewController.swift; path = "Sources/View Controllers/MainTableViewController.swift"; sourceTree = "<group>"; };
@@ -155,6 +159,7 @@
 		4716027F1DD433F400727CBD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				47A716B021DEB7E200C7650C /* FileIcon */,
 				471602801DD4345100727CBD /* Protocols.swift */,
 				47BE37411DDC3EE5002A6042 /* CustomAlert.swift */,
 				477D7B3321D5716000F78CE1 /* Extensions.swift */,
@@ -175,6 +180,16 @@
 				47A716AC21DE86C200C7650C /* DelugeBool.swift */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		47A716B021DEB7E200C7650C /* FileIcon */ = {
+			isa = PBXGroup;
+			children = (
+				47A716B321DEB9B300C7650C /* FileIcon2@3X.png */,
+				47A716B121DEB7E200C7650C /* TorrentFile@3x.png */,
+			);
+			name = FileIcon;
+			path = Resources/FileIcon;
 			sourceTree = "<group>";
 		};
 		67A29AE78AB8790B56F14D72 /* Pods */ = {
@@ -257,6 +272,8 @@
 			files = (
 				4716023C1DD4305800727CBD /* LaunchScreen.storyboard in Resources */,
 				471602391DD4305800727CBD /* Assets.xcassets in Resources */,
+				47A716B421DEB9B300C7650C /* FileIcon2@3X.png in Resources */,
+				47A716B221DEB7E200C7650C /* TorrentFile@3x.png in Resources */,
 				471602371DD4305800727CBD /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
