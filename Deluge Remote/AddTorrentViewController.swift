@@ -14,8 +14,12 @@ import UIKit
 class AddTorrentViewController: FormViewController {
 
     var defaultConfig: TorrentConfig?
-
     var onTorrentAdded: ((_ hash: String) -> Void)?
+
+    var preknownIsFileURL: Bool?
+    var preknownURL: URL?
+
+    var torrentType: String?
 
     enum CodingKeys: String {
         case selectionSection
@@ -44,7 +48,71 @@ class AddTorrentViewController: FormViewController {
         getTorrentConfig()
 
         // Populate Form
-        populateTorrentTypeSelection()
+        if let isFileURL = preknownIsFileURL, let torrentURL = preknownURL {
+
+            MBProgressHUD.showAdded(to: self.view, animated: true)
+
+            torrentType = isFileURL ? "Torrent File" : "Magnet Link"
+
+            if isFileURL {
+                handleFormConfigurationFor(fileURL: torrentURL)
+            } else {
+                handleFormConfigurationFor(magnetURL: torrentURL)
+            }
+
+        } else {
+            populateTorrentTypeSelection()
+        }
+
+    }
+
+    func handleFormConfigurationFor(fileURL: URL) {
+        ClientManager.shared.activeClient?.getTorrentInfo(fileURL: fileURL)
+            .always {
+                DispatchQueue.main.async {
+                    MBProgressHUD.hide(for: self.view, animated: true)
+                }
+            }
+            .then { torrentInfo -> Void in
+                DispatchQueue.main.async {
+                    self.showTorrentConfig(name: torrentInfo.name, hash: torrentInfo.hash, url: fileURL)
+                }
+                torrentInfo.files.prettyPrint()
+            }.catch { error in
+                if let error = error as? ClientError {
+                    showAlert(target: self, title: "Connection failure", message: error.domain())
+                } else {
+                    showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
+                }
+                if self.preknownIsFileURL != nil {
+                    self.populateTorrentTypeSelection()
+                }
+        }
+    }
+
+    func handleFormConfigurationFor(magnetURL: URL) {
+        ClientManager.shared.activeClient?.getMagnetInfo(url: magnetURL)
+            .always {
+                DispatchQueue.main.async {
+                    MBProgressHUD.hide(for: self.view, animated: true)
+                }
+            }
+            .then { output -> Void in
+                DispatchQueue.main.async {
+                    self.showTorrentConfig(name: output.name, hash: output.hash, url: magnetURL)
+                }
+            }.catch { _ in
+                let dismiss = UIAlertAction(title: "Ok", style: .default) { _ in
+                    self.navigationController?.popViewController(animated: true)
+                }
+                DispatchQueue.main.async {
+
+                    showAlert(target: self, title: "Failure to load magnet URL",
+                              message: "An error occurred while attempting to load the magnet URL", actionList: [dismiss])
+                    // swiftlint:disable:previous line_length
+
+                }
+        }
     }
 
     // swiftlint:disable:next function_body_length
@@ -57,7 +125,12 @@ class AddTorrentViewController: FormViewController {
             <<< SegmentedRow<String> {
                 $0.tag = CodingKeys.torrentType.rawValue
                 $0.options = ["Magnet Link", "Torrent File"]
-            }
+                }.onChange { row in
+                    if let value = row.value {
+                        self.torrentType = value
+                    }
+                }
+
             <<< URLRow {
                 $0.title = "URL:"
                 $0.tag = CodingKeys.magnetURL.rawValue
@@ -107,28 +180,7 @@ class AddTorrentViewController: FormViewController {
                             MBProgressHUD.showAdded(to: view, animated: true)
                         }
                     }
-                    ClientManager.shared.activeClient?.getMagnetInfo(url: url).then { output -> Void in
-                        DispatchQueue.main.async {
-                            if let view = self?.view {
-                                MBProgressHUD.hide(for: view, animated: true)
-                            }
-                            self?.showTorrentConfig(name: output.name, hash: output.hash, url: url)
-
-                        }
-                        }.catch { _ in
-                            let dismiss = UIAlertAction(title: "Ok", style: .default) { _ in
-                                self?.navigationController?.popViewController(animated: true)
-                            }
-                            DispatchQueue.main.async {
-                                if let self = self {
-                                    MBProgressHUD.hide(for: self.view, animated: true)
-                                    showAlert(target: self, title: "Failure to load magnet URL",
-                                              message: "An error occurred while attempting to load the magnet URL", actionList: [dismiss])
-                                    // swiftlint:disable:previous line_length
-                                }
-                            }
-
-                    }
+                    self?.handleFormConfigurationFor(magnetURL: url)
         }
     }
 
@@ -154,8 +206,10 @@ class AddTorrentViewController: FormViewController {
                 }.onChange { row in
                     if let value = row.value {
                         self.defaultConfig?.downloadLocation = value
-                    }
-            }
+                }
+                }.cellUpdate { _, row in
+                    row.value = self.defaultConfig?.downloadLocation
+                }
             <<< SwitchRow {
                 $0.title = "Move Completed:"
                 $0.tag = CodingKeys.moveCompleted.rawValue
@@ -256,8 +310,7 @@ class AddTorrentViewController: FormViewController {
                     print("Should Add Torrent")
 
                     guard
-                        let values = self?.form.values(includeHidden: true),
-                        let type = values[CodingKeys.torrentType.rawValue] as? String,
+                        let torrentType = self?.torrentType,
                         let defaultConfig = self?.defaultConfig
                         else { return }
 
@@ -267,7 +320,7 @@ class AddTorrentViewController: FormViewController {
                             MBProgressHUD.showAdded(to: view, animated: true)
                         }
                     }
-                    if type == "Magnet Link" {
+                    if torrentType == "Magnet Link" {
                         self?.addMagnetLink(url: url, hash: hash, config: defaultConfig)
                     } else {
                         self?.addTorrentFile(fileName: name, hash: hash, url: url, config: defaultConfig)
@@ -303,10 +356,7 @@ class AddTorrentViewController: FormViewController {
                     hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-cancel"))
                     hud.isSquare = false
                     hud.label.text = "Failed to Add Torrent"
-                    hud.hide(animated: true, afterDelay: 1.5)
-                    hud.completionBlock = {
-                        self.navigationController?.popViewController(animated: true)
-                    }
+                    hud.hide(animated: true, afterDelay: 3.0)
                 }
         }
     }
@@ -327,7 +377,10 @@ class AddTorrentViewController: FormViewController {
                     hud.label.text = "Torrent Successfully Added"
                     hud.hide(animated: true, afterDelay: 1.5)
                     hud.completionBlock = {
-                        self.navigationController?.popViewController(animated: true)
+                        if let onTorrentAdded = self.onTorrentAdded {
+                            onTorrentAdded(hash)
+                        }
+
                     }
                 }
             }.catch { _ in
@@ -337,19 +390,15 @@ class AddTorrentViewController: FormViewController {
                     hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-cancel"))
                     hud.isSquare = false
                     hud.label.text = "Failed to Add Torrent"
-                    hud.hide(animated: true, afterDelay: 1.5)
-                    hud.completionBlock = {
-                        if let onTorrentAdded = self.onTorrentAdded {
-                            onTorrentAdded(hash)
-                        }
-                    }
+                    hud.hide(animated: true, afterDelay: 3.0)
                 }
         }
     }
 
     func getTorrentConfig() {
-        ClientManager.shared.activeClient?.getAddTorrentConfig().then { config in
+        ClientManager.shared.activeClient?.getAddTorrentConfig().then { config -> Void in
             self.defaultConfig = config
+            self.tableView.reloadData()
             }.catch { _ in
                 let dismiss = UIAlertAction(title: "Ok", style: .default) { _ in
                     self.navigationController?.popViewController(animated: true)
@@ -374,21 +423,6 @@ extension AddTorrentViewController: UIDocumentPickerDelegate {
         DispatchQueue.main.async {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
-        ClientManager.shared.activeClient?.getTorrentInfo(fileURL: url)
-            .always {
-                DispatchQueue.main.async {
-                    MBProgressHUD.hide(for: self.view, animated: true)
-                }
-            }
-            .then { torrentInfo -> Void in
-                DispatchQueue.main.async {
-                    self.showTorrentConfig(name: torrentInfo.name, hash: torrentInfo.hash, url: url)
-                }
-                torrentInfo.files.prettyPrint()
-            }.catch { error in
-                DispatchQueue.main.async {
-                    showAlert(target: self, title: "Error", message: error.localizedDescription)
-                }
-        }
+        handleFormConfigurationFor(fileURL: url)
     }
 }

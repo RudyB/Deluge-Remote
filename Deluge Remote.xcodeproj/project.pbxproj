@@ -22,6 +22,7 @@
 		477D7B3621D605C200F78CE1 /* SessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3521D605C200F78CE1 /* SessionStatus.swift */; };
 		477D7B3C21D6F6EF00F78CE1 /* Bencoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3B21D6F6EF00F78CE1 /* Bencoder.swift */; };
 		477D7B4321DA7DBC00F78CE1 /* TorrentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B4221DA7DBC00F78CE1 /* TorrentInfo.swift */; };
+		478D81C221DDF1CC0062A647 /* NewTorrentNotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478D81C121DDF1CC0062A647 /* NewTorrentNotificationHelper.swift */; };
 		47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */; };
 		47BE37421DDC3EE5002A6042 /* CustomAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47BE37411DDC3EE5002A6042 /* CustomAlert.swift */; };
 		47BE37441DDD1FAF002A6042 /* AddClientViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */; };
@@ -80,6 +81,7 @@
 		477D7B3B21D6F6EF00F78CE1 /* Bencoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bencoder.swift; sourceTree = "<group>"; };
 		477D7B4221DA7DBC00F78CE1 /* TorrentInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentInfo.swift; sourceTree = "<group>"; };
 		478D81BF21DDD30D0062A647 /* Deluge Remote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Deluge Remote.entitlements"; sourceTree = "<group>"; };
+		478D81C121DDF1CC0062A647 /* NewTorrentNotificationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTorrentNotificationHelper.swift; sourceTree = "<group>"; };
 		47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ClientsTableViewController.swift; path = "Sources/View Controllers/ClientsTableViewController.swift"; sourceTree = "<group>"; };
 		47BE37411DDC3EE5002A6042 /* CustomAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CustomAlert.swift; path = Resources/CustomAlert.swift; sourceTree = "<group>"; };
 		47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddClientViewController.swift; path = "Sources/View Controllers/AddClientViewController.swift"; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 				4716027E1DD433D800727CBD /* View Controllers */,
 				4716027D1DD433CF00727CBD /* Deluge API */,
 				477D7B3121D3EFE000F78CE1 /* ClientManager.swift */,
+				478D81C121DDF1CC0062A647 /* NewTorrentNotificationHelper.swift */,
 				477D7B3B21D6F6EF00F78CE1 /* Bencoder.swift */,
 			);
 			name = Sources;
@@ -411,6 +414,7 @@
 				477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */,
 				47F9C73321DC66790017281C /* TorrentConfig.swift in Sources */,
 				4716027B1DD433A700727CBD /* TableViewTorrent.swift in Sources */,
+				478D81C221DDF1CC0062A647 /* NewTorrentNotificationHelper.swift in Sources */,
 				47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */,
 				4716027A1DD433A700727CBD /* Torrent.swift in Sources */,
 				477D7B3621D605C200F78CE1 /* SessionStatus.swift in Sources */,

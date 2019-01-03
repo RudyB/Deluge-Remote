@@ -88,6 +88,15 @@ class MainTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Authenticate to Client
+        handleNewActiveClient()
+
+        // Begin Data Download
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
+            self.downloadNewData()
+            self.updateSessionStats()
+        }
+
         self.initUploadDownloadLabels()
         statusHeader.frame = CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: 22)
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
@@ -103,6 +112,9 @@ class MainTableViewController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleNewActiveClient),
                                                name: Notification.Name(ClientManager.NewActiveClientNotification),
                                                object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleAddTorrentNotification(notification:)),
+                                               name: Notification.Name("AddTorrentNotification"), object: nil)
+        NewTorrentNotificationHelper.shared.didMainTableVCCreateObserver = true
 
         // Setup the Search Controller
         searchController.delegate = self
@@ -118,14 +130,6 @@ class MainTableViewController: UITableViewController {
         searchController.searchBar.scopeButtonTitles = ["All", "Name", "Hash", "Tracker"]
         searchController.searchBar.delegate = self
 
-        // Authenticate to Client
-        handleNewActiveClient()
-
-        // Begin Data Download
-        Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
-            self.downloadNewData()
-            self.updateSessionStats()
-        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -186,6 +190,23 @@ class MainTableViewController: UITableViewController {
         } else {
             self.statusHeader.text = "Host Offline"
             self.statusHeader.backgroundColor = UIColor(red: 0.98, green: 0.196, blue: 0.196, alpha: 0.85)
+        }
+    }
+
+    func handleAddTorrentNotification(notification: NSNotification) {
+        NewTorrentNotificationHelper.shared.userInfo = nil
+        guard
+            let userInfo = notification.userInfo,
+            let _ = userInfo["url"] as? URL,
+            let _ = userInfo["isFileURL"] as? Bool
+        else { return }
+
+        if ClientManager.shared.activeClient != nil {
+            self.performSegue(withIdentifier: "addTorrentSegue", sender: userInfo)
+        } else {
+            DispatchQueue.main.async {
+                showAlert(target: self, title: "Error", message: "You cannot add a torrent without an active configuration")
+            }
         }
     }
 
@@ -415,6 +436,13 @@ class MainTableViewController: UITableViewController {
 
         } else if segue.identifier == "addTorrentSegue" {
             if let destination = segue.destination as? AddTorrentViewController {
+                if let userInfo = sender as? [AnyHashable: Any],
+                    let torrentURL = userInfo["url"] as? URL,
+                    let isFileURL = userInfo["isFileURL"] as? Bool {
+                    destination.preknownIsFileURL = isFileURL
+                    destination.preknownURL = torrentURL
+                }
+
                 destination.onTorrentAdded = { [weak self] torrentHash in
                     DispatchQueue.main.async {
                         self?.navigationController?.popViewController(animated: true)

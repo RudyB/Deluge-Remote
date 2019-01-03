@@ -14,10 +14,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	var window: UIWindow?
 
     // swiftlint:disable:next line_length
-	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-		// Override point for customization after application launch.
-		return true
-	}
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        return true
+    }
+
+    func applicationDidFinishLaunching(_ application: UIApplication) {
+        return
+    }
 
 	func applicationWillResignActive(_ application: UIApplication) {
 		// Sent when the application is about to move from active to inactive state.
@@ -54,27 +58,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Determine who sent the URL.
         let sendingAppID = options[.sourceApplication]
         print("source application = \(sendingAppID ?? "Unknown")")
-
-        // Process the URL.
-        if url.isFileURL {
-            print("Handle Torrent File")
-            ClientManager.shared.activeClient?.getTorrentInfo(fileURL: url).then { torrentInfo -> Void in
-                print("Name: \(torrentInfo.name)")
-                print("Files: ")
-                torrentInfo.files.prettyPrint()
-            }
-            if let bencode = Bencoder(torrentFileURL: url) {
-                print(bencode.getTorrentName() ?? "")
-                print(bencode.getTorrentSize()?.sizeString() ?? "")
-                for (file, size) in bencode.getTorrentFiles() ?? [] {
-                    print("\(file) - \(size.sizeString())")
-                }
-            }
-
-        } else {
-            print("Handle Magnet Link")
-        }
-        print(url)
+        NewTorrentNotificationHelper.shared.userInfo = ["url": url, "isFileURL": url.isFileURL]
+        //NotificationCenter.default.post(name: Notification.Name("AddTorrentNotification"), object: nil, userInfo: ["url": url, "isFileURL": url.isFileURL])
         return true
     }
 
