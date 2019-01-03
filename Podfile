@@ -9,5 +9,5 @@ target 'Deluge Remote' do
   pod 'PromiseKit'
   pod 'Valet' 
   pod 'Eureka'
-
+  pod 'MBProgressHUD'
 end

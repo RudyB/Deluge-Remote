@@ -9,16 +9,16 @@
 import Foundation
 
 struct TorrentConfig: Decodable {
-    let addPaused: Bool
-    let maxDownloadSpeed: Int
-    let prioritizeFirstLastPieces: Bool
-    let maxUploadSpeed: Int
-    let maxConnections: Int
-    let moveCompletedPath: String
-    let downloadLocation: String
-    let compactAllocation: Bool
-    let moveCompleted: Bool
-    let maxUploadSlots: Int
+    var addPaused: Bool
+    var maxDownloadSpeed: Int
+    var prioritizeFirstLastPieces: Bool
+    var maxUploadSpeed: Int
+    var maxConnections: Int
+    var moveCompletedPath: String
+    var downloadLocation: String
+    var compactAllocation: Bool
+    var moveCompleted: Bool
+    var maxUploadSlots: Int
 
     enum CodingKeys: String, CodingKey {
         case addPaused = "add_paused"

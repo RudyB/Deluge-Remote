@@ -7,6 +7,7 @@
 //
 
 import Eureka
+import MBProgressHUD
 import UIKit
 
 class AddTorrentViewController: FormViewController {
@@ -91,19 +92,31 @@ class AddTorrentViewController: FormViewController {
                 }.onCellSelection { [weak self] _, _ in
                     guard
                         let url = self?.form.values()[CodingKeys.magnetURL.rawValue] as? URL
-                    else { return }
+                        else { return }
+                    DispatchQueue.main.async {
+                        if let view = self?.view {
+                            MBProgressHUD.showAdded(to: view, animated: true)
+                        }
+                    }
                     ClientManager.shared.activeClient?.getMagnetInfo(url: url).then { output -> Void in
                         DispatchQueue.main.async {
+                            if let view = self?.view {
+                                MBProgressHUD.hide(for: view, animated: true)
+                            }
                             self?.showTorrentConfig(name: output.name, hash: output.hash)
+
                         }
                         }.catch { _ in
                             let dismiss = UIAlertAction(title: "Ok", style: .default) { _ in
                                 self?.navigationController?.popViewController(animated: true)
                             }
-                            if let self = self {
-                                showAlert(target: self, title: "Failure to load magnet URL",
-                                          message: "An error occurred while attempting to load the magnet URL", actionList: [dismiss])
-                                // swiftlint:disable:previous line_length
+                            DispatchQueue.main.async {
+                                if let self = self {
+                                    MBProgressHUD.hide(for: self.view, animated: true)
+                                    showAlert(target: self, title: "Failure to load magnet URL",
+                                              message: "An error occurred while attempting to load the magnet URL", actionList: [dismiss])
+                                    // swiftlint:disable:previous line_length
+                                }
                             }
 
                     }
@@ -129,12 +142,21 @@ class AddTorrentViewController: FormViewController {
                 $0.tag = CodingKeys.downloadLocation.rawValue
                 $0.add(rule: RuleRequired())
                 $0.value = defaultConfig?.downloadLocation
+                }.onChange { row in
+                    if let value = row.value {
+                        self.defaultConfig?.downloadLocation = value
+                    }
             }
             <<< SwitchRow {
                 $0.title = "Move Completed:"
                 $0.tag = CodingKeys.moveCompleted.rawValue
                 $0.value = defaultConfig?.moveCompleted ?? false
+                }.onChange { row in
+                    if let value = row.value {
+                        self.defaultConfig?.moveCompleted = value
+                    }
             }
+
             <<< TextRow {
                 $0.title = "Move Completed Path:"
                 $0.tag = defaultConfig?.moveCompletedPath
@@ -142,62 +164,139 @@ class AddTorrentViewController: FormViewController {
                 $0.hidden = Condition.function([CodingKeys.moveCompleted.rawValue]) { form in
                     return !((form.rowBy(tag: CodingKeys.moveCompleted.rawValue) as? SwitchRow)?.value ?? false)
                 }
+                }.onChange { row in
+                    if let value = row.value {
+                        self.defaultConfig?.moveCompletedPath = value
+                    }
             }
 
             <<< IntRow {
                 $0.title = "Max Upload Speed:"
                 $0.value = defaultConfig?.maxUploadSpeed ?? -1
                 $0.add(rule: RuleRequired())
+                }.onChange { row in
+                    if let value = row.value {
+                        self.defaultConfig?.maxUploadSpeed = value
+                    }
             }
+
             <<< IntRow {
                 $0.title = "Max Download Speed:"
                 $0.value = defaultConfig?.maxDownloadSpeed ?? -1
                 $0.add(rule: RuleRequired())
+                }.onChange { row in
+                    if let value = row.value {
+                        self.defaultConfig?.maxDownloadSpeed = value
+                    }
             }
+
             <<< IntRow {
                 $0.title = "Max Connections:"
                 $0.value = defaultConfig?.maxConnections ?? -1
                 $0.add(rule: RuleRequired())
+                }.onChange { row in
+                    if let value = row.value {
+                        self.defaultConfig?.maxConnections = value
+                    }
             }
+
             <<< IntRow {
                 $0.title = "Max Upload Slots:"
                 $0.value = defaultConfig?.maxUploadSlots ?? -1
                 $0.add(rule: RuleRequired())
+                }.onChange { row in
+                    if let value = row.value {
+                        self.defaultConfig?.maxUploadSlots = value
+                    }
             }
 
             <<< SwitchRow {
                 $0.title = "Add Paused:"
                 $0.value = defaultConfig?.addPaused ?? false
                 $0.add(rule: RuleRequired())
+                }.onChange { row in
+                    if let value = row.value {
+                        self.defaultConfig?.addPaused = value
+                    }
             }
+
             <<< SwitchRow {
                 $0.title = "Compact Allocation:"
                 $0.value = defaultConfig?.compactAllocation ?? false
                 $0.add(rule: RuleRequired())
+                }.onChange { row in
+                    if let value = row.value {
+                        self.defaultConfig?.compactAllocation = value
+                    }
             }
+
             <<< SwitchRow {
                 $0.title = "Prioritize First/Last Pieces:"
                 $0.value = defaultConfig?.prioritizeFirstLastPieces ?? false
                 $0.add(rule: RuleRequired())
+                }.onChange { row in
+                    if let value = row.value {
+                        self.defaultConfig?.prioritizeFirstLastPieces = value
+                    }
         }
 
         form +++ Section()
             <<< ButtonRow {
                 $0.title = "Add Torrent"
-            }.onCellSelection { [weak self] _, _ in
-                print("Should Add Torrent")
-                guard
-                    let url = self?.form.values()[CodingKeys.magnetURL.rawValue] as? URL,
-                    let type = self?.form.values()[CodingKeys.torrentType.rawValue] as? String
-                else { return }
+                }.onCellSelection { [weak self] _, _ in
+                    print("Should Add Torrent")
 
-                // TODO: Get the form values and convert to Torrent Config
+                    guard
+                        let values = self?.form.values(includeHidden: true),
+                        let url = values[CodingKeys.magnetURL.rawValue] as? URL,
+                        let type = values[CodingKeys.torrentType.rawValue] as? String,
+                        let defaultConfig = self?.defaultConfig
+                    else { return }
 
-                if type == "Magnet Link" {
+                    // TODO: Get the form values and convert to Torrent Config
+                    DispatchQueue.main.async {
+                        if let view = self?.view {
+                            MBProgressHUD.showAdded(to: view, animated: true)
+                        }
+                    }
+                    if type == "Magnet Link" {
+                        self?.addMagnetLink(url: url, config: defaultConfig)
+                    }
+        }
+    }
 
-                    // ClientManager.shared.activeClient?.addTorrentMagnet(url: url, with: <#T##TorrentConfig#>)
+    func addMagnetLink(url: URL, config: TorrentConfig) {
+        ClientManager.shared.activeClient?.addTorrentMagnet(url: url, with: config)
+            .always {
+                DispatchQueue.main.async {
+                    MBProgressHUD.hide(for: self.view, animated: true)
                 }
             }
+            .then { _ -> Void in
+                DispatchQueue.main.async {
+                    let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+                    hud.mode = MBProgressHUDMode.customView
+                    hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-checkmark"))
+                    hud.isSquare = false
+                    hud.label.text = "Torrent Successfully Added"
+                    hud.hide(animated: true, afterDelay: 1.5)
+                    hud.completionBlock = {
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
+            }.catch { error in
+                DispatchQueue.main.async {
+                    let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+                    hud.mode = MBProgressHUDMode.customView
+                    hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-cancel"))
+                    hud.isSquare = false
+                    hud.label.text = "Failed to Add Torrent"
+                    hud.hide(animated: true, afterDelay: 1.5)
+                    hud.completionBlock = {
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
+        }
     }
 
     func getTorrentConfig() {
