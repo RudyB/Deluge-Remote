@@ -16,11 +16,9 @@
 		4716027B1DD433A700727CBD /* TableViewTorrent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471602781DD433A700727CBD /* TableViewTorrent.swift */; };
 		471602811DD4345100727CBD /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471602801DD4345100727CBD /* Protocols.swift */; };
 		477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7ADA21D3299300F78CE1 /* ClientConfig.swift */; };
-		477D7B2521D3595400F78CE1 /* libNSBencodeSerialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 477D7AE921D34CE800F78CE1 /* libNSBencodeSerialization.a */; };
 		477D7B3221D3EFE000F78CE1 /* ClientManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3121D3EFE000F78CE1 /* ClientManager.swift */; };
 		477D7B3421D5716000F78CE1 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3321D5716000F78CE1 /* Extensions.swift */; };
 		477D7B3621D605C200F78CE1 /* SessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3521D605C200F78CE1 /* SessionStatus.swift */; };
-		477D7B3C21D6F6EF00F78CE1 /* Bencoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3B21D6F6EF00F78CE1 /* Bencoder.swift */; };
 		477D7B4321DA7DBC00F78CE1 /* TorrentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B4221DA7DBC00F78CE1 /* TorrentInfo.swift */; };
 		478D81C221DDF1CC0062A647 /* NewTorrentNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478D81C121DDF1CC0062A647 /* NewTorrentNotifier.swift */; };
 		47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */; };
@@ -34,30 +32,6 @@
 		47F9C73621DC6EB80017281C /* AddTorrentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */; };
 		4CE6290D2BE9BFD9EBB91CC7 /* Pods_Deluge_Remote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB6CE69A1698C94F6A70ACE6 /* Pods_Deluge_Remote.framework */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		477D7AE821D34CE800F78CE1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 477D7AE421D34CE800F78CE1 /* NSBencodeSerialization.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 23A8686318BF2FE20066E383;
-			remoteInfo = NSBencodeSerialization;
-		};
-		477D7AEA21D34CED00F78CE1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 477D7AE421D34CE800F78CE1 /* NSBencodeSerialization.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 23A8686218BF2FE20066E383;
-			remoteInfo = NSBencodeSerialization;
-		};
-		477D7B2C21D3637300F78CE1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 477D7B2821D3637300F78CE1 /* M13OrderedDictionary.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = CAC53481167D3EA900E66DFC;
-			remoteInfo = M13OrderedDictionary;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		00454872045418AC9157473D /* Pods-Deluge Remote.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Deluge Remote.release.xcconfig"; path = "Pods/Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote.release.xcconfig"; sourceTree = "<group>"; };
@@ -73,13 +47,9 @@
 		471602801DD4345100727CBD /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Protocols.swift; path = Resources/Protocols.swift; sourceTree = "<group>"; };
 		471602821DD5845500727CBD /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		477D7ADA21D3299300F78CE1 /* ClientConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfig.swift; sourceTree = "<group>"; };
-		477D7AE421D34CE800F78CE1 /* NSBencodeSerialization.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NSBencodeSerialization.xcodeproj; path = NSBencodeSerialization/NSBencodeSerialization.xcodeproj; sourceTree = "<group>"; };
-		477D7B1F21D3593000F78CE1 /* NSBencode-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBencode-Bridging-Header.h"; sourceTree = "<group>"; };
-		477D7B2821D3637300F78CE1 /* M13OrderedDictionary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = M13OrderedDictionary.xcodeproj; path = NSBencodeSerialization/M13OrderedDictionary/M13OrderedDictionary.xcodeproj; sourceTree = "<group>"; };
 		477D7B3121D3EFE000F78CE1 /* ClientManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientManager.swift; sourceTree = "<group>"; };
 		477D7B3321D5716000F78CE1 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		477D7B3521D605C200F78CE1 /* SessionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStatus.swift; sourceTree = "<group>"; };
-		477D7B3B21D6F6EF00F78CE1 /* Bencoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bencoder.swift; sourceTree = "<group>"; };
 		477D7B4221DA7DBC00F78CE1 /* TorrentInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentInfo.swift; sourceTree = "<group>"; };
 		478D81BF21DDD30D0062A647 /* Deluge Remote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Deluge Remote.entitlements"; sourceTree = "<group>"; };
 		478D81C121DDF1CC0062A647 /* NewTorrentNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTorrentNotifier.swift; sourceTree = "<group>"; };
@@ -101,7 +71,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				477D7B2521D3595400F78CE1 /* libNSBencodeSerialization.a in Frameworks */,
 				4CE6290D2BE9BFD9EBB91CC7 /* Pods_Deluge_Remote.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -120,8 +89,6 @@
 		471602251DD4305800727CBD = {
 			isa = PBXGroup;
 			children = (
-				477D7B2821D3637300F78CE1 /* M13OrderedDictionary.xcodeproj */,
-				477D7AE421D34CE800F78CE1 /* NSBencodeSerialization.xcodeproj */,
 				471602301DD4305800727CBD /* Deluge Remote */,
 				4716022F1DD4305800727CBD /* Products */,
 				67A29AE78AB8790B56F14D72 /* Pods */,
@@ -141,7 +108,6 @@
 			isa = PBXGroup;
 			children = (
 				478D81BF21DDD30D0062A647 /* Deluge Remote.entitlements */,
-				477D7B1F21D3593000F78CE1 /* NSBencode-Bridging-Header.h */,
 				4716027F1DD433F400727CBD /* Resources */,
 				4716027C1DD433B000727CBD /* Sources */,
 				471602351DD4305800727CBD /* Main.storyboard */,
@@ -162,7 +128,6 @@
 				4716027D1DD433CF00727CBD /* Deluge API */,
 				477D7B3121D3EFE000F78CE1 /* ClientManager.swift */,
 				478D81C121DDF1CC0062A647 /* NewTorrentNotifier.swift */,
-				477D7B3B21D6F6EF00F78CE1 /* Bencoder.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -212,22 +177,6 @@
 			name = Models;
 			sourceTree = "<group>";
 		};
-		477D7AE521D34CE800F78CE1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				477D7AE921D34CE800F78CE1 /* libNSBencodeSerialization.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		477D7B2921D3637300F78CE1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				477D7B2D21D3637300F78CE1 /* M13OrderedDictionary.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		67A29AE78AB8790B56F14D72 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -254,7 +203,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				477D7AEB21D34CED00F78CE1 /* PBXTargetDependency */,
 			);
 			name = "Deluge Remote";
 			productName = "Deluge Remote";
@@ -295,39 +243,12 @@
 			mainGroup = 471602251DD4305800727CBD;
 			productRefGroup = 4716022F1DD4305800727CBD /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 477D7B2921D3637300F78CE1 /* Products */;
-					ProjectRef = 477D7B2821D3637300F78CE1 /* M13OrderedDictionary.xcodeproj */;
-				},
-				{
-					ProductGroup = 477D7AE521D34CE800F78CE1 /* Products */;
-					ProjectRef = 477D7AE421D34CE800F78CE1 /* NSBencodeSerialization.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				4716022D1DD4305800727CBD /* Deluge Remote */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		477D7AE921D34CE800F78CE1 /* libNSBencodeSerialization.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libNSBencodeSerialization.a;
-			remoteRef = 477D7AE821D34CE800F78CE1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		477D7B2D21D3637300F78CE1 /* M13OrderedDictionary.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = M13OrderedDictionary.app;
-			remoteRef = 477D7B2C21D3637300F78CE1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		4716022C1DD4305800727CBD /* Resources */ = {
@@ -426,7 +347,6 @@
 				47D035691DD81F31003BB2A0 /* MainTableViewCell.swift in Sources */,
 				471602791DD433A700727CBD /* DelugeClient.swift in Sources */,
 				47A716AD21DE86C200C7650C /* DelugeBool.swift in Sources */,
-				477D7B3C21D6F6EF00F78CE1 /* Bencoder.swift in Sources */,
 				471602321DD4305800727CBD /* AppDelegate.swift in Sources */,
 				47D035631DD81B34003BB2A0 /* MainTableViewController.swift in Sources */,
 				47D035651DD81BA4003BB2A0 /* DetailedTorrentViewController.swift in Sources */,
@@ -436,14 +356,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		477D7AEB21D34CED00F78CE1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = NSBencodeSerialization;
-			targetProxy = 477D7AEA21D34CED00F78CE1 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		471602351DD4305800727CBD /* Main.storyboard */ = {
@@ -592,7 +504,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "co.rudybermudez.Deluge-Remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Deluge Remote/NSBencode-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -613,7 +525,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "co.rudybermudez.Deluge-Remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Deluge Remote/NSBencode-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
