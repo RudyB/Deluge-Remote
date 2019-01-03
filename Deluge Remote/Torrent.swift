@@ -35,9 +35,9 @@ struct TorrentMetadata: Decodable {
     let max_upload_speed: Double
     let message: String
     let move_on_completed_path: String
-    let move_on_completed: Bool
+    let move_on_completed: DelugeBool
     let move_completed_path: String
-    let move_completed: Bool
+    let move_completed: DelugeBool
     let next_announce: Double
     let num_peers: Int
     let num_seeds: Int
@@ -51,7 +51,7 @@ struct TorrentMetadata: Decodable {
     let seeds_peers_ratio: Double
     let seed_rank: Int
     let state: String // Turn this into enum
-    let stop_at_ratio: Bool
+    let stop_at_ratio: DelugeBool
     let stop_ratio: Double
     let time_added: Double
     let total_done: Int

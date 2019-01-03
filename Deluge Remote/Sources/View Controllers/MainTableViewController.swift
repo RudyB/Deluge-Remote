@@ -112,9 +112,10 @@ class MainTableViewController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleNewActiveClient),
                                                name: Notification.Name(ClientManager.NewActiveClientNotification),
                                                object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleAddTorrentNotification(notification:)),
+        NotificationCenter.default.addObserver(self, selector:
+            #selector(self.handleAddTorrentNotification(notification:)),
                                                name: Notification.Name("AddTorrentNotification"), object: nil)
-        NewTorrentNotificationHelper.shared.didMainTableVCCreateObserver = true
+        NewTorrentNotifier.shared.didMainTableVCCreateObserver = true
 
         // Setup the Search Controller
         searchController.delegate = self
@@ -194,18 +195,19 @@ class MainTableViewController: UITableViewController {
     }
 
     func handleAddTorrentNotification(notification: NSNotification) {
-        NewTorrentNotificationHelper.shared.userInfo = nil
+        NewTorrentNotifier.shared.userInfo = nil
         guard
             let userInfo = notification.userInfo,
-            let _ = userInfo["url"] as? URL,
-            let _ = userInfo["isFileURL"] as? Bool
+            userInfo["url"] as? URL != nil,
+            userInfo["isFileURL"] as? Bool != nil
         else { return }
 
         if ClientManager.shared.activeClient != nil {
             self.performSegue(withIdentifier: "addTorrentSegue", sender: userInfo)
         } else {
             DispatchQueue.main.async {
-                showAlert(target: self, title: "Error", message: "You cannot add a torrent without an active configuration")
+                showAlert(target: self, title: "Error",
+                          message: "You cannot add a torrent without an active configuration")
             }
         }
     }
@@ -215,7 +217,8 @@ class MainTableViewController: UITableViewController {
             if self.shouldRefresh && !self.tableView.isEditing &&
                 !self.tableView.isDragging && !self.tableView.isDecelerating {
                 print("Updating Table View")
-                self.tableView.performSelector(onMainThread: #selector(tableView.reloadData), with: nil, waitUntilDone: true)
+                self.tableView.performSelector(onMainThread: #selector(tableView.reloadData),
+                                               with: nil, waitUntilDone: true)
                 if isFiltering() {
                     updateSearchResults(for: searchController)
                 }
@@ -243,7 +246,6 @@ class MainTableViewController: UITableViewController {
         }
     }
 
-    // TODO: Make method stop when cell is selected. Check to see if VC is present?
     func downloadNewData() {
         print("Attempting to get all torrents")
         if !isHostOnline { return }
@@ -288,7 +290,9 @@ class MainTableViewController: UITableViewController {
             onSuccess()
             }.catch { error in
                 if let error = error as? ClientError {
-                    showAlert(target: self, title: "Error", message: error.domain(), style: .alert)
+                    showAlert(target: self, title: "Error", message: error.domain())
+                } else {
+                    showAlert(target: self, title: "Error", message: error.localizedDescription)
                 }
         }
     }

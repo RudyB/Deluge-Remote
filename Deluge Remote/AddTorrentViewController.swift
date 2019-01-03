@@ -314,7 +314,6 @@ class AddTorrentViewController: FormViewController {
                         let defaultConfig = self?.defaultConfig
                         else { return }
 
-                    // TODO: Get the form values and convert to Torrent Config
                     DispatchQueue.main.async {
                         if let view = self?.view {
                             MBProgressHUD.showAdded(to: view, animated: true)
@@ -425,4 +424,4 @@ extension AddTorrentViewController: UIDocumentPickerDelegate {
         }
         handleFormConfigurationFor(fileURL: url)
     }
-}
+} // swiftlint:disable:this file_length

@@ -58,8 +58,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Determine who sent the URL.
         let sendingAppID = options[.sourceApplication]
         print("source application = \(sendingAppID ?? "Unknown")")
-        NewTorrentNotificationHelper.shared.userInfo = ["url": url, "isFileURL": url.isFileURL]
-        //NotificationCenter.default.post(name: Notification.Name("AddTorrentNotification"), object: nil, userInfo: ["url": url, "isFileURL": url.isFileURL])
+        NewTorrentNotifier.shared.userInfo = ["url": url, "isFileURL": url.isFileURL]
         return true
     }
 

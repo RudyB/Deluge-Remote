@@ -31,6 +31,7 @@ class AddClientViewController: UITableViewController {
         sslEnabled = sender.selectedSegmentIndex == 1
 	}
 
+    // swiftlint:disable:next function_body_length
 	@IBAction func testConnectionAction(_ sender: Any) {
 		var port: String = ""
 		var sslConfig: NetworkSecurity!

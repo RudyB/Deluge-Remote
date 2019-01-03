@@ -182,7 +182,7 @@ class DelugeClient {
      
      */
     func authenticate() -> Promise<Bool> {
-        // swiftline:disable:next line_length
+        // swiftlint:disable:next line_length
         return DelugeClient.validateCredentials(host: clientConfig.hostname, url: clientConfig.url, password: clientConfig.password)
     }
 
@@ -220,7 +220,7 @@ class DelugeClient {
                         reject(ClientError.torrentCouldNotBeParsed)
                     }
 
-                case .failure(let error): reject(error)
+                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                 }
             }
         }
@@ -428,8 +428,7 @@ class DelugeClient {
                         return
                     }
                     fulfill(())
-                case .failure:
-                    reject(ClientError.unableToAddTorrent)
+                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                 }
             }
         }
@@ -458,8 +457,7 @@ class DelugeClient {
                             return
                         }
                         fulfill(name: name, hash: hash)
-                    case .failure(let error):
-                        reject(error)
+                    case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                     }
             }
         }
@@ -491,8 +489,7 @@ class DelugeClient {
                         return
                     }
                     fulfill(())
-                case .failure:
-                    reject(ClientError.unableToAddTorrent)
+                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                 }
             }
         }
@@ -509,7 +506,7 @@ class DelugeClient {
                 reject(ClientError.failedToConvertTorrentToData)
                 return
             }
-
+            // swiftlint:disable:next trailing_closure
             Manager.upload(multipartFormData: ({ multipartFormData in
                 multipartFormData.append(torrentData, withName: "file")
             }), to: clientConfig.uploadURL, method: .post, headers: headers, encodingCompletion: { encodingResult in
@@ -531,8 +528,7 @@ class DelugeClient {
                             reject(error)
                         }
                     }
-                case .failure(let error):
-                    reject(error)
+                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                 }
             })
         }
@@ -572,8 +568,7 @@ class DelugeClient {
                                 let info = TorrentInfo(name: torrentName, hash: torrentHash,
                                                        isDirectory: type == "dir", files: files)
                                 fulfill(info)
-                            case .failure(let error):
-                                reject(error)
+                            case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                             }
                     }
 
@@ -616,7 +611,7 @@ class DelugeClient {
                             reject(ClientError.torrentCouldNotBeParsed)
                         }
 
-                    case .failure(let error): reject(error)
+                    case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                     }
                 }
         }
@@ -691,7 +686,7 @@ class DelugeClient {
                         reject(ClientError.torrentCouldNotBeParsed)
                     }
 
-                case .failure(let error): reject(error)
+                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                 }
             }
         }

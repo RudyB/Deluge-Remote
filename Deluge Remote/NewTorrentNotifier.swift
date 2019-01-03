@@ -8,8 +8,8 @@
 
 import Foundation
 
-final class NewTorrentNotificationHelper {
-    public static var shared = NewTorrentNotificationHelper()
+final class NewTorrentNotifier {
+    public static var shared = NewTorrentNotifier()
 
     private var _userInfo: [AnyHashable: Any]?
 
@@ -24,7 +24,8 @@ final class NewTorrentNotificationHelper {
                 self._userInfo = newValue
                 if self._didMainTableVCCreateObserver && newValue != nil {
                     DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: Notification.Name("AddTorrentNotification"), object: nil, userInfo: self._userInfo)
+                        NotificationCenter.default.post(name: Notification.Name("AddTorrentNotification"),
+                                                        object: nil, userInfo: self._userInfo)
                     }
 
                 }
@@ -45,7 +46,8 @@ final class NewTorrentNotificationHelper {
                 self._didMainTableVCCreateObserver = newValue
                 if newValue && self._userInfo != nil {
                     DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: Notification.Name("AddTorrentNotification"), object: nil, userInfo: self._userInfo)
+                        NotificationCenter.default.post(name: Notification.Name("AddTorrentNotification"),
+                                                        object: nil, userInfo: self._userInfo)
                     }
                 }
             }
