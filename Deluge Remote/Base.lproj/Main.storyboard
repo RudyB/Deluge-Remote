@@ -132,9 +132,9 @@
                         </barButtonItem>
                     </toolbarItems>
                     <navigationItem key="navigationItem" id="HJ8-A1-s0D">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="Wxq-PV-h4z">
+                        <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="add" id="Wxq-PV-h4z">
                             <connections>
-                                <segue destination="UWE-Tj-nSN" kind="show" id="a8J-91-cog"/>
+                                <segue destination="UWE-Tj-nSN" kind="show" identifier="addTorrentSegue" id="a8J-91-cog"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -184,7 +184,7 @@
         <scene sceneID="sp0-1E-TYr">
             <objects>
                 <tableViewController storyboardIdentifier="AddClientVC" title="Add Client" id="JQf-ll-XtU" customClass="AddClientViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="ecA-vn-YBB">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="ecA-vn-YBB">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
@@ -212,7 +212,7 @@
                                                     <rect key="frame" x="143" y="13.5" width="220" height="17"/>
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="words" textContentType="nickname"/>
                                                 </textField>
                                             </subviews>
                                             <constraints>
@@ -245,7 +245,7 @@
                                                     <rect key="frame" x="143" y="13.5" width="220" height="17"/>
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
+                                                    <textInputTraits key="textInputTraits" textContentType="url"/>
                                                 </textField>
                                             </subviews>
                                             <constraints>
@@ -325,7 +325,7 @@
                                                     <rect key="frame" x="143" y="13.5" width="220" height="17"/>
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="numberPad" textContentType="url"/>
                                                 </textField>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Port:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="63p-YP-lXA">
                                                     <rect key="frame" x="28" y="11.5" width="95" height="21"/>
@@ -368,7 +368,7 @@
                                                     <rect key="frame" x="143" y="13.5" width="204" height="17"/>
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" secureTextEntry="YES" textContentType="password"/>
                                                 </textField>
                                             </subviews>
                                             <constraints>
@@ -412,7 +412,7 @@
                     </tableView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Add Client" id="qaU-Iq-pCB">
-                        <barButtonItem key="rightBarButtonItem" title="Done" id="iA1-74-pkF">
+                        <barButtonItem key="rightBarButtonItem" title="Save" id="iA1-74-pkF">
                             <connections>
                                 <action selector="doneAction:" destination="JQf-ll-XtU" id="OOb-22-HQw"/>
                             </connections>

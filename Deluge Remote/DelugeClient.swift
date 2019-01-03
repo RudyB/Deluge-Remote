@@ -182,6 +182,7 @@ class DelugeClient {
      
      */
     func authenticate() -> Promise<Bool> {
+        // swiftline:disable:next line_length
         return DelugeClient.validateCredentials(host: clientConfig.hostname, url: clientConfig.url, password: clientConfig.password)
     }
 
@@ -464,28 +465,21 @@ class DelugeClient {
         }
     }
 
-    func addTorrentFile(fileName: String, url: URL) -> Promise<Void> {
-        let options: [String: Any] = [
-            "file_priorities": [],
-            "add_paused": false,
-            "compact_allocation": false,
-            /*"download_location": "/home/yotam/Downloads",*/
-            "move_completed": false,
-            /*"move_completed_path": "/home/yotam/Downloads",*/
-            "max_connections": -1,
-            "max_download_speed": -1,
-            "max_upload_slots": -1,
-            "max_upload_speed": -1,
-            "prioritize_first_last_pieces": false
-        ]
-
-        let parameters: Parameters = [
-            "id": arc4random(),
-            "method": "core.add_torrent_file",
-            "params": [fileName, url.absoluteString, options]
-        ]
+    func addTorrentFile(fileName: String, url: URL, with config: TorrentConfig) -> Promise<Void> {
 
         return Promise { fulfill, reject in
+            guard
+                let torrent = try? Data(contentsOf: url) else {
+                reject(ClientError.unexpectedError("Failed to create base64 encoded torrent"))
+                return
+            }
+
+            let parameters: Parameters = [
+                "id": arc4random(),
+                "method": "core.add_torrent_file",
+                "params": [fileName, torrent.base64EncodedString(), config.toParams()]
+            ]
+
             Manager.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default)
                 .validate().responseJSON(queue: utilityQueue) { response in
@@ -518,7 +512,7 @@ class DelugeClient {
 
             Manager.upload(multipartFormData: ({ multipartFormData in
                 multipartFormData.append(torrentData, withName: "file")
-            }), to: "http://stardust.whatbox.ca:12547/upload", method: .post, headers: headers) { encodingResult in
+            }), to: clientConfig.uploadURL, method: .post, headers: headers, encodingCompletion: { encodingResult in
                 switch encodingResult {
 
                 case .success(let request, _, _):
@@ -540,7 +534,7 @@ class DelugeClient {
                 case .failure(let error):
                     reject(error)
                 }
-            }
+            })
         }
     }
 

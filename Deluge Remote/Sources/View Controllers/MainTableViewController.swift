@@ -13,56 +13,56 @@ class MainTableViewController: UITableViewController {
     // swiftlint:disable:previous type_body_length
 
     // MARK: - Properties
-	let byteCountFormatter = ByteCountFormatter()
+    let byteCountFormatter = ByteCountFormatter()
     let searchController = UISearchController(searchResultsController: nil)
 
-	var tableViewDataSource: [TableViewTorrent]?
+    var tableViewDataSource: [TableViewTorrent]?
     var filteredTableViewDataSource = [TableViewTorrent]()
-	var isHostOnline: Bool = false
-	var cancelNextRefresh = false
-	var shouldRefresh = true
+    var isHostOnline: Bool = false
+    var cancelNextRefresh = false
+    var shouldRefresh = true
 
-	var dataTransferTotalsView: UIView = {
-		let view = UIView(frame: CGRect(x: 0, y: 0, width: 80, height: 22))
-		view.backgroundColor = UIColor.clear
-		return view
-	}()
+    var dataTransferTotalsView: UIView = {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 80, height: 22))
+        view.backgroundColor = UIColor.clear
+        return view
+    }()
 
-	var currentUploadSpeedLabel: UILabel = {
-		let label = UILabel(frame: CGRect(x: 0, y: 0, width: 80, height: 11))
-		label.font = label.font.withSize(11)
-		label.text = "↑ 0 KiB/s"
-		label.backgroundColor = UIColor.clear
-		return label
-	}()
+    var currentUploadSpeedLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 80, height: 11))
+        label.font = label.font.withSize(11)
+        label.text = "↑ 0 KiB/s"
+        label.backgroundColor = UIColor.clear
+        return label
+    }()
 
-	var currentDownloadSpeedLabel: UILabel = {
-		let label = UILabel(frame: CGRect(x: 0, y: 11, width: 80, height: 11))
-		label.font = label.font.withSize(11)
-		label.text = "↓ 0 KiB/s"
-		label.backgroundColor = UIColor.clear
-		return label
-	}()
+    var currentDownloadSpeedLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 11, width: 80, height: 11))
+        label.font = label.font.withSize(11)
+        label.text = "↓ 0 KiB/s"
+        label.backgroundColor = UIColor.clear
+        return label
+    }()
 
-	var totalUploadLabel: UILabel = {
-		let label = UILabel(frame: CGRect(x: 0, y: 0, width: 80, height: 11))
-		label.font = label.font.withSize(11)
-		label.text = "↑ 0 KiB"
-		label.backgroundColor = UIColor.clear
-		return label
-	}()
+    var totalUploadLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 80, height: 11))
+        label.font = label.font.withSize(11)
+        label.text = "↑ 0 KiB"
+        label.backgroundColor = UIColor.clear
+        return label
+    }()
 
-	var totalDownloadLabel: UILabel = {
-		let label = UILabel(frame: CGRect(x: 0, y: 11, width: 80, height: 11))
-		label.font = label.font.withSize(11)
-		label.text = "↓ 0 KiB/s"
-		label.backgroundColor = UIColor.clear
-		return label
-	}()
+    var totalDownloadLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 11, width: 80, height: 11))
+        label.font = label.font.withSize(11)
+        label.text = "↓ 0 KiB/s"
+        label.backgroundColor = UIColor.clear
+        return label
+    }()
 
-	var statusHeader: UILabel = {
-		let label = UILabel()
-		label.backgroundColor = UIColor(red: 0.0, green: 0.9, blue: 0.2, alpha: 0.85)
+    var statusHeader: UILabel = {
+        let label = UILabel()
+        label.backgroundColor = UIColor(red: 0.0, green: 0.9, blue: 0.2, alpha: 0.85)
         if ClientManager.shared.activeClient != nil {
             label.backgroundColor = UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0)
             label.text = "Attempting Connection"
@@ -71,33 +71,33 @@ class MainTableViewController: UITableViewController {
             label.text = "No Active Configuration"
         }
 
-		label.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-		label.textAlignment = NSTextAlignment.center
-		label.autoresizingMask = UIViewAutoresizing.flexibleLeftMargin
-		return label
-	}()
+        label.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        label.textAlignment = NSTextAlignment.center
+        label.autoresizingMask = UIViewAutoresizing.flexibleLeftMargin
+        return label
+    }()
 
-	@IBAction func resumeAllTorrentsAction(_ sender: Any) {
-		(isHostOnline == true) ? self.resumeAllTorrents() : ()
-	}
-	@IBAction func pauseAllTorrentsAction(_ sender: Any) {
-		(isHostOnline == true) ? self.pauseAllTorrents() : ()
-	}
+    @IBAction func resumeAllTorrentsAction(_ sender: Any) {
+        (isHostOnline == true) ? self.resumeAllTorrents() : ()
+    }
+    @IBAction func pauseAllTorrentsAction(_ sender: Any) {
+        (isHostOnline == true) ? self.pauseAllTorrents() : ()
+    }
 
-	// MARK: - UI Methods
-	override func viewDidLoad() {
-		super.viewDidLoad()
+    // MARK: - UI Methods
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
         self.initUploadDownloadLabels()
-		statusHeader.frame = CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: 22)
-		self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
+        statusHeader.frame = CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: 22)
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
         self.navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
         self.tableView.accessibilityScroll(UIAccessibilityScrollDirection.down)
 
-		NotificationCenter.default.addObserver(self, selector: #selector(self.updateHeader),
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateHeader),
                                                name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
 
-		NotificationCenter.default.addObserver(self, selector: #selector(self.recieveUpdateTableNotifcation),
+        NotificationCenter.default.addObserver(self, selector: #selector(self.recieveUpdateTableNotifcation),
                                                name: NSNotification.Name(rawValue: "reloadTableView"), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleNewActiveClient),
@@ -126,26 +126,27 @@ class MainTableViewController: UITableViewController {
             self.downloadNewData()
             self.updateSessionStats()
         }
-	}
+    }
 
-	override func viewWillAppear(_ animated: Bool) {
-		shouldRefresh = true
-	}
+    override func viewWillAppear(_ animated: Bool) {
+        shouldRefresh = true
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
 
-	func initUploadDownloadLabels() {
-		dataTransferTotalsView.addSubview(currentUploadSpeedLabel)
-		dataTransferTotalsView.addSubview(currentDownloadSpeedLabel)
-		self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dataTransferTotalsView)
-	}
+    func initUploadDownloadLabels() {
+        dataTransferTotalsView.addSubview(currentUploadSpeedLabel)
+        dataTransferTotalsView.addSubview(currentDownloadSpeedLabel)
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dataTransferTotalsView)
+    }
 
     func handleNewActiveClient() {
         print("New Client")
         self.tableViewDataSource?.removeAll()
         self.isHostOnline = false
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
         self.navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTableView"), object: nil)
@@ -158,6 +159,7 @@ class MainTableViewController: UITableViewController {
                 if !isAuthenticated {
                     showAlert(target: self, title: "Authentication Error", message: "Invalid Password")
                 } else {
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
                     self.downloadNewData()
                     self.updateSessionStats()
                 }
@@ -172,38 +174,38 @@ class MainTableViewController: UITableViewController {
         }
     }
 
-	func updateHeader() {
+    func updateHeader() {
         guard ClientManager.shared.activeClient != nil else {
             self.statusHeader.text = "No Active Config"
             self.statusHeader.backgroundColor = UIColor(red: 0.98, green: 0.196, blue: 0.196, alpha: 0.85)
             return
         }
-		if isHostOnline {
-			self.statusHeader.text = "Host Online"
-			self.statusHeader.backgroundColor = UIColor(red: 0.302, green: 0.584, blue: 0.772, alpha: 0.85)
-		} else {
-			self.statusHeader.text = "Host Offline"
-			self.statusHeader.backgroundColor = UIColor(red: 0.98, green: 0.196, blue: 0.196, alpha: 0.85)
-		}
-	}
+        if isHostOnline {
+            self.statusHeader.text = "Host Online"
+            self.statusHeader.backgroundColor = UIColor(red: 0.302, green: 0.584, blue: 0.772, alpha: 0.85)
+        } else {
+            self.statusHeader.text = "Host Offline"
+            self.statusHeader.backgroundColor = UIColor(red: 0.98, green: 0.196, blue: 0.196, alpha: 0.85)
+        }
+    }
 
-	func recieveUpdateTableNotifcation() {
-		if !cancelNextRefresh {
-			if self.shouldRefresh && !self.tableView.isEditing &&
+    func recieveUpdateTableNotifcation() {
+        if !cancelNextRefresh {
+            if self.shouldRefresh && !self.tableView.isEditing &&
                 !self.tableView.isDragging && !self.tableView.isDecelerating {
-				print("Updating Table View")
-				self.tableView.performSelector(onMainThread: #selector(tableView.reloadData), with: nil, waitUntilDone: true)
+                print("Updating Table View")
+                self.tableView.performSelector(onMainThread: #selector(tableView.reloadData), with: nil, waitUntilDone: true)
                 if isFiltering() {
                     updateSearchResults(for: searchController)
                 }
 
-			}
-		} else {
-			cancelNextRefresh = false
-		}
-	}
+            }
+        } else {
+            cancelNextRefresh = false
+        }
+    }
 
-	// MARK: - Deluge UI Wrapper Methods
+    // MARK: - Deluge UI Wrapper Methods
 
     func updateSessionStats() {
         if !isHostOnline { return }
@@ -212,63 +214,63 @@ class MainTableViewController: UITableViewController {
                 self.currentDownloadSpeedLabel.text = "↓ \(status.payload_download_rate.transferRateString())"
                 self.currentUploadSpeedLabel.text = "↑ \(status.payload_upload_rate.transferRateString())"
             }
-        }.catch { _ in
+            }.catch { _ in
+                DispatchQueue.main.async {
+                    self.currentDownloadSpeedLabel.text = "↓ 0 KiB/s"
+                    self.currentUploadSpeedLabel.text = "↑ 0 KiB/s"
+                }
+        }
+    }
+
+    // TODO: Make method stop when cell is selected. Check to see if VC is present?
+    func downloadNewData() {
+        print("Attempting to get all torrents")
+        if !isHostOnline { return }
+        ClientManager.shared.activeClient?.getAllTorrents().then { tableViewData -> Void in
             DispatchQueue.main.async {
-                self.currentDownloadSpeedLabel.text = "↓ 0 KiB/s"
-                self.currentUploadSpeedLabel.text = "↑ 0 KiB/s"
+                print("Torrent Data Successfully Downloaded")
+                self.tableViewDataSource = tableViewData
+                NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
+            }
+            }.catch { error in
+                self.isHostOnline = false
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
+                if let error = error as? ClientError {
+                    print(error.domain())
+                    showAlert(target: self, title: "Error", message: error.domain())
+                } else {
+                    print(error.localizedDescription)
+                }
+        }
+    }
+
+    func pauseAllTorrents() {
+        ClientManager.shared.activeClient?.pauseAllTorrents { result in
+            switch result {
+            case .success: print("All Torrents Paused")
+            case .failure(let error): print(error)
             }
         }
     }
 
-	// TODO: Make method stop when cell is selected. Check to see if VC is present?
-	func downloadNewData() {
-		print("Attempting to get all torrents")
-        if !isHostOnline { return }
-		ClientManager.shared.activeClient?.getAllTorrents().then { tableViewData -> Void in
-			DispatchQueue.main.async {
-				print("Torrent Data Successfully Downloaded")
-				self.tableViewDataSource = tableViewData
-				NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
-			}
-			}.catch { error in
-				self.isHostOnline = false
-				NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
-				if let error = error as? ClientError {
-					print(error.domain())
-					showAlert(target: self, title: "Error", message: error.domain())
-				} else {
-					print(error.localizedDescription)
-				}
-		}
-	}
+    func resumeAllTorrents() {
+        ClientManager.shared.activeClient?.resumeAllTorrents { result in
+            switch result {
+            case .success: print("All Torrents Resumed")
+            case .failure(let error): print(error)
+            }
+        }
+    }
 
-	func pauseAllTorrents() {
-		ClientManager.shared.activeClient?.pauseAllTorrents { result in
-			switch result {
-			case .success: print("All Torrents Paused")
-			case .failure(let error): print(error)
-			}
-		}
-	}
-
-	func resumeAllTorrents() {
-		ClientManager.shared.activeClient?.resumeAllTorrents { result in
-			switch result {
-			case .success: print("All Torrents Resumed")
-			case .failure(let error): print(error)
-			}
-		}
-	}
-
-	func removeTorrent(withHash hash: String, removeData: Bool, onSuccess: @escaping () -> Void) {
-		ClientManager.shared.activeClient?.removeTorrent(withHash: hash, removeData: removeData).then { _ -> Void in
-			onSuccess()
-		}.catch { error in
-			if let error = error as? ClientError {
-				showAlert(target: self, title: "Error", message: error.domain(), style: .alert)
-			}
-		}
-	}
+    func removeTorrent(withHash hash: String, removeData: Bool, onSuccess: @escaping () -> Void) {
+        ClientManager.shared.activeClient?.removeTorrent(withHash: hash, removeData: removeData).then { _ -> Void in
+            onSuccess()
+            }.catch { error in
+                if let error = error as? ClientError {
+                    showAlert(target: self, title: "Error", message: error.domain(), style: .alert)
+                }
+        }
+    }
 
     func sort(_ content: [TableViewTorrent]) -> [TableViewTorrent] {
         return content.sorted {
@@ -282,33 +284,33 @@ class MainTableViewController: UITableViewController {
         return 1
     }
 
-	override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-		return 22
-	}
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 22
+    }
 
-	override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-		return self.shouldRefresh ? self.statusHeader : nil
-	}
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return self.shouldRefresh ? self.statusHeader : nil
+    }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		guard let tableViewDataSource = tableViewDataSource else {
-			return 0
-		}
+        guard let tableViewDataSource = tableViewDataSource else {
+            return 0
+        }
 
         if isFiltering() {
             return filteredTableViewDataSource.count
         }
-		return tableViewDataSource.count
+        return tableViewDataSource.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		guard
+        guard
             let tableViewDataSource = tableViewDataSource,
             let cell = tableView.dequeueReusableCell(withIdentifier: "mainTableViewCell", for: indexPath)
                 as? MainTableViewCell
             else {
-			return tableView.dequeueReusableCell(withIdentifier: "mainTableViewCell", for: indexPath)
-		}
+                return tableView.dequeueReusableCell(withIdentifier: "mainTableViewCell", for: indexPath)
+        }
 
         let currentItem: TableViewTorrent
         if isFiltering() {
@@ -317,42 +319,42 @@ class MainTableViewController: UITableViewController {
             currentItem = tableViewDataSource[indexPath.row]
         }
 
-		cell.nameLabel.text = currentItem.name
-		cell.progressBar.setProgress(Float(currentItem.progress/100), animated: true)
-		cell.currentStatusLabel.text = currentItem.state
-		cell.downloadSpeedLabel.text =
+        cell.nameLabel.text = currentItem.name
+        cell.progressBar.setProgress(Float(currentItem.progress/100), animated: true)
+        cell.currentStatusLabel.text = currentItem.state
+        cell.downloadSpeedLabel.text =
         "\(byteCountFormatter.string(fromByteCount: Int64(currentItem.download_payload_rate))) ↓"
-		cell.uploadSpeedLabel.text =
+        cell.uploadSpeedLabel.text =
         "↑ \(byteCountFormatter.string(fromByteCount: Int64(currentItem.upload_payload_rate)))"
-		cell.torrentHash = currentItem.hash
-		if currentItem.eta == 0 {
-			cell.etaLabel.text = "\(currentItem.ratio.roundTo(places: 3))"
-		} else {
-			cell.etaLabel.text = String(currentItem.eta)
-		}
+        cell.torrentHash = currentItem.hash
+        if currentItem.eta == 0 {
+            cell.etaLabel.text = "\(currentItem.ratio.roundTo(places: 3))"
+        } else {
+            cell.etaLabel.text = String(currentItem.eta)
+        }
         return cell
     }
 
-	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-			tableView.deselectRow(at: indexPath, animated: true)
-	}
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 
-	override func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
-		cancelNextRefresh = false
-	}
+    override func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+        cancelNextRefresh = false
+    }
 
-	override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-		return true
-	}
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
 
     // swiftlint:disable:next line_length
-	override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-		if editingStyle == UITableViewCellEditingStyle.delete {
-			// handle delete (by removing the data from your array and updating the tableview)
-			if let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == UITableViewCellEditingStyle.delete {
+            // handle delete (by removing the data from your array and updating the tableview)
+            if let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell {
 
-				let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { _ in
-					self.removeTorrent(withHash: cell.torrentHash, removeData: false) {
+                let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { _ in
+                    self.removeTorrent(withHash: cell.torrentHash, removeData: false) {
                         DispatchQueue.main.async {
                             if self.isFiltering() {
                                 self.tableViewDataSource?.removeAll {
@@ -366,11 +368,11 @@ class MainTableViewController: UITableViewController {
                             }
                             self.tableView.setEditing(false, animated: true)
                         }
-					}
-				}
+                    }
+                }
 
-				let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { _ in
-					self.removeTorrent(withHash: cell.torrentHash, removeData: true) {
+                let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { _ in
+                    self.removeTorrent(withHash: cell.torrentHash, removeData: true) {
                         DispatchQueue.main.async {
                             if self.isFiltering() {
                                 self.tableViewDataSource?.removeAll {
@@ -384,30 +386,44 @@ class MainTableViewController: UITableViewController {
                             }
                             self.tableView.setEditing(false, animated: true)
                         }
-					}
+                    }
 
-				}
-				let cancel = UIAlertAction(title: "Cancel", style: .cancel) { _ in
-					self.tableView.setEditing(false, animated: true)
-				}
+                }
+                let cancel = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+                    self.tableView.setEditing(false, animated: true)
+                }
 
-				showAlert(target: self, title: "Remove the selected Torrent?",
+                showAlert(target: self, title: "Remove the selected Torrent?",
                           style: .alert, actionList: [deleteTorrent, deleteTorrentWithData, cancel])
-			}
-		}
-	}
+            }
+        }
+    }
 
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-		if segue.identifier == "detailedTorrentViewSegue" {
-			if let cell: MainTableViewCell = sender as? MainTableViewCell,
-                let destination = segue.destination as? DetailedTorrentViewController {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "detailedTorrentViewSegue" {
+            if let destination = segue.destination as? DetailedTorrentViewController {
+                if let cell: MainTableViewCell = sender as? MainTableViewCell {
                     destination.torrentHash = cell.torrentHash
-			}
-		}
-	}
+                }
+                if let torrentHash = sender as? String {
+                    destination.torrentHash = torrentHash
+                }
+            }
+
+        } else if segue.identifier == "addTorrentSegue" {
+            if let destination = segue.destination as? AddTorrentViewController {
+                destination.onTorrentAdded = { [weak self] torrentHash in
+                    DispatchQueue.main.async {
+                        self?.navigationController?.popViewController(animated: true)
+                        self?.performSegue(withIdentifier: "detailedTorrentViewSegue", sender: torrentHash)
+                    }
+                }
+            }
+        }
+    }
 
 }
 
@@ -428,25 +444,25 @@ extension MainTableViewController: UISearchResultsUpdating {
 
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
 
-    if scope == "Name" {
-        filteredTableViewDataSource = tableViewDataSource?.filter {
-            return $0.name.lowercased().contains(searchText.lowercased())
-            } ?? []
-    } else if scope == "Hash" {
-        filteredTableViewDataSource = tableViewDataSource?.filter {
-            return $0.hash.lowercased().contains(searchText.lowercased())
-            } ?? []
-    } else if scope == "Tracker" {
-        filteredTableViewDataSource = tableViewDataSource?.filter {
-            return $0.tracker_host.lowercased().contains(searchText.lowercased())
-            } ?? []
-    } else {
-        filteredTableViewDataSource = tableViewDataSource?.filter {
-            return $0.name.lowercased().contains(searchText.lowercased()) ||
-            $0.hash.lowercased().contains(searchText.lowercased()) ||
-            $0.tracker_host.lowercased().contains(searchText.lowercased())
-            } ?? []
-    }
+        if scope == "Name" {
+            filteredTableViewDataSource = tableViewDataSource?.filter {
+                return $0.name.lowercased().contains(searchText.lowercased())
+                } ?? []
+        } else if scope == "Hash" {
+            filteredTableViewDataSource = tableViewDataSource?.filter {
+                return $0.hash.lowercased().contains(searchText.lowercased())
+                } ?? []
+        } else if scope == "Tracker" {
+            filteredTableViewDataSource = tableViewDataSource?.filter {
+                return $0.tracker_host.lowercased().contains(searchText.lowercased())
+                } ?? []
+        } else {
+            filteredTableViewDataSource = tableViewDataSource?.filter {
+                return $0.name.lowercased().contains(searchText.lowercased()) ||
+                    $0.hash.lowercased().contains(searchText.lowercased()) ||
+                    $0.tracker_host.lowercased().contains(searchText.lowercased())
+                } ?? []
+        }
         // TODO: Sort the Filtered Data
         tableView.reloadData()
     }

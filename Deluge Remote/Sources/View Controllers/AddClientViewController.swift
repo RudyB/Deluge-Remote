@@ -6,6 +6,7 @@
 //  Copyright © 2016 Rudy Bermudez. All rights reserved.
 //
 
+import MBProgressHUD
 import UIKit
 
 class AddClientViewController: UITableViewController {
@@ -51,30 +52,47 @@ class AddClientViewController: UITableViewController {
 			sslConfig = NetworkSecurity.http(port: port)
 		}
 
-		// FIXME: If both fields are empty then 2 alerts
         if nickname.isEmpty { showAlert(target: self, title: "Nickname cannot be left empty")}
 		if hostname.isEmpty { showAlert(target: self, title: "Hostname cannot be empty")}
 		if password.isEmpty { showAlert(target: self, title: "Password cannot be empty")}
 		if port.isEmpty { showAlert(target: self, title: "Port cannot be empty")}
 
 		if !hostname.isEmpty && !password.isEmpty && !port.isEmpty && !nickname.isEmpty {
+            DispatchQueue.main.async {
+                MBProgressHUD.showAdded(to: self.view, animated: true)
+            }
+
 			let url = buildURL(hostname: hostname, relativePath: relativePath, sslConfig: sslConfig)
+            // swiftlint:disable:next line_length
             DelugeClient.validateCredentials(host: hostname, url: url, password: password).then { isValidScheme -> Void in
-				if isValidScheme {
-					showAlert(target: self, title: "Connection successful")
-                    self.config = ClientConfig(nickname: nickname, hostname: hostname,
-                                               relativePath: relativePath, port: port,
-                                               password: password, isHTTP: !self.sslEnabled)
-                    self.navigationItem.rightBarButtonItem?.isEnabled = true
-				} else {
-					showAlert(target: self, title: "Unable to Authenticate", message: "Invalid Password")
-				}
+                DispatchQueue.main.async {
+                    MBProgressHUD.hide(for: self.view, animated: true)
+
+                    if isValidScheme {
+                        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+                        hud.mode = MBProgressHUDMode.customView
+                        hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-checkmark"))
+                        hud.isSquare = true
+                        hud.label.text = "Valid Configuration"
+                        hud.hide(animated: true, afterDelay: 1.5)
+                        self.config = ClientConfig(nickname: nickname, hostname: hostname,
+                                                   relativePath: relativePath, port: port,
+                                                   password: password, isHTTP: !self.sslEnabled)
+                        self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    } else {
+                        showAlert(target: self, title: "Unable to Authenticate", message: "Invalid Password")
+                    }
+                }
+
 			}.catch { error in
-				if let error = error as? ClientError {
-					showAlert(target: self, title: "Connection failure", message: error.domain())
-				} else {
-					showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
-				}
+                DispatchQueue.main.async {
+                    MBProgressHUD.hide(for: self.view, animated: true)
+                    if let error = error as? ClientError {
+                        showAlert(target: self, title: "Connection failure", message: error.domain())
+                    } else {
+                        showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
+                    }
+                }
 
 			}
 		}
@@ -124,16 +142,4 @@ class AddClientViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 7
     }
-
-	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-		let cell = super.tableView(tableView, cellForRowAt: indexPath)
-		if cell == portTableViewCell {
-			switch sslEnabled {
-			case true: return 0
-			case false: return 44
-			}
-		} else {
-			return super.tableView(tableView, heightForRowAt: indexPath)
-		}
-	}
 }

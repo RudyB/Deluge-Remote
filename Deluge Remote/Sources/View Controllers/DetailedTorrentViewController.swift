@@ -181,6 +181,7 @@ class DetailedTorrentViewController: UITableViewController {
                 cell.detailTextLabel?.text = String(format: "%.3f", torrentData.ratio)
             case 6:
                 cell.textLabel?.text = "ETA"
+                cell.detailTextLabel?.text = "Computing"
                 if torrentData.eta > 0 {
                     let formatter = DateComponentsFormatter()
                     formatter.allowedUnits = [.year, .day, .hour, .minute]

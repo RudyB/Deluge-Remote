@@ -79,6 +79,7 @@
 		477D7B3521D605C200F78CE1 /* SessionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStatus.swift; sourceTree = "<group>"; };
 		477D7B3B21D6F6EF00F78CE1 /* Bencoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bencoder.swift; sourceTree = "<group>"; };
 		477D7B4221DA7DBC00F78CE1 /* TorrentInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentInfo.swift; sourceTree = "<group>"; };
+		478D81BF21DDD30D0062A647 /* Deluge Remote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Deluge Remote.entitlements"; sourceTree = "<group>"; };
 		47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ClientsTableViewController.swift; path = "Sources/View Controllers/ClientsTableViewController.swift"; sourceTree = "<group>"; };
 		47BE37411DDC3EE5002A6042 /* CustomAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CustomAlert.swift; path = Resources/CustomAlert.swift; sourceTree = "<group>"; };
 		47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddClientViewController.swift; path = "Sources/View Controllers/AddClientViewController.swift"; sourceTree = "<group>"; };
@@ -135,6 +136,7 @@
 		471602301DD4305800727CBD /* Deluge Remote */ = {
 			isa = PBXGroup;
 			children = (
+				478D81BF21DDD30D0062A647 /* Deluge Remote.entitlements */,
 				477D7B1F21D3593000F78CE1 /* NSBencode-Bridging-Header.h */,
 				4716027F1DD433F400727CBD /* Resources */,
 				4716027C1DD433B000727CBD /* Sources */,
@@ -268,6 +270,11 @@
 						DevelopmentTeam = NZ8449Y9W6;
 						LastSwiftMigration = 1010;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -566,6 +573,7 @@
 			baseConfigurationReference = CBE414C0A48278AAA9218964 /* Pods-Deluge Remote.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Deluge Remote/Deluge Remote.entitlements";
 				DEVELOPMENT_TEAM = NZ8449Y9W6;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",
@@ -586,6 +594,7 @@
 			baseConfigurationReference = 00454872045418AC9157473D /* Pods-Deluge Remote.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Deluge Remote/Deluge Remote.entitlements";
 				DEVELOPMENT_TEAM = NZ8449Y9W6;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",

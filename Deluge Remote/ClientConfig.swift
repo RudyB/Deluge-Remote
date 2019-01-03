@@ -31,6 +31,16 @@ struct ClientConfig: Codable, Comparable {
         return "\(sslConfig.name())\(hostname):\(sslConfig.port())\(relativePath)/json"
     }
 
+    var uploadURL: String {
+        var sslConfig: NetworkSecurity
+        if isHTTP {
+            sslConfig = NetworkSecurity.http(port: port)
+        } else {
+            sslConfig = NetworkSecurity.https(port: port)
+        }
+        return "\(sslConfig.name())\(hostname):\(sslConfig.port())\(relativePath)/upload"
+    }
+
     init(nickname: String, hostname: String, relativePath: String, port: String, password: String, isHTTP: Bool) {
         self.nickname = nickname
         self.hostname = hostname

@@ -10,9 +10,12 @@ import Eureka
 import MBProgressHUD
 import UIKit
 
+// swiftlint:disable:next type_body_length
 class AddTorrentViewController: FormViewController {
 
     var defaultConfig: TorrentConfig?
+
+    var onTorrentAdded: ((_ hash: String) -> Void)?
 
     enum CodingKeys: String {
         case selectionSection
@@ -77,6 +80,12 @@ class AddTorrentViewController: FormViewController {
                         as? SegmentedRow<String>)?.value ?? ""
                     return selection != "Torrent File"
                 }
+                }.onCellSelection { [weak self] _, _ in
+                    let vc = UIDocumentPickerViewController(
+                        documentTypes: ["io.rudybermudez.deluge.torrent"], in: UIDocumentPickerMode.import
+                    )
+                    vc.delegate = self
+                    self?.present(vc, animated: true, completion: nil)
             }
 
             <<< ButtonRow {
@@ -103,7 +112,7 @@ class AddTorrentViewController: FormViewController {
                             if let view = self?.view {
                                 MBProgressHUD.hide(for: view, animated: true)
                             }
-                            self?.showTorrentConfig(name: output.name, hash: output.hash)
+                            self?.showTorrentConfig(name: output.name, hash: output.hash, url: url)
 
                         }
                         }.catch { _ in
@@ -123,8 +132,8 @@ class AddTorrentViewController: FormViewController {
         }
     }
 
-    // swiftlint:disable:next function_body_length
-    func showTorrentConfig(name: String, hash: String) {
+    // swiftlint:disable:next function_body_length cyclomatic_complexity
+    func showTorrentConfig(name: String, hash: String, url: URL) {
         form.sectionBy(tag: CodingKeys.selectionSection.rawValue)?.hidden = true
         form.sectionBy(tag: CodingKeys.selectionSection.rawValue)?.evaluateHidden()
 
@@ -248,10 +257,9 @@ class AddTorrentViewController: FormViewController {
 
                     guard
                         let values = self?.form.values(includeHidden: true),
-                        let url = values[CodingKeys.magnetURL.rawValue] as? URL,
                         let type = values[CodingKeys.torrentType.rawValue] as? String,
                         let defaultConfig = self?.defaultConfig
-                    else { return }
+                        else { return }
 
                     // TODO: Get the form values and convert to Torrent Config
                     DispatchQueue.main.async {
@@ -260,12 +268,50 @@ class AddTorrentViewController: FormViewController {
                         }
                     }
                     if type == "Magnet Link" {
-                        self?.addMagnetLink(url: url, config: defaultConfig)
+                        self?.addMagnetLink(url: url, hash: hash, config: defaultConfig)
+                    } else {
+                        self?.addTorrentFile(fileName: name, hash: hash, url: url, config: defaultConfig)
                     }
         }
     }
 
-    func addMagnetLink(url: URL, config: TorrentConfig) {
+    func addTorrentFile(fileName: String, hash: String, url: URL, config: TorrentConfig) {
+        ClientManager.shared.activeClient?.addTorrentFile(fileName: fileName, url: url, with: config)
+            .always {
+                DispatchQueue.main.async {
+                    MBProgressHUD.hide(for: self.view, animated: true)
+                }
+            }
+            .then { _ -> Void in
+                DispatchQueue.main.async {
+                    let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+                    hud.mode = MBProgressHUDMode.customView
+                    hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-checkmark"))
+                    hud.isSquare = false
+                    hud.label.text = "Torrent Successfully Added"
+                    hud.hide(animated: true, afterDelay: 1.5)
+                    hud.completionBlock = {
+                        if let onTorrentAdded = self.onTorrentAdded {
+                            onTorrentAdded(hash)
+                        }
+                    }
+                }
+            }.catch { _ in
+                DispatchQueue.main.async {
+                    let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+                    hud.mode = MBProgressHUDMode.customView
+                    hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-cancel"))
+                    hud.isSquare = false
+                    hud.label.text = "Failed to Add Torrent"
+                    hud.hide(animated: true, afterDelay: 1.5)
+                    hud.completionBlock = {
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
+        }
+    }
+
+    func addMagnetLink(url: URL, hash: String, config: TorrentConfig) {
         ClientManager.shared.activeClient?.addTorrentMagnet(url: url, with: config)
             .always {
                 DispatchQueue.main.async {
@@ -284,7 +330,7 @@ class AddTorrentViewController: FormViewController {
                         self.navigationController?.popViewController(animated: true)
                     }
                 }
-            }.catch { error in
+            }.catch { _ in
                 DispatchQueue.main.async {
                     let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
                     hud.mode = MBProgressHUDMode.customView
@@ -293,7 +339,9 @@ class AddTorrentViewController: FormViewController {
                     hud.label.text = "Failed to Add Torrent"
                     hud.hide(animated: true, afterDelay: 1.5)
                     hud.completionBlock = {
-                        self.navigationController?.popViewController(animated: true)
+                        if let onTorrentAdded = self.onTorrentAdded {
+                            onTorrentAdded(hash)
+                        }
                     }
                 }
         }
@@ -312,4 +360,35 @@ class AddTorrentViewController: FormViewController {
         }
     }
 
+}
+
+// MARK: - UIDocumentPickerDelegate
+extension AddTorrentViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first else {
+            DispatchQueue.main.async {
+                showAlert(target: self, title: "Error", message: "Unable to open torrent file")
+            }
+            return
+        }
+        DispatchQueue.main.async {
+            MBProgressHUD.showAdded(to: self.view, animated: true)
+        }
+        ClientManager.shared.activeClient?.getTorrentInfo(fileURL: url)
+            .always {
+                DispatchQueue.main.async {
+                    MBProgressHUD.hide(for: self.view, animated: true)
+                }
+            }
+            .then { torrentInfo -> Void in
+                DispatchQueue.main.async {
+                    self.showTorrentConfig(name: torrentInfo.name, hash: torrentInfo.hash, url: url)
+                }
+                torrentInfo.files.prettyPrint()
+            }.catch { error in
+                DispatchQueue.main.async {
+                    showAlert(target: self, title: "Error", message: error.localizedDescription)
+                }
+        }
+    }
 }

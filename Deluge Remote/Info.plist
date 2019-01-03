@@ -8,10 +8,7 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeIconFiles</key>
-			<array>
-				<string>icons8-torrent-48.png</string>
-				<string>torrent-symbol-file-format.png</string>
-			</array>
+			<array/>
 			<key>CFBundleTypeName</key>
 			<string>Torrent File</string>
 			<key>CFBundleTypeRole</key>
@@ -64,6 +61,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
