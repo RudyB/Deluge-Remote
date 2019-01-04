@@ -112,7 +112,7 @@ class DetailedTorrentViewController: UITableViewController {
     }
 
     func createNewTimer() {
-        print("Created new Timer in DetailTorrentVC")
+        print("Created New Timer in DetailTorrentVC")
         refreshTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) {[weak self] _ in
             guard let torrentHash = self?.torrentHash else { return }
             self?.getTorrentData(withHash: torrentHash)

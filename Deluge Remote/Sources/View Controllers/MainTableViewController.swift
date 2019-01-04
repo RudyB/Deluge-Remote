@@ -36,6 +36,8 @@ class MainTableViewController: UITableViewController {
     var cancelNextRefresh = false
     var shouldRefresh = true
 
+    var refreshTimer: Timer?
+
     var dataTransferTotalsView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 80, height: 22))
         view.backgroundColor = UIColor.clear
@@ -115,15 +117,6 @@ class MainTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Authenticate to Client
-        handleNewActiveClient()
-
-        // Begin Data Download
-        Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
-            self.downloadNewData()
-            self.updateSessionStats()
-        }
-
         self.initUploadDownloadLabels()
         statusHeader.frame = CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: 22)
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
@@ -161,7 +154,17 @@ class MainTableViewController: UITableViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+
+        // Authenticate to Client
+        refreshAuthentication()
+
+        // Begin Data Download
         shouldRefresh = true
+        createRefreshTimer()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        invalidateRefreshTimer()
     }
 
     override func didReceiveMemoryWarning() {
@@ -174,15 +177,21 @@ class MainTableViewController: UITableViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dataTransferTotalsView)
     }
 
-    func handleNewActiveClient() {
-        print("New Client")
-        self.tableViewDataSource?.removeAll()
-        self.isHostOnline = false
-        self.navigationItem.rightBarButtonItem?.isEnabled = false
-        self.navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTableView"), object: nil)
+    func createRefreshTimer() {
+        print("Created New Timer in MainTableVC")
+        refreshTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
+            self?.downloadNewData()
+            self?.updateSessionStats()
+        }
+    }
 
+    func invalidateRefreshTimer() {
+        print("Invalidated Timer in MainTableVC")
+        refreshTimer?.invalidate()
+    }
+
+    func refreshAuthentication () {
+        print("Auth Refresh")
         _ = ClientManager.shared.activeClient?.authenticate()
             .then { isAuthenticated -> Void in
                 self.isHostOnline = isAuthenticated
@@ -206,6 +215,18 @@ class MainTableViewController: UITableViewController {
         }
     }
 
+    func handleNewActiveClient() {
+        print("New Client")
+        self.tableViewDataSource?.removeAll()
+        self.isHostOnline = false
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        self.navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTableView"), object: nil)
+
+        refreshAuthentication()
+    }
+
     func updateHeader() {
         guard ClientManager.shared.activeClient != nil else {
             self.statusHeader.text = "No Active Config"
@@ -227,7 +248,7 @@ class MainTableViewController: UITableViewController {
             let userInfo = notification.userInfo,
             userInfo["url"] as? URL != nil,
             userInfo["isFileURL"] as? Bool != nil
-        else { return }
+            else { return }
 
         if ClientManager.shared.activeClient != nil {
             self.performSegue(withIdentifier: "addTorrentSegue", sender: userInfo)
@@ -245,14 +266,18 @@ class MainTableViewController: UITableViewController {
                 !self.tableView.isDragging && !self.tableView.isDecelerating {
                 print("Updating Table View")
 
-                self.tableViewDataSource = tableViewDataSource?.sort(by: activeSortKey, ascending: sortAscending)
+                DispatchQueue.global(qos: .userInitiated).async {
+                    self.tableViewDataSource = self.tableViewDataSource?.sort(by: self.activeSortKey, ascending: self.sortAscending)
 
-                self.tableView.performSelector(onMainThread: #selector(tableView.reloadData),
-                                               with: nil, waitUntilDone: true)
-                if isFiltering() {
-                    updateSearchResults(for: searchController)
+                    self.tableView.performSelector(onMainThread: #selector(self.tableView.reloadData),
+                                                   with: nil, waitUntilDone: true)
+
+                    DispatchQueue.main.async {
+                        if self.isFiltering() {
+                            self.updateSearchResults(for: self.searchController)
+                        }
+                    }
                 }
-
             }
         } else {
             cancelNextRefresh = false
@@ -287,7 +312,8 @@ class MainTableViewController: UITableViewController {
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
 
-        showAlert(target: self, title: "Order By:", message: nil, style: .actionSheet, actionList: [ascending, descending, cancel])
+        showAlert(target: self, title: "Order By:", message: nil,
+                  style: .actionSheet, actionList: [ascending, descending, cancel])
     }
 
     // MARK: - Deluge UI Wrapper Methods
