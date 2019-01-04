@@ -16,6 +16,7 @@ class DetailedTorrentViewController: UITableViewController {
     @IBAction func deleteAction(_ sender: UIBarButtonItem) {
 
         let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .destructive) { _ in
+            self.invalidateTimer()
             ClientManager.shared.activeClient?.removeTorrent(withHash: self.torrentHash!, removeData: false).then {_ in
                 self.navigationController?.popViewController(animated: true)
                 }.catch { error in
@@ -28,6 +29,7 @@ class DetailedTorrentViewController: UITableViewController {
         }
 
         let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .destructive) { _ in
+            self.invalidateTimer()
             ClientManager.shared.activeClient?.removeTorrent(withHash: self.torrentHash!, removeData: true).then {_ in
                 self.navigationController?.popViewController(animated: true)
                 }.catch { error in
@@ -53,6 +55,7 @@ class DetailedTorrentViewController: UITableViewController {
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
+                        self.createNewTimer()
                         UIView.animate(withDuration: 1.0) {
                             self.playPauseItem.image = #imageLiteral(resourceName: "icons8-pause")
                         }
@@ -89,7 +92,7 @@ class DetailedTorrentViewController: UITableViewController {
     var torrentData: TorrentMetadata?
     var torrentHash: String?
 
-    var refreshTimer: Timer!
+    var refreshTimer: Timer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -101,14 +104,24 @@ class DetailedTorrentViewController: UITableViewController {
         }
 
         // Begin Data Download
-        refreshTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) {_ in
-            guard let torrentHash = self.torrentHash else { return }
-            self.getTorrentData(withHash: torrentHash)
-        }
+        createNewTimer()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        refreshTimer.invalidate()
+        invalidateTimer()
+    }
+
+    func createNewTimer() {
+        print("Created new Timer in DetailTorrentVC")
+        refreshTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) {[weak self] _ in
+            guard let torrentHash = self?.torrentHash else { return }
+            self?.getTorrentData(withHash: torrentHash)
+        }
+    }
+
+    func invalidateTimer() {
+        refreshTimer?.invalidate()
+        print("Invalidated Timer in DetailTorrentVC")
     }
 
     override func didReceiveMemoryWarning() {
@@ -123,6 +136,9 @@ class DetailedTorrentViewController: UITableViewController {
                 self.playPauseItem.image = torrent.paused ?  #imageLiteral(resourceName: "play_filled") : #imageLiteral(resourceName: "icons8-pause")
                 self.tableView.reloadData()
                 print("Updated Detail VC Data")
+                if torrent.paused {
+                    self.invalidateTimer()
+                }
             }
             }.catch { error in
                 if let error = error as? ClientError {

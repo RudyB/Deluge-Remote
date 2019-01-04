@@ -498,8 +498,8 @@ class MainTableViewController: UITableViewController {
                 if let userInfo = sender as? [AnyHashable: Any],
                     let torrentURL = userInfo["url"] as? URL,
                     let isFileURL = userInfo["isFileURL"] as? Bool {
-                    destination.preknownIsFileURL = isFileURL
-                    destination.preknownURL = torrentURL
+                    destination.torrentType = isFileURL ? .file : .magnet
+                    destination.torrentURL = torrentURL
                 }
 
                 destination.onTorrentAdded = { [weak self] torrentHash in

@@ -13,13 +13,17 @@ import UIKit
 // swiftlint:disable:next type_body_length
 class AddTorrentViewController: FormViewController {
 
+    enum TorrentType: String {
+        case magnet = "Magnet Link"
+        case file = "Torrent File"
+    }
     var defaultConfig: TorrentConfig?
     var onTorrentAdded: ((_ hash: String) -> Void)?
 
-    var preknownIsFileURL: Bool?
-    var preknownURL: URL?
-
-    var torrentType: String?
+    var torrentName: String?
+    var torrentHash: String?
+    var torrentURL: URL?
+    var torrentType: TorrentType?
 
     enum CodingKeys: String {
         case selectionSection
@@ -48,18 +52,12 @@ class AddTorrentViewController: FormViewController {
         getTorrentConfig()
 
         // Populate Form
-        if let isFileURL = preknownIsFileURL, let torrentURL = preknownURL {
-
+        if let torrentType = torrentType, let torrentURL = torrentURL {
             MBProgressHUD.showAdded(to: self.view, animated: true)
-
-            torrentType = isFileURL ? "Torrent File" : "Magnet Link"
-
-            if isFileURL {
-                handleFormConfigurationFor(fileURL: torrentURL)
-            } else {
-                handleFormConfigurationFor(magnetURL: torrentURL)
+            switch torrentType {
+                case .file: handleFormConfigurationFor(fileURL: torrentURL)
+                case .magnet: handleFormConfigurationFor(magnetURL: torrentURL)
             }
-
         } else {
             populateTorrentTypeSelection()
         }
@@ -84,7 +82,7 @@ class AddTorrentViewController: FormViewController {
                 } else {
                     showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
                 }
-                if self.preknownIsFileURL != nil {
+                if self.torrentURL != nil {
                     self.populateTorrentTypeSelection()
                 }
         }
@@ -126,8 +124,8 @@ class AddTorrentViewController: FormViewController {
                 $0.tag = CodingKeys.torrentType.rawValue
                 $0.options = ["Magnet Link", "Torrent File"]
                 }.onChange { row in
-                    if let value = row.value {
-                        self.torrentType = value
+                    if let value = row.value, let type = TorrentType(rawValue: value) {
+                        self.torrentType = type
                     }
                 }
 
@@ -184,10 +182,19 @@ class AddTorrentViewController: FormViewController {
         }
     }
 
-    // swiftlint:disable:next function_body_length cyclomatic_complexity
+    // swiftlint:disable:next function_body_length
     func showTorrentConfig(name: String, hash: String, url: URL) {
+        self.torrentName = name
+        self.torrentHash = hash
+        self.torrentURL = url
+
         form.sectionBy(tag: CodingKeys.selectionSection.rawValue)?.hidden = true
         form.sectionBy(tag: CodingKeys.selectionSection.rawValue)?.evaluateHidden()
+
+        let title = "Upload Torrent to \(ClientManager.shared.activeClient?.clientConfig.nickname ?? "Server")"
+        let done = UIBarButtonItem(title: title, style: .done, target: self, action: #selector(uploadToServer))
+        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        self.setToolbarItems([spacer, done, spacer], animated: true)
 
         form +++ Section("Torrent Info")
             <<< LabelRow {
@@ -303,27 +310,25 @@ class AddTorrentViewController: FormViewController {
                     }
         }
 
-        form +++ Section()
-            <<< ButtonRow {
-                $0.title = "Add Torrent"
-                }.onCellSelection { [weak self] _, _ in
-                    print("Should Add Torrent")
+    }
 
-                    guard
-                        let torrentType = self?.torrentType,
-                        let defaultConfig = self?.defaultConfig
-                        else { return }
+    func uploadToServer() {
+        print("Should Add Torrent")
 
-                    DispatchQueue.main.async {
-                        if let view = self?.view {
-                            MBProgressHUD.showAdded(to: view, animated: true)
-                        }
-                    }
-                    if torrentType == "Magnet Link" {
-                        self?.addMagnetLink(url: url, hash: hash, config: defaultConfig)
-                    } else {
-                        self?.addTorrentFile(fileName: name, hash: hash, url: url, config: defaultConfig)
-                    }
+        guard
+            let url = self.torrentURL,
+            let torrentName = self.torrentName,
+            let torrentHash = self.torrentHash,
+            let torrentType = self.torrentType,
+            let defaultConfig = self.defaultConfig
+        else { return }
+
+        DispatchQueue.main.async {
+           MBProgressHUD.showAdded(to: self.view, animated: true)
+        }
+        switch torrentType {
+        case .magnet: addMagnetLink(url: url, hash: torrentHash, config: defaultConfig)
+        case .file: addTorrentFile(fileName: torrentName, hash: torrentHash, url: url, config: defaultConfig)
         }
     }
 
