@@ -8,8 +8,8 @@
 
 import Foundation
 
-struct TableViewTorrent: Decodable, Comparable {
-    static func < (lhs: TableViewTorrent, rhs: TableViewTorrent) -> Bool {
+struct TableViewTorrent: Decodable, Equatable {
+    static func == (lhs: TableViewTorrent, rhs: TableViewTorrent) -> Bool {
         return lhs.hash == rhs.hash
     }
 
@@ -24,5 +24,7 @@ struct TableViewTorrent: Decodable, Comparable {
 	let tracker_host: String
 	let label: String
 	let eta: Double
-
+    let total_size: Int
+    let all_time_download: Int
+    let total_uploaded: Int
 }

@@ -240,7 +240,8 @@ class DelugeClient {
                 "id": arc4random(),
                 "method": "core.get_torrents_status",
                 "params": [[], ["name", "hash", "upload_payload_rate", "download_payload_rate", "ratio",
-                                "progress", "total_wanted", "state", "tracker_host", "label", "eta"]]
+                                "progress", "total_wanted", "state", "tracker_host", "label", "eta",
+                                "total_size", "all_time_download", "total_uploaded"]]
             ]
             Manager.request(clientConfig.url, method: .post, parameters: parameters,
                               encoding: JSONEncoding.default).validate().responseData(queue: utilityQueue) { response in

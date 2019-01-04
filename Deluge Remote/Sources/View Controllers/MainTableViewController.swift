@@ -12,6 +12,20 @@ import UIKit
 class MainTableViewController: UITableViewController {
     // swiftlint:disable:previous type_body_length
 
+    enum SortKey: String, CaseIterable {
+        case Name
+        case State
+        case Size
+        case Ratio
+        case DownloadSpeed = "Download Speed"
+        case UploadSpeed = "Upload Speed"
+        case TotalDownload = "Total Download"
+        case TotalUpload = "Total Upload"
+    }
+
+    var activeSortKey = SortKey.Name
+    var sortAscending = true
+
     // MARK: - Properties
     let byteCountFormatter = ByteCountFormatter()
     let searchController = UISearchController(searchResultsController: nil)
@@ -82,6 +96,19 @@ class MainTableViewController: UITableViewController {
     }
     @IBAction func pauseAllTorrentsAction(_ sender: Any) {
         (isHostOnline == true) ? self.pauseAllTorrents() : ()
+    }
+    @IBAction func displaySortMenu(_ sender: UIBarButtonItem) {
+
+        let title = "Sorted by: \(activeSortKey.rawValue) (\(sortAscending ? "Ascending" : "Descending"))"
+        let orderAs = UIAlertAction(title: "Order As", style: .default) { [weak self] _ in
+            self?.displayOrderByMenu()
+        }
+        let sortBy = UIAlertAction(title: "Sort By", style: .default) { [weak self] _ in
+            self?.displaySortByMenu()
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+
+        showAlert(target: self, title: title, message: nil, style: .actionSheet, actionList: [sortBy, orderAs, cancel])
     }
 
     // MARK: - UI Methods
@@ -217,6 +244,9 @@ class MainTableViewController: UITableViewController {
             if self.shouldRefresh && !self.tableView.isEditing &&
                 !self.tableView.isDragging && !self.tableView.isDecelerating {
                 print("Updating Table View")
+
+                self.tableViewDataSource = tableViewDataSource?.sort(by: activeSortKey, ascending: sortAscending)
+
                 self.tableView.performSelector(onMainThread: #selector(tableView.reloadData),
                                                with: nil, waitUntilDone: true)
                 if isFiltering() {
@@ -227,6 +257,37 @@ class MainTableViewController: UITableViewController {
         } else {
             cancelNextRefresh = false
         }
+    }
+
+    func displaySortByMenu() {
+
+        var actions = [UIAlertAction]()
+
+        for item in SortKey.allCases {
+            let action = UIAlertAction(title: item.rawValue, style: .default) { [weak self] _ in
+                self?.activeSortKey = item
+                NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
+            }
+            actions.append(action)
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        actions.append(cancel)
+
+        showAlert(target: self, title: "Sort By:", message: nil, style: .actionSheet, actionList: actions)
+    }
+
+    func displayOrderByMenu() {
+        let ascending = UIAlertAction(title: "Ascending", style: .default) { [weak self] _ in
+            self?.sortAscending = true
+            NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
+        }
+        let descending = UIAlertAction(title: "Descending", style: .default) { [weak self] _ in
+            self?.sortAscending = false
+            NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+
+        showAlert(target: self, title: "Order By:", message: nil, style: .actionSheet, actionList: [ascending, descending, cancel])
     }
 
     // MARK: - Deluge UI Wrapper Methods
@@ -294,12 +355,6 @@ class MainTableViewController: UITableViewController {
                 } else {
                     showAlert(target: self, title: "Error", message: error.localizedDescription)
                 }
-        }
-    }
-
-    func sort(_ content: [TableViewTorrent]) -> [TableViewTorrent] {
-        return content.sorted {
-            $0.0.name < $0.1.name
         }
     }
 
@@ -516,4 +571,52 @@ extension MainTableViewController: UISearchBarDelegate {
 
 extension MainTableViewController: UISearchControllerDelegate {
 
+}
+
+extension Array where Iterator.Element == TableViewTorrent {
+    func sort(by sortKey: MainTableViewController.SortKey, ascending: Bool = true) -> [TableViewTorrent] {
+
+        var sortedContent = [TableViewTorrent]()
+
+        switch sortKey {
+        case .Name:
+            sortedContent = self.sorted {
+                $0.name.lowercased() < $1.name.lowercased()
+            }
+        case .DownloadSpeed:
+            sortedContent = self.sorted {
+                ($0.download_payload_rate, $0.name.lowercased()) < ($1.download_payload_rate, $1.name.lowercased())
+            }
+        case .UploadSpeed:
+            sortedContent = self.sorted {
+                ($0.upload_payload_rate, $0.name.lowercased()) < ($1.upload_payload_rate, $1.name.lowercased())
+            }
+        case .Size:
+            sortedContent = self.sorted {
+                ($0.total_size, $0.name.lowercased()) < ($1.total_size, $1.name.lowercased())
+            }
+        case .Ratio:
+            sortedContent = self.sorted {
+                ($0.ratio, $0.name.lowercased()) < ($1.ratio, $1.name.lowercased())
+            }
+        case .TotalDownload:
+            sortedContent = self.sorted {
+                ($0.all_time_download, $0.name.lowercased()) < ($1.all_time_download, $1.name.lowercased())
+            }
+        case .TotalUpload:
+            sortedContent = self.sorted {
+                ($0.total_uploaded, $0.name.lowercased()) < ($1.total_uploaded, $1.name.lowercased())
+            }
+        case .State:
+            sortedContent = self.sorted {
+                ($0.state.lowercased(), $0.name.lowercased()) < ($1.state.lowercased(), $1.name.lowercased())
+            }
+        }
+
+        if !ascending {
+            sortedContent.reverse()
+        }
+        print("Sorted")
+        return sortedContent
+    }
 } // swiftlint:disable:this file_length

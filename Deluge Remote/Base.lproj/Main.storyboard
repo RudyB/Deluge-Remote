@@ -110,7 +110,11 @@
                         </connections>
                     </tableView>
                     <toolbarItems>
-                        <barButtonItem title="Item" image="filter" id="rb0-Tx-etn"/>
+                        <barButtonItem title="Item" image="filter" id="rb0-Tx-etn">
+                            <connections>
+                                <action selector="displaySortMenu:" destination="jI0-br-phc" id="iV8-Ad-11q"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="MLN-Xz-civ"/>
                         <barButtonItem systemItem="play" id="TrX-XH-c0g">
                             <connections>
@@ -537,9 +541,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="filter" width="25" height="25"/>
-        <image name="icons8-delete" width="25" height="25"/>
-        <image name="icons8-pause" width="25" height="25"/>
-        <image name="settings" width="25" height="25"/>
+        <image name="filter" width="37.5" height="37.5"/>
+        <image name="icons8-delete" width="50" height="50"/>
+        <image name="icons8-pause" width="50" height="50"/>
+        <image name="settings" width="50" height="50"/>
     </resources>
 </document>
