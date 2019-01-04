@@ -194,6 +194,7 @@ class MainTableViewController: UITableViewController {
         print("Auth Refresh")
         _ = ClientManager.shared.activeClient?.authenticate()
             .then { isAuthenticated -> Void in
+                print("Refresh Complete")
                 self.isHostOnline = isAuthenticated
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
 
