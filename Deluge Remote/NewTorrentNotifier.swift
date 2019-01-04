@@ -16,7 +16,7 @@ final class NewTorrentNotifier {
     private init() {}
 
     private let lockQueue = DispatchQueue(label: "io.rudybermudez.deluge.notificationHelper",
-                                          qos: .default, attributes: .concurrent)
+                                          qos: .userInteractive, attributes: .concurrent)
 
     public var userInfo: [AnyHashable: Any]? {
         set {

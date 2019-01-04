@@ -30,6 +30,7 @@ class AddTorrentViewController: FormViewController {
         case torrentType
         case magnetURL
         // Torrent Config
+        case configSection
         case addPaused
         case maxDownloadSpeed
         case maxUploadSpeed
@@ -199,12 +200,17 @@ class AddTorrentViewController: FormViewController {
         form +++ Section("Torrent Info")
             <<< LabelRow {
                 $0.title = name
+                $0.cell.textLabel?.numberOfLines = 0
+                $0.cell.textLabel?.lineBreakMode = .byCharWrapping
             }
             <<< LabelRow {
                 $0.title = hash
+                $0.cell.textLabel?.adjustsFontSizeToFitWidth = true
         }
 
-        form +++ Section("Torrent Configuration")
+        form +++ Section("Torrent Configuration") {
+            $0.tag = CodingKeys.configSection.rawValue
+            }
             <<< TextRow {
                 $0.title = "Download Location:"
                 $0.tag = CodingKeys.downloadLocation.rawValue
@@ -225,6 +231,8 @@ class AddTorrentViewController: FormViewController {
                     if let value = row.value {
                         self.defaultConfig?.moveCompleted = value
                     }
+                }.cellUpdate { _, row in
+                    row.value = self.defaultConfig?.moveCompleted
             }
 
             <<< TextRow {
@@ -238,6 +246,8 @@ class AddTorrentViewController: FormViewController {
                     if let value = row.value {
                         self.defaultConfig?.moveCompletedPath = value
                     }
+                }.cellUpdate { _, row in
+                    row.value = self.defaultConfig?.moveCompletedPath
             }
 
             <<< IntRow {
@@ -248,6 +258,8 @@ class AddTorrentViewController: FormViewController {
                     if let value = row.value {
                         self.defaultConfig?.maxUploadSpeed = value
                     }
+                }.cellUpdate { _, row in
+                    row.value = self.defaultConfig?.maxUploadSpeed
             }
 
             <<< IntRow {
@@ -258,6 +270,8 @@ class AddTorrentViewController: FormViewController {
                     if let value = row.value {
                         self.defaultConfig?.maxDownloadSpeed = value
                     }
+                }.cellUpdate { _, row in
+                    row.value = self.defaultConfig?.maxDownloadSpeed
             }
 
             <<< IntRow {
@@ -268,6 +282,8 @@ class AddTorrentViewController: FormViewController {
                     if let value = row.value {
                         self.defaultConfig?.maxConnections = value
                     }
+                }.cellUpdate { _, row in
+                    row.value = self.defaultConfig?.maxConnections
             }
 
             <<< IntRow {
@@ -278,6 +294,8 @@ class AddTorrentViewController: FormViewController {
                     if let value = row.value {
                         self.defaultConfig?.maxUploadSlots = value
                     }
+                }.cellUpdate { _, row in
+                    row.value = self.defaultConfig?.maxUploadSlots
             }
 
             <<< SwitchRow {
@@ -288,6 +306,8 @@ class AddTorrentViewController: FormViewController {
                     if let value = row.value {
                         self.defaultConfig?.addPaused = value
                     }
+                }.cellUpdate { _, row in
+                    row.value = self.defaultConfig?.addPaused
             }
 
             <<< SwitchRow {
@@ -298,6 +318,8 @@ class AddTorrentViewController: FormViewController {
                     if let value = row.value {
                         self.defaultConfig?.compactAllocation = value
                     }
+                }.cellUpdate { _, row in
+                    row.value = self.defaultConfig?.compactAllocation
             }
 
             <<< SwitchRow {
@@ -308,7 +330,9 @@ class AddTorrentViewController: FormViewController {
                     if let value = row.value {
                         self.defaultConfig?.prioritizeFirstLastPieces = value
                     }
-        }
+                }.cellUpdate { _, row in
+                    row.value = self.defaultConfig?.prioritizeFirstLastPieces
+            }
 
     }
 
@@ -402,7 +426,7 @@ class AddTorrentViewController: FormViewController {
     func getTorrentConfig() {
         ClientManager.shared.activeClient?.getAddTorrentConfig().then { config -> Void in
             self.defaultConfig = config
-            self.tableView.reloadData()
+            self.form.sectionBy(tag: CodingKeys.configSection.rawValue)?.reload()
             }.catch { _ in
                 let dismiss = UIAlertAction(title: "Ok", style: .default) { _ in
                     self.navigationController?.popViewController(animated: true)
@@ -426,6 +450,7 @@ extension AddTorrentViewController: UIDocumentPickerDelegate {
         }
         DispatchQueue.main.async {
             MBProgressHUD.showAdded(to: self.view, animated: true)
+            // FIXME: Above Main Thread Checker: UI API called on a background thread
         }
         handleFormConfigurationFor(fileURL: url)
     }

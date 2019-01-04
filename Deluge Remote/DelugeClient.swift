@@ -114,7 +114,7 @@ class DelugeClient {
 
     init(config: ClientConfig) {
         self.clientConfig = config
-        self.utilityQueue = DispatchQueue.global(qos: .utility)
+        self.utilityQueue = DispatchQueue.global(qos: .userInitiated)
     }
 
     /**

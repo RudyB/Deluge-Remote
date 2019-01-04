@@ -266,7 +266,7 @@ class MainTableViewController: UITableViewController {
                 !self.tableView.isDragging && !self.tableView.isDecelerating {
                 print("Updating Table View")
 
-                DispatchQueue.global(qos: .userInitiated).async {
+                DispatchQueue.global(qos: .userInteractive).async {
                     self.tableViewDataSource = self.tableViewDataSource?.sort(by: self.activeSortKey, ascending: self.sortAscending)
 
                     self.tableView.performSelector(onMainThread: #selector(self.tableView.reloadData),
@@ -426,8 +426,13 @@ class MainTableViewController: UITableViewController {
         }
 
         cell.nameLabel.text = currentItem.name
-        cell.progressBar.setProgress(Float(currentItem.progress/100), animated: true)
+        cell.progressBar.setProgress(Float(currentItem.progress/100), animated: false)
         cell.currentStatusLabel.text = currentItem.state
+        if currentItem.state == "Error" {
+            cell.currentStatusLabel.textColor = UIColor.red
+        } else {
+            cell.currentStatusLabel.textColor = UIColor.black
+        }
         cell.downloadSpeedLabel.text =
         "\(byteCountFormatter.string(fromByteCount: Int64(currentItem.download_payload_rate))) ↓"
         cell.uploadSpeedLabel.text =
@@ -436,7 +441,7 @@ class MainTableViewController: UITableViewController {
         if currentItem.eta == 0 {
             cell.etaLabel.text = "\(currentItem.ratio.roundTo(places: 3))"
         } else {
-            cell.etaLabel.text = String(currentItem.eta)
+            cell.etaLabel.text = currentItem.eta.timeRemainingString(unitStyle: .abbreviated)
         }
         return cell
     }

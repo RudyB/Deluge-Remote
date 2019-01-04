@@ -15,7 +15,7 @@ final class ClientManager {
     public static var shared = ClientManager()
     private var _activeClient: DelugeClient?
     private let lockQueue = DispatchQueue(label: "io.rudybermudez.deluge.clientManager",
-                                          qos: .default, attributes: .concurrent)
+                                          qos: .userInteractive, attributes: .concurrent)
     private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.deluge")!,
                                        accessibility: .whenUnlocked)
 

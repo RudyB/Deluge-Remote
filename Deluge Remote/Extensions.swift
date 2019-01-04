@@ -17,3 +17,16 @@ extension Int {
         return ByteCountFormatter.string(fromByteCount: Int64(self), countStyle: ByteCountFormatter.CountStyle.memory)
     }
 }
+
+extension Double {
+    func timeRemainingString(unitStyle style: DateComponentsFormatter.UnitsStyle = .full) -> String? {
+        if self > 0 {
+            let formatter = DateComponentsFormatter()
+            formatter.allowedUnits = [.year, .day, .hour, .minute, .second]
+            formatter.unitsStyle = style
+            return formatter.string(from: TimeInterval(self))
+        } else {
+            return "Done"
+        }
+    }
+}

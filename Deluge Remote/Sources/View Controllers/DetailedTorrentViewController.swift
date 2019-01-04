@@ -136,9 +136,6 @@ class DetailedTorrentViewController: UITableViewController {
                 self.playPauseItem.image = torrent.paused ?  #imageLiteral(resourceName: "play_filled") : #imageLiteral(resourceName: "icons8-pause")
                 self.tableView.reloadData()
                 print("Updated Detail VC Data")
-                if torrent.paused {
-                    self.invalidateTimer()
-                }
             }
             }.catch { error in
                 if let error = error as? ClientError {
@@ -207,10 +204,7 @@ class DetailedTorrentViewController: UITableViewController {
                 cell.textLabel?.text = "ETA"
                 cell.detailTextLabel?.text = "Computing"
                 if torrentData.eta > 0 {
-                    let formatter = DateComponentsFormatter()
-                    formatter.allowedUnits = [.year, .day, .hour, .minute]
-                    formatter.unitsStyle = .full
-                    cell.detailTextLabel?.text = formatter.string(from: TimeInterval(torrentData.eta))
+                    cell.detailTextLabel?.text = torrentData.eta.timeRemainingString()
                 }
             default: return tableView.dequeueReusableCell(withIdentifier: "RegularCell", for: indexPath)
             }
