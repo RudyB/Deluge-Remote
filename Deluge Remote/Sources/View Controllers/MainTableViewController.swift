@@ -100,9 +100,11 @@ class MainTableViewController: UITableViewController {
         return label
     }()
 
+    @IBOutlet weak var resumeAllTorrentsBarButton: UIBarButtonItem!
     @IBAction func resumeAllTorrentsAction(_ sender: Any) {
         (isHostOnline == true) ? self.resumeAllTorrents() : ()
     }
+    @IBOutlet weak var pauseAllTorrentsBarButton: UIBarButtonItem!
     @IBAction func pauseAllTorrentsAction(_ sender: Any) {
         (isHostOnline == true) ? self.pauseAllTorrents() : ()
     }
@@ -168,12 +170,11 @@ class MainTableViewController: UITableViewController {
         searchController.searchBar.scopeButtonTitles = ["All", "Name", "Hash", "Tracker"]
         searchController.searchBar.delegate = self
 
+        // Authenticate to Client
+        refreshAuthentication()
     }
 
     override func viewWillAppear(_ animated: Bool) {
-
-        // Authenticate to Client
-        refreshAuthentication()
 
         // Begin Data Download
         shouldRefresh = true
@@ -182,6 +183,7 @@ class MainTableViewController: UITableViewController {
 
     override func viewDidDisappear(_ animated: Bool) {
         invalidateRefreshDataTimer()
+        invalidateRefreshAuthTimer()
     }
 
     override func didReceiveMemoryWarning() {
@@ -195,50 +197,75 @@ class MainTableViewController: UITableViewController {
     }
 
     func createRefreshDataTimer() {
-        Logger.debug("Created Refresh Data Timer in MainTableVC")
-        refreshDataTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
-            self?.downloadNewData()
-            self?.updateSessionStats()
+        if !(refreshDataTimer?.isValid ?? false) {
+            refreshDataTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
+                self?.downloadNewData()
+                self?.updateSessionStats()
+            }
+            Logger.info("Created Refresh Data Timer")
         }
     }
 
     func invalidateRefreshDataTimer() {
-        print("Invalidated Timer in MainTableVC")
         refreshDataTimer?.invalidate()
+        Logger.info("Invalidated Refresh Data Timer")
     }
 
     func createRefreshAuthTimer() {
+        if !(refreshAuthTimer?.isValid ?? false) {
+            refreshAuthTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
+                self?.refreshAuthentication()
+            }
+            Logger.info("Created Refresh Auth Timer")
+        }
+    }
 
+    func invalidateRefreshAuthTimer() {
+        refreshAuthTimer?.invalidate()
+        Logger.info("Invalidated Refresh Auth Timer")
     }
 
     func refreshAuthentication () {
-        print("Auth Refresh")
+        Logger.info("Began Auth Refresh")
         _ = ClientManager.shared.activeClient?.authenticate()
             .then { isAuthenticated -> Void in
-                print("Refresh Complete")
                 self.isHostOnline = isAuthenticated
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
+                self.navigationItem.rightBarButtonItem?.isEnabled = isAuthenticated
+                self.pauseAllTorrentsBarButton.isEnabled = isAuthenticated
+                self.resumeAllTorrentsBarButton.isEnabled = isAuthenticated
 
-                if !isAuthenticated {
-                    showAlert(target: self, title: "Authentication Error", message: "Invalid Password")
-                } else {
-                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                if isAuthenticated {
+                    Logger.info("User Authenticated")
+                    self.invalidateRefreshAuthTimer()
                     self.downloadNewData()
                     self.updateSessionStats()
+                } else {
+                    Logger.warning("Bad Credentials")
+                    DispatchQueue.main.async {
+                        self.statusHeader.text = "Bad Credentials"
+                    }
+
+                    // TODO: Turn into a toast
+                    showAlert(target: self, title: "Authentication Error", message: "Invalid Password")
                 }
             }.catch { error in
                 self.isHostOnline = false
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
                 if let error = error as? ClientError {
-                    showAlert(target: self, title: "Error", message: error.domain())
+                    Logger.error(error.domain())
+                    self.statusHeader.text = error.domain()
+                    //showAlert(target: self, title: "Error", message: error.domain())
                 } else {
-                    showAlert(target: self, title: "Error", message: error.localizedDescription)
+                    Logger.error(error)
+                    self.statusHeader.text = error.localizedDescription
+                    //showAlert(target: self, title: "Error", message: error.localizedDescription)
                 }
         }
     }
 
     func handleNewActiveClient() {
-        print("New Client")
+        Logger.debug("New Client")
         self.tableViewDataSource?.removeAll()
         self.isHostOnline = false
         self.navigationItem.rightBarButtonItem?.isEnabled = false
@@ -286,10 +313,10 @@ class MainTableViewController: UITableViewController {
         if !cancelNextRefresh {
             if self.shouldRefresh && !self.tableView.isEditing &&
                 !self.tableView.isDragging && !self.tableView.isDecelerating {
-                print("Updating Table View")
 
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.tableViewDataSource = self.tableViewDataSource?.sort(by: self.activeSortKey, self.activeOrderKey)
+                    Logger.verbose("Updating Table View")
                     self.tableView.performSelector(onMainThread: #selector(self.tableView.reloadData),
                                                    with: nil, waitUntilDone: true)
 
@@ -361,22 +388,32 @@ class MainTableViewController: UITableViewController {
     }
 
     func downloadNewData() {
-        print("Attempting to get all torrents")
-        if !isHostOnline { return }
+        Logger.verbose("Attempting to get all torrents")
+        if !isHostOnline {
+            Logger.info("Host not online")
+            createRefreshAuthTimer()
+            return
+        }
         ClientManager.shared.activeClient?.getAllTorrents().then { tableViewData -> Void in
             DispatchQueue.main.async {
-                print("Torrent Data Successfully Downloaded")
+                Logger.verbose("Torrent Data Successfully Downloaded")
                 self.tableViewDataSource = tableViewData
                 NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
             }
             }.catch { error in
                 self.isHostOnline = false
+                self.pauseAllTorrentsBarButton.isEnabled = false
+                self.resumeAllTorrentsBarButton.isEnabled = false
+                self.navigationItem.rightBarButtonItem?.isEnabled = false
+                self.tableViewDataSource?.removeAll()
+                NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
                 if let error = error as? ClientError {
-                    print(error.domain())
+                    Logger.error(error.domain())
                     showAlert(target: self, title: "Error", message: error.domain())
                 } else {
-                    print(error.localizedDescription)
+                    Logger.error(error)
+                    showAlert(target: self, title: "Error", message: error.localizedDescription)
                 }
         }
     }
@@ -384,8 +421,12 @@ class MainTableViewController: UITableViewController {
     func pauseAllTorrents() {
         ClientManager.shared.activeClient?.pauseAllTorrents { result in
             switch result {
-            case .success: print("All Torrents Paused")
-            case .failure(let error): print(error)
+            case .success:
+                // TODO: HUD Here
+                Logger.debug("All Torrents Paused")
+            case .failure(let error):
+                // TODO: HUD Here
+                Logger.error(error)
             }
         }
     }
@@ -393,8 +434,12 @@ class MainTableViewController: UITableViewController {
     func resumeAllTorrents() {
         ClientManager.shared.activeClient?.resumeAllTorrents { result in
             switch result {
-            case .success: print("All Torrents Resumed")
-            case .failure(let error): print(error)
+            case .success:
+                // TODO: HUD Here
+                Logger.debug("All Torrents Resumed")
+            case .failure(let error):
+                // TODO: HUD Here
+                Logger.error(error)
             }
         }
     }
@@ -404,8 +449,10 @@ class MainTableViewController: UITableViewController {
             onSuccess()
             }.catch { error in
                 if let error = error as? ClientError {
+                    Logger.error(error.domain())
                     showAlert(target: self, title: "Error", message: error.domain())
                 } else {
+                    Logger.error(error)
                     showAlert(target: self, title: "Error", message: error.localizedDescription)
                 }
         }
@@ -674,7 +721,7 @@ extension Array where Iterator.Element == TorrentOverview {
         if order == .Descending {
             sortedContent.reverse()
         }
-        print("Sorted")
+        Logger.verbose("Sorted")
         return sortedContent
     }
 } // swiftlint:disable:this file_length

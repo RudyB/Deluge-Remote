@@ -116,13 +116,13 @@
                             </connections>
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="MLN-Xz-civ"/>
-                        <barButtonItem systemItem="play" id="TrX-XH-c0g">
+                        <barButtonItem enabled="NO" systemItem="play" id="TrX-XH-c0g">
                             <connections>
                                 <action selector="resumeAllTorrentsAction:" destination="jI0-br-phc" id="w2q-2x-CMz"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem width="10" style="plain" systemItem="fixedSpace" id="6xH-X8-PoH"/>
-                        <barButtonItem systemItem="pause" id="WlZ-er-MER">
+                        <barButtonItem enabled="NO" systemItem="pause" id="WlZ-er-MER">
                             <connections>
                                 <action selector="pauseAllTorrentsAction:" destination="jI0-br-phc" id="6xb-IW-N9K"/>
                             </connections>
@@ -143,6 +143,10 @@
                         </barButtonItem>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="pauseAllTorrentsBarButton" destination="WlZ-er-MER" id="94f-7W-fBe"/>
+                        <outlet property="resumeAllTorrentsBarButton" destination="TrX-XH-c0g" id="CMM-oq-RRU"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Whl-wn-ral" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -489,9 +493,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="filter" width="37.5" height="37.5"/>
-        <image name="icons8-delete" width="50" height="50"/>
-        <image name="icons8-pause" width="50" height="50"/>
-        <image name="settings" width="50" height="50"/>
+        <image name="filter" width="25" height="25"/>
+        <image name="icons8-delete" width="25" height="25"/>
+        <image name="icons8-pause" width="25" height="25"/>
+        <image name="settings" width="25" height="25"/>
     </resources>
 </document>
