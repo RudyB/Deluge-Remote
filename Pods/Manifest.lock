@@ -1,6 +1,7 @@
 PODS:
   - Alamofire (4.8.0)
   - Eureka (4.3.1)
+  - Houston (0.2.1)
   - MBProgressHUD (1.1.0)
   - PromiseKit (4.5.2):
     - PromiseKit/Foundation (= 4.5.2)
@@ -18,6 +19,7 @@ PODS:
 DEPENDENCIES:
   - Alamofire
   - Eureka
+  - Houston
   - MBProgressHUD
   - PromiseKit
   - Valet
@@ -26,6 +28,7 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
     - Eureka
+    - Houston
     - MBProgressHUD
     - PromiseKit
     - Valet
@@ -33,10 +36,11 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   Alamofire: 3ec537f71edc9804815215393ae2b1a8ea33a844
   Eureka: 28ea296f06710f6745266b71f17862048941a32d
+  Houston: 0efbaa54a60b1e157e723de4c48d8167b3372027
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   PromiseKit: 743e497a5f505a470d3bbbf4ce0663c1268af0a4
   Valet: 0babf5737029004185a7a009c1135f0c073011d1
 
-PODFILE CHECKSUM: f8aba1e1590a0760292ce6b668bd0450660caf3e
+PODFILE CHECKSUM: a917df1431e53d5854c61d24dc2a855a538338c4
 
 COCOAPODS: 1.5.3

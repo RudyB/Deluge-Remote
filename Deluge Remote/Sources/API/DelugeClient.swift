@@ -10,6 +10,8 @@ import Alamofire
 import Foundation
 import PromiseKit
 
+typealias JSON = [String: Any]
+
 enum ClientError: Error {
     case incorrectPassword
     case unexpectedResponse
@@ -233,7 +235,7 @@ class DelugeClient {
      
      - Returns: A `Promise` embedded with a TableViewTorrent
      */
-    func getAllTorrents() -> Promise<[TableViewTorrent]> {
+    func getAllTorrents() -> Promise<[TorrentOverview]> {
         return Promise { fulfill, reject in
 
             let parameters: Parameters = [
@@ -249,7 +251,7 @@ class DelugeClient {
                 case .success(let data):
 
                     guard let response = try?
-                        JSONDecoder().decode(DelugeResponse<[String:TableViewTorrent]>.self, from: data ) else {
+                        JSONDecoder().decode(DelugeResponse<[String:TorrentOverview]>.self, from: data ) else {
                             reject(ClientError.unableToParseTableViewTorrent)
                             break
                     }

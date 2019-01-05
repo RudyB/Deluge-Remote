@@ -6,6 +6,7 @@
 //  Copyright © 2016 Rudy Bermudez. All rights reserved.
 //
 
+import Houston
 import PromiseKit
 import UIKit
 
@@ -35,13 +36,14 @@ class MainTableViewController: UITableViewController {
     let byteCountFormatter = ByteCountFormatter()
     let searchController = UISearchController(searchResultsController: nil)
 
-    var tableViewDataSource: [TableViewTorrent]?
-    var filteredTableViewDataSource = [TableViewTorrent]()
+    var tableViewDataSource: [TorrentOverview]?
+    var filteredTableViewDataSource = [TorrentOverview]()
     var isHostOnline: Bool = false
     var cancelNextRefresh = false
     var shouldRefresh = true
 
-    var refreshTimer: Timer?
+    var refreshDataTimer: Timer?
+    var refreshAuthTimer: Timer?
 
     var dataTransferTotalsView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 80, height: 22))
@@ -175,11 +177,11 @@ class MainTableViewController: UITableViewController {
 
         // Begin Data Download
         shouldRefresh = true
-        createRefreshTimer()
+        createRefreshDataTimer()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
-        invalidateRefreshTimer()
+        invalidateRefreshDataTimer()
     }
 
     override func didReceiveMemoryWarning() {
@@ -192,17 +194,21 @@ class MainTableViewController: UITableViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dataTransferTotalsView)
     }
 
-    func createRefreshTimer() {
-        print("Created New Timer in MainTableVC")
-        refreshTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
+    func createRefreshDataTimer() {
+        Logger.debug("Created Refresh Data Timer in MainTableVC")
+        refreshDataTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
             self?.downloadNewData()
             self?.updateSessionStats()
         }
     }
 
-    func invalidateRefreshTimer() {
+    func invalidateRefreshDataTimer() {
         print("Invalidated Timer in MainTableVC")
-        refreshTimer?.invalidate()
+        refreshDataTimer?.invalidate()
+    }
+
+    func createRefreshAuthTimer() {
+
     }
 
     func refreshAuthentication () {
@@ -439,7 +445,7 @@ class MainTableViewController: UITableViewController {
                 return tableView.dequeueReusableCell(withIdentifier: "mainTableViewCell", for: indexPath)
         }
 
-        let currentItem: TableViewTorrent
+        let currentItem: TorrentOverview
         if isFiltering() {
             currentItem = filteredTableViewDataSource[indexPath.row]
         } else {
@@ -625,10 +631,10 @@ extension MainTableViewController: UISearchControllerDelegate {
 
 }
 
-extension Array where Iterator.Element == TableViewTorrent {
-    func sort(by sortKey: MainTableViewController.SortKey, _ order: MainTableViewController.Order = .Ascending) -> [TableViewTorrent] {
+extension Array where Iterator.Element == TorrentOverview {
+    func sort(by sortKey: MainTableViewController.SortKey, _ order: MainTableViewController.Order = .Ascending) -> [TorrentOverview] {
 
-        var sortedContent = [TableViewTorrent]()
+        var sortedContent = [TorrentOverview]()
 
         switch sortKey {
         case .Name:

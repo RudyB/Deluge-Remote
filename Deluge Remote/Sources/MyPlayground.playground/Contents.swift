@@ -77,19 +77,15 @@ import UIKit
 //let tracker = URL(string: "http://bttracker.debian.org:6969/announce")!
 //tracker.host
 
-
-
 extension Int {
     func transferRateString() -> String {
         return sizeString() + "/s"
     }
-    
+
     func sizeString() -> String {
         return ByteCountFormatter.string(fromByteCount: Int64(self), countStyle: ByteCountFormatter.CountStyle.memory)
     }
 }
-
-
 
 let jsonData1 =
 """
@@ -264,10 +260,10 @@ struct FileNode {
 }
 
 extension FileNode {
-    
+
     func prettyPrint() {
         print(self.fileName)
-        
+
         for child in self.children where !child.isDirectory {
             print("\t\(child.fileName) - \(child.length?.sizeString() ?? "")")
         }
@@ -275,9 +271,9 @@ extension FileNode {
             printChildrenHelper(node: child)
         }
     }
-    
+
     private func printChildrenHelper(node: FileNode) {
-        
+
         if !node.isDirectory {
             print("\t\t\(node.fileName) - \(node.length?.sizeString() ?? "") ")
         } else {
@@ -286,7 +282,7 @@ extension FileNode {
                 printChildrenHelper(node: child)
             }
         }
-        
+
     }
 }
 
@@ -317,20 +313,19 @@ func parseJSON() {
 
 //parseJSON()
 
-
 enum DelugeBool: Decodable {
     case int(Int)
     case bool(Bool)
-    
+
     var value: Bool {
         switch self {
         case .int(let int):
-            return int == 1;
+            return int == 1
         case .bool(let bool):
             return bool
         }
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         do {
@@ -450,7 +445,6 @@ struct ErrorMetadata: Decodable {
     let category: String
     let value: Int
 }
-
 
 import PlaygroundSupport
 

@@ -8,8 +8,8 @@
 
 import Foundation
 
-struct TableViewTorrent: Decodable, Equatable {
-    static func == (lhs: TableViewTorrent, rhs: TableViewTorrent) -> Bool {
+struct TorrentOverview: Decodable, Equatable {
+    static func == (lhs: TorrentOverview, rhs: TorrentOverview) -> Bool {
         return lhs.hash == rhs.hash
     }
 

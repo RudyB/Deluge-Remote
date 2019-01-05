@@ -13,4 +13,5 @@ target 'Deluge Remote' do
   pod 'Valet' 
   pod 'Eureka'
   pod 'MBProgressHUD'
+  pod 'Houston'
 end
