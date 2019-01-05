@@ -176,6 +176,9 @@ class MainTableViewController: UITableViewController {
 
     override func viewWillAppear(_ animated: Bool) {
 
+        // Authenticate to Client
+        refreshAuthentication()
+
         // Begin Data Download
         shouldRefresh = true
         createRefreshDataTimer()
