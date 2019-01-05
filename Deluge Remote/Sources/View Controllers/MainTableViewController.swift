@@ -23,8 +23,13 @@ class MainTableViewController: UITableViewController {
         case TotalUpload = "Total Upload"
     }
 
+    enum Order: String, CaseIterable {
+        case Ascending
+        case Descending
+    }
+
     var activeSortKey = SortKey.Name
-    var sortAscending = true
+    var activeOrderKey = Order.Ascending
 
     // MARK: - Properties
     let byteCountFormatter = ByteCountFormatter()
@@ -101,7 +106,7 @@ class MainTableViewController: UITableViewController {
     }
     @IBAction func displaySortMenu(_ sender: UIBarButtonItem) {
 
-        let title = "Sorted by: \(activeSortKey.rawValue) (\(sortAscending ? "Ascending" : "Descending"))"
+        let title = "Sorted by: \(activeSortKey.rawValue) (\(activeOrderKey.rawValue))"
         let orderAs = UIAlertAction(title: "Order As", style: .default) { [weak self] _ in
             self?.displayOrderByMenu()
         }
@@ -116,6 +121,16 @@ class MainTableViewController: UITableViewController {
     // MARK: - UI Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        if let sortKeyString = UserDefaults.standard.string(forKey: "SortKey"),
+            let sortKey = SortKey(rawValue: sortKeyString) {
+            self.activeSortKey = sortKey
+        }
+
+        if let orderKeyString = UserDefaults.standard.string(forKey: "OrderKey"),
+            let orderKey = Order(rawValue: orderKeyString) {
+            self.activeOrderKey = orderKey
+        }
 
         self.initUploadDownloadLabels()
         statusHeader.frame = CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: 22)
@@ -268,8 +283,7 @@ class MainTableViewController: UITableViewController {
                 print("Updating Table View")
 
                 DispatchQueue.global(qos: .userInteractive).async {
-                    self.tableViewDataSource = self.tableViewDataSource?.sort(by: self.activeSortKey, ascending: self.sortAscending)
-
+                    self.tableViewDataSource = self.tableViewDataSource?.sort(by: self.activeSortKey, self.activeOrderKey)
                     self.tableView.performSelector(onMainThread: #selector(self.tableView.reloadData),
                                                    with: nil, waitUntilDone: true)
 
@@ -293,6 +307,7 @@ class MainTableViewController: UITableViewController {
             let action = UIAlertAction(title: item.rawValue, style: .default) { [weak self] _ in
                 self?.activeSortKey = item
                 NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
+                UserDefaults.standard.set(item.rawValue, forKey: "SortKey")
             }
             actions.append(action)
         }
@@ -303,18 +318,23 @@ class MainTableViewController: UITableViewController {
     }
 
     func displayOrderByMenu() {
-        let ascending = UIAlertAction(title: "Ascending", style: .default) { [weak self] _ in
-            self?.sortAscending = true
-            NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
+
+        var actions = [UIAlertAction]()
+
+        for item in Order.allCases {
+            let action = UIAlertAction(title: item.rawValue, style: .default) { [weak self] _ in
+                self?.activeOrderKey = item
+                NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
+                UserDefaults.standard.set(item.rawValue, forKey: "OrderKey")
+            }
+            actions.append(action)
         }
-        let descending = UIAlertAction(title: "Descending", style: .default) { [weak self] _ in
-            self?.sortAscending = false
-            NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
-        }
+
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        actions.append(cancel)
 
         showAlert(target: self, title: "Order By:", message: nil,
-                  style: .actionSheet, actionList: [ascending, descending, cancel])
+                  style: .actionSheet, actionList: actions)
     }
 
     // MARK: - Deluge UI Wrapper Methods
@@ -606,7 +626,7 @@ extension MainTableViewController: UISearchControllerDelegate {
 }
 
 extension Array where Iterator.Element == TableViewTorrent {
-    func sort(by sortKey: MainTableViewController.SortKey, ascending: Bool = true) -> [TableViewTorrent] {
+    func sort(by sortKey: MainTableViewController.SortKey, _ order: MainTableViewController.Order = .Ascending) -> [TableViewTorrent] {
 
         var sortedContent = [TableViewTorrent]()
 
@@ -645,7 +665,7 @@ extension Array where Iterator.Element == TableViewTorrent {
             }
         }
 
-        if !ascending {
+        if order == .Descending {
             sortedContent.reverse()
         }
         print("Sorted")

@@ -144,7 +144,7 @@ class DetailedTorrentViewController: FormViewController {
                     $0.hidden = Condition(booleanLiteral: true)
                 }
 
-                }.cellUpdate { cell, row in
+                }.cellUpdate { cell, _ in
                     if let torrentData = self.torrentData {
                         cell.detailTextLabel?.text = torrentData.eta.timeRemainingString()
                     }
