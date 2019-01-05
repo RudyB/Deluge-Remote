@@ -114,6 +114,7 @@ class DetailedTorrentViewController: FormViewController {
         form +++ Section("Basic Info")
             <<< LabelRow {
                 $0.title = "State"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.value = torrentData.state
                 }
@@ -136,6 +137,7 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "ETA"
                 $0.tag = "ETA"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.cell.detailTextLabel?.text = torrentData.eta.timeRemainingString()
                     $0.cell.detailTextLabel?.numberOfLines = 0
@@ -152,6 +154,7 @@ class DetailedTorrentViewController: FormViewController {
             }
             <<< LabelRow {
                 $0.title = "Completed"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.cell.detailTextLabel?.text = String(format: "%.1f%%", torrentData.progress)
                 }
@@ -164,6 +167,7 @@ class DetailedTorrentViewController: FormViewController {
             }
             <<< LabelRow {
                 $0.title = "Size"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.cell.detailTextLabel?.text = torrentData.total_size.sizeString()
                 }
@@ -174,6 +178,7 @@ class DetailedTorrentViewController: FormViewController {
             }
             <<< LabelRow {
                 $0.title = "Downloaded"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.cell.detailTextLabel?.text = torrentData.all_time_download.sizeString()
                 }
@@ -185,6 +190,7 @@ class DetailedTorrentViewController: FormViewController {
             }
             <<< LabelRow {
                 $0.title = "Uploaded"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.cell.detailTextLabel?.text = torrentData.total_uploaded.sizeString()
                 }
@@ -196,6 +202,7 @@ class DetailedTorrentViewController: FormViewController {
             }
             <<< LabelRow {
                 $0.title = "Ratio"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.cell.detailTextLabel?.text = String(format: "%.3f", torrentData.ratio)
                 }
@@ -211,6 +218,7 @@ class DetailedTorrentViewController: FormViewController {
 
             <<< LabelRow {
                 $0.title = "Status"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.cell.detailTextLabel?.text = torrentData.message
                 }
@@ -222,6 +230,7 @@ class DetailedTorrentViewController: FormViewController {
             }
             <<< LabelRow {
                 $0.title = "Down Speed"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.cell.detailTextLabel?.text = torrentData.download_payload_rate.transferRateString()
                 }
@@ -233,6 +242,7 @@ class DetailedTorrentViewController: FormViewController {
             }
             <<< LabelRow {
                 $0.title = "Up Speed"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.cell.detailTextLabel?.text = torrentData.upload_payload_rate.transferRateString()
                 }
@@ -244,6 +254,7 @@ class DetailedTorrentViewController: FormViewController {
             }
             <<< LabelRow {
                 $0.title = "Seeds Connected"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.cell.detailTextLabel?.text = "\(torrentData.num_seeds) (\(torrentData.total_seeds))"
                 }
@@ -254,6 +265,7 @@ class DetailedTorrentViewController: FormViewController {
             }
             <<< LabelRow {
                 $0.title = "Peers Connected"
+                $0.cell.detailTextLabel?.numberOfLines = 0
                 if let torrentData = self.torrentData {
                     $0.cell.detailTextLabel?.text = "\(torrentData.num_peers) (\(torrentData.total_peers))"
                 }
