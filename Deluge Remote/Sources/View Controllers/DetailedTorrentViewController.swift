@@ -7,8 +7,10 @@
 //
 
 import Eureka
+import Houston
 import UIKit
 
+// swiftlint:disable:next type_body_length
 class DetailedTorrentViewController: FormViewController {
 
     @IBOutlet weak var deleteItem: UIBarButtonItem!
@@ -54,7 +56,9 @@ class DetailedTorrentViewController: FormViewController {
         guard let torrentData = torrentData else { return }
 
         if torrentData.paused {
-            ClientManager.shared.activeClient?.resumeTorrent(withHash: torrentData.hash) { result in
+            ClientManager.shared.activeClient?.resumeTorrent(withHash: torrentData.hash) { [weak self] result in
+
+                guard let self = self else {return}
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
@@ -69,7 +73,8 @@ class DetailedTorrentViewController: FormViewController {
 
             }
         } else {
-            ClientManager.shared.activeClient?.pauseTorrent(withHash: torrentData.hash) { result in
+            ClientManager.shared.activeClient?.pauseTorrent(withHash: torrentData.hash) { [weak self] result in
+                guard let self = self else {return}
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
@@ -91,6 +96,11 @@ class DetailedTorrentViewController: FormViewController {
 
     var refreshTimer: Timer?
 
+    var cancelRefresh = false
+
+    deinit {
+        Logger.info("Destroyed")
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Details"
@@ -122,26 +132,35 @@ class DetailedTorrentViewController: FormViewController {
         }
     }
 
+    func reloadTableView() {
+        DispatchQueue.main.async {
+            if !self.cancelRefresh && !self.tableView.isEditing &&
+                !self.tableView.isDragging && !self.tableView.isDecelerating {
+                self.tableView.reloadData()
+                Logger.verbose("Reloaded Data")
+            } else {
+                Logger.debug("Reload Skipped")
+            }
+        }
+    }
+
     // swiftlint:disable:next function_body_length cyclomatic_complexity
     func createBasicInfoSection() {
         form +++ Section("Basic Info")
             <<< LabelRow {
                 $0.title = "State"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.value = torrentData.state
-                }
+                $0.value = torrentData?.state
                 }.cellUpdate { [weak self] cell, row in
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.state
                         cell.height = self?.computeCellHeight(for: cell)
                         row.section?.header?.title = torrentData.name
-                        print("Reloaded TableView")
                         if let etaRow = self?.form.rowBy(tag: "ETA") as? LabelRow {
                             etaRow.hidden = Condition(booleanLiteral: torrentData.eta == 0)
                             if etaRow.isHidden != (torrentData.eta == 0) {
                                 etaRow.evaluateHidden()
-                                self?.tableView.reloadData()
+                                self?.reloadTableView()
                             }
                         }
                     }
@@ -150,14 +169,14 @@ class DetailedTorrentViewController: FormViewController {
                 $0.title = "ETA"
                 $0.tag = "ETA"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = torrentData.eta.timeRemainingString()
-                    $0.cell.detailTextLabel?.numberOfLines = 0
-                    $0.hidden = Condition(booleanLiteral: torrentData.eta == 0)
+
+                $0.cell.detailTextLabel?.text = torrentData?.eta.timeRemainingString()
+                $0.cell.detailTextLabel?.numberOfLines = 0
+                if let eta = torrentData?.eta {
+                    $0.hidden = Condition(booleanLiteral: eta == 0)
                 } else {
                     $0.hidden = Condition(booleanLiteral: true)
                 }
-
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.eta.timeRemainingString()
@@ -168,8 +187,8 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Completed"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = String(format: "%.1f%%", torrentData.progress)
+                if let progress = torrentData?.progress {
+                    $0.cell.detailTextLabel?.text = String(format: "%.1f%%", progress)
                 }
 
                 }.cellUpdate { [weak self] cell, _ in
@@ -182,9 +201,7 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Size"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = torrentData.total_size.sizeString()
-                }
+                $0.cell.detailTextLabel?.text = torrentData?.total_size.sizeString()
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.total_size.sizeString()
@@ -194,9 +211,7 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Downloaded"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = torrentData.all_time_download.sizeString()
-                }
+                $0.cell.detailTextLabel?.text = torrentData?.all_time_download.sizeString()
 
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
@@ -207,9 +222,7 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Uploaded"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = torrentData.total_uploaded.sizeString()
-                }
+                $0.cell.detailTextLabel?.text = torrentData?.total_uploaded.sizeString()
 
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
@@ -220,8 +233,8 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Ratio"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = String(format: "%.3f", torrentData.ratio)
+                if let ratio = torrentData?.ratio {
+                    $0.cell.detailTextLabel?.text = String(format: "%.3f", ratio)
                 }
 
                 }.cellUpdate { [weak self] cell, _ in
@@ -242,9 +255,7 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Status"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = torrentData.message
-                }
+                $0.cell.detailTextLabel?.text = torrentData?.message
 
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
@@ -255,9 +266,7 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Down Speed"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = torrentData.download_payload_rate.transferRateString()
-                }
+                $0.cell.detailTextLabel?.text = torrentData?.download_payload_rate.transferRateString()
 
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
@@ -268,9 +277,7 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Up Speed"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = torrentData.upload_payload_rate.transferRateString()
-                }
+                $0.cell.detailTextLabel?.text = torrentData?.upload_payload_rate.transferRateString()
 
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
@@ -281,8 +288,8 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Seeds Connected"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = "\(torrentData.num_seeds) (\(torrentData.total_seeds))"
+                if let data = torrentData {
+                    $0.cell.detailTextLabel?.text = "\(data.num_seeds) (\(data.total_seeds))"
                 }
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
@@ -293,8 +300,8 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Peers Connected"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = "\(torrentData.num_peers) (\(torrentData.total_peers))"
+                if let data = torrentData {
+                    $0.cell.detailTextLabel?.text = "\(data.num_peers) (\(data.total_peers))"
                 }
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
@@ -305,9 +312,7 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Path"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = torrentData.save_path
-                }
+                $0.cell.detailTextLabel?.text = torrentData?.save_path
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.save_path
@@ -317,12 +322,11 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Tracker"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-
-                if let torrentData = self.torrentData {
-                    if let tracker = URL(string: torrentData.tracker) {
+                if let data = torrentData {
+                    if let tracker = URL(string: data.tracker) {
                         $0.cell.detailTextLabel?.text = tracker.host
                     } else {
-                        if let url = torrentData.trackers.first?.url,
+                        if let url = data.trackers.first?.url,
                             let tracker = URL(string: url) {
                             $0.cell.detailTextLabel?.text = tracker.host
                         } else {
@@ -348,11 +352,11 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Active Time"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
+                if let activeTime = torrentData?.active_time {
                     let formatter = DateComponentsFormatter()
                     formatter.allowedUnits = [.month, .day, .hour, .minute]
                     formatter.unitsStyle = .abbreviated
-                    $0.cell.detailTextLabel?.text = formatter.string(from: TimeInterval(torrentData.active_time))
+                    $0.cell.detailTextLabel?.text = formatter.string(from: TimeInterval(activeTime))
                 }
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
@@ -367,11 +371,11 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Date Added"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
+                if let timeAdded = torrentData?.time_added {
                     let formatter = DateFormatter()
                     formatter.dateFormat = "MM/dd/yyyy h:mm a"
                     $0.cell.detailTextLabel?.text =
-                        formatter.string(from: Date(timeIntervalSince1970: torrentData.time_added))
+                        formatter.string(from: Date(timeIntervalSince1970: timeAdded))
                 }
                 }.cellUpdate { [weak self] cell, _ in
 
@@ -386,24 +390,36 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Comments"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let torrentData = self.torrentData {
-                    $0.cell.detailTextLabel?.text = torrentData.comment
-                }
+                $0.cell.detailTextLabel?.text = torrentData?.comment
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.comment
                         cell.height = self?.computeCellHeight(for: cell)
-                        }
-                }
+                    }
+        }
 
     }
 
+    // swiftlint:disable:next cyclomatic_complexity function_body_length
     func createTorrentOptionsSection() {
-        form +++ Section("Torrent Options") {
-            $0.header?.height = {return CGFloat(20.0)}
+
+        form +++ Section {
+            $0.header = {
+                var header = HeaderFooterView<UIView>(.callback({
+                    let headerView = UIView(frame: CGRect(x: 15, y: 5, width: 250, height: 40))
+                    let label = UILabel(frame: headerView.frame)
+                    label.text = "Torrent Options"
+                    label.font = UIFont.boldSystemFont(ofSize: 30.0)
+                    headerView.addSubview(label)
+                    return headerView
+                }))
+                header.height = { 45 }
+                return header
+            }()
         }
+        form +++ Section("Bandwidth")
             <<< IntRow {
-                $0.title = "Max Download Speed"
+                $0.title = "Max Download Speed (KiB/s)"
                 $0.cell.textField.text = "\(Int(torrentData?.max_download_speed ?? -1))"
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
@@ -412,9 +428,12 @@ class DetailedTorrentViewController: FormViewController {
                         }
                     }
 
-                }
+                }.onCellHighlightChanged { [weak self] cell, _ in
+                    Logger.info(cell.textField.isFirstResponder)
+                    self?.cancelRefresh = cell.textField.isFirstResponder
+            }
             <<< IntRow {
-                $0.title  = "Max Upload Speed"
+                $0.title  = "Max Upload Speed (KiB/s)"
                 $0.cell.textField.text = "\(Int(torrentData?.max_upload_speed ?? -1))"
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
@@ -422,7 +441,10 @@ class DetailedTorrentViewController: FormViewController {
                             cell.textField.text = "\(Int(torrentData.max_download_speed))"
                         }
                     }
-        }
+                }.onCellHighlightChanged { [weak self] cell, _ in
+                    Logger.info(cell.textField.isFirstResponder)
+                    self?.cancelRefresh = cell.textField.isFirstResponder
+            }
             <<< IntRow {
                 $0.title  = "Max Connections"
                 $0.value = torrentData?.max_connections
@@ -432,7 +454,9 @@ class DetailedTorrentViewController: FormViewController {
                             cell.textField.text = "\(torrentData.max_connections)"
                         }
                     }
-        }
+                }.onCellHighlightChanged { [weak self] cell, _ in
+                    self?.cancelRefresh = cell.textField.isFirstResponder
+            }
 
             <<< IntRow {
                 $0.title  = "Max Upload Slots"
@@ -443,21 +467,119 @@ class DetailedTorrentViewController: FormViewController {
                             cell.textField.text = "\(torrentData.max_upload_slots)"
                         }
                     }
+                }.onCellHighlightChanged { [weak self] cell, _ in
+                    self?.cancelRefresh = cell.textField.isFirstResponder
+        }
+        form +++ Section("Queue")
+            <<< SwitchRow {
+                $0.title = "Auto Managed"
+                $0.value = torrentData?.is_auto_managed
+                }.cellUpdate { [weak self] cell, _ in
+                    if let torrentData = self?.torrentData {
+                        if !cell.row.wasChanged {
+                            cell.switchControl.setOn(torrentData.is_auto_managed, animated: true)
+                        }
+                    }
+            }
+
+            <<< SwitchRow {
+                $0.title = "Stop Seed at Ratio"
+                $0.tag = "EnableStopAtRatio"
+                $0.value = torrentData?.stop_at_ratio.value
+                }.cellUpdate { [weak self] cell, _ in
+                    if let torrentData = self?.torrentData {
+                        if !cell.row.wasChanged {
+                            cell.switchControl.setOn(torrentData.stop_at_ratio.value, animated: true)
+                        }
+                    }
+            }
+
+            <<< DecimalRow {
+                $0.title  = "\tStop Ratio"
+                $0.value = torrentData?.stop_ratio
+                $0.hidden = Condition.function(["EnableStopAtRatio"]) { form -> Bool in
+                    return !((form.rowBy(tag: "EnableStopAtRatio") as? SwitchRow)?.value ?? false)
+                }
+                }.cellUpdate { [weak self] cell, _ in
+                    if let torrentData = self?.torrentData {
+                        if !cell.row.wasChanged {
+                            cell.textField.text = "\(torrentData.stop_ratio)"
+                        }
+                    }
+                }.onCellHighlightChanged { [weak self] cell, _ in
+                    self?.cancelRefresh = cell.textField.isFirstResponder
+            }
+
+            <<< SwitchRow {
+                $0.title = "\tRemove at Ratio"
+                $0.value = torrentData?.remove_at_ratio
+                $0.hidden = Condition.function(["EnableStopAtRatio"]) { form -> Bool in
+                    return !((form.rowBy(tag: "EnableStopAtRatio") as? SwitchRow)?.value ?? false)
+                }
+                }.cellUpdate { [weak self] cell, _ in
+                    if let torrentData = self?.torrentData {
+                        if !cell.row.wasChanged {
+                            cell.switchControl.setOn(torrentData.remove_at_ratio, animated: true)
+                        }
+                    }
+            }
+
+            <<< SwitchRow {
+                $0.title = "Move Completed"
+                $0.tag = "EnableMoveCompleted"
+                $0.value = torrentData?.move_completed.value
+                }.cellUpdate { [weak self] cell, _ in
+                    if let torrentData = self?.torrentData {
+                        if !cell.row.wasChanged {
+                            cell.switchControl.setOn(torrentData.move_completed.value, animated: true)
+                        }
+                    }
+            }
+
+            <<< TextRow {
+                $0.title = "\tPath"
+                $0.value = torrentData?.move_completed_path
+                $0.hidden = Condition.function(["EnableMoveCompleted"]) { form -> Bool in
+                    return !((form.rowBy(tag: "EnableMoveCompleted") as? SwitchRow)?.value ?? false)
+                }
+                }.cellUpdate { [weak self] cell, _ in
+                    if let torrentData = self?.torrentData {
+                        if !cell.row.wasChanged {
+                            cell.textField.text = torrentData.move_completed_path
+                        }
+                    }
+                }.onCellHighlightChanged { [weak self] cell, _ in
+                    self?.cancelRefresh = cell.textField.isFirstResponder
+            }
+
+            <<< SwitchRow {
+                $0.title = "Prioritize First/Last"
+                $0.value = torrentData?.prioritize_first_last
+                }.cellUpdate { [weak self] cell, _ in
+                    if let torrentData = self?.torrentData {
+                        if !cell.row.wasChanged {
+                            cell.switchControl.setOn(torrentData.prioritize_first_last, animated: true)
+                        }
+                    }
+        }
+        form +++ Section()
+            <<< ButtonRow {
+                $0.title = "Apply Settings"
         }
 
     }
 
     func createNewTimer() {
-        print("Created New Timer in DetailTorrentVC")
         refreshTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) {[weak self] _ in
             guard let torrentHash = self?.torrentHash else { return }
             self?.getTorrentData(withHash: torrentHash)
         }
+        Logger.info("Create New Data Timer")
     }
 
     func invalidateTimer() {
         refreshTimer?.invalidate()
-        print("Invalidated Timer in DetailTorrentVC")
+        Logger.info("Invalidated Data Timer")
     }
 
     override func didReceiveMemoryWarning() {
@@ -466,19 +588,14 @@ class DetailedTorrentViewController: FormViewController {
     }
 
     func getTorrentData(withHash hash: String) {
-        ClientManager.shared.activeClient?.getTorrentDetails(withHash: hash).then { torrent -> Void in
-            DispatchQueue.main.async {
-                print("New Detail VC Data")
-                self.torrentData = torrent
-                self.playPauseItem.image = torrent.paused ?  #imageLiteral(resourceName: "play_filled") : #imageLiteral(resourceName: "icons8-pause")
-                //self.form.allSections.forEach { $0.reload() }
-                self.tableView.reloadData()
-                //self.form.sectionBy(tag: "BasicInfo")?.reload()
-                //self.form.sectionBy(tag: "AdditionalInfo")?.reload()
+        ClientManager.shared.activeClient?.getTorrentDetails(withHash: hash).then { [weak self] torrent -> Void in
+            Logger.verbose("New Detail VC Data")
+            self?.torrentData = torrent
+            self?.playPauseItem.image = torrent.paused ?  #imageLiteral(resourceName: "play_filled") : #imageLiteral(resourceName: "icons8-pause")
+            self?.reloadTableView()
 
-            }
-            }.catch { error in
-                if let error = error as? ClientError {
+            }.catch { [weak self] error in
+                if let self = self, let error = error as? ClientError {
                     let okButton = UIAlertAction(title: "Bummer", style: .default) { _ in
                         self.navigationController?.popViewController(animated: true)
                     }
