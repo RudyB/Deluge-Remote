@@ -57,31 +57,36 @@ class AddTorrentViewController: FormViewController {
         if let torrentType = torrentType, let torrentURL = torrentURL {
             MBProgressHUD.showAdded(to: self.view, animated: true)
             switch torrentType {
-                case .file: handleFormConfigurationFor(fileURL: torrentURL)
-                case .magnet: handleFormConfigurationFor(magnetURL: torrentURL)
+            case .file: handleFormConfigurationFor(fileURL: torrentURL)
+            case .magnet: handleFormConfigurationFor(magnetURL: torrentURL)
             }
         } else {
             populateTorrentTypeSelection()
         }
 
     }
+
     deinit {
         Logger.info("Destroyed")
     }
 
     func handleFormConfigurationFor(fileURL: URL) {
         ClientManager.shared.activeClient?.getTorrentInfo(fileURL: fileURL)
-            .always {
-                DispatchQueue.main.async {
-                    MBProgressHUD.hide(for: self.view, animated: true)
+            .always { [weak self] _ in
+                if let self = self {
+                    DispatchQueue.main.async {
+                        MBProgressHUD.hide(for: self.view, animated: true)
+                    }
                 }
+
             }
-            .then { torrentInfo -> Void in
+            .then { [weak self] torrentInfo -> Void in
                 DispatchQueue.main.async {
-                    self.showTorrentConfig(name: torrentInfo.name, hash: torrentInfo.hash, url: fileURL)
+                    self?.showTorrentConfig(name: torrentInfo.name, hash: torrentInfo.hash, url: fileURL)
                 }
                 torrentInfo.files.prettyPrint()
-            }.catch { error in
+            }.catch { [weak self] error in
+                guard let self = self else { return }
                 if let error = error as? ClientError {
                     showAlert(target: self, title: "Connection failure", message: error.domain())
                 } else {
@@ -95,23 +100,23 @@ class AddTorrentViewController: FormViewController {
 
     func handleFormConfigurationFor(magnetURL: URL) {
         ClientManager.shared.activeClient?.getMagnetInfo(url: magnetURL)
-            .always {
-                DispatchQueue.main.async {
-                    MBProgressHUD.hide(for: self.view, animated: true)
+            .always { [weak self] _ in
+                if let self = self {
+                    DispatchQueue.main.async {
+                        MBProgressHUD.hide(for: self.view, animated: true)
+                    }
                 }
             }
-            .then { output -> Void in
+            .then { [weak self] output -> Void in
                 DispatchQueue.main.async {
-                    self.showTorrentConfig(name: output.name, hash: output.hash, url: magnetURL)
+                    self?.showTorrentConfig(name: output.name, hash: output.hash, url: magnetURL)
                 }
-            }.catch { _ in
-                let dismiss = UIAlertAction(title: "Ok", style: .default) { _ in
-                    self.navigationController?.popViewController(animated: true)
-                }
+            }.catch { [weak self] _ in
+                guard let self = self else { return }
                 DispatchQueue.main.async {
 
                     showAlert(target: self, title: "Failure to load magnet URL",
-                              message: "An error occurred while attempting to load the magnet URL", actionList: [dismiss])
+                              message: "An error occurred while attempting to load the magnet URL")
                     // swiftlint:disable:previous line_length
 
                 }
@@ -128,11 +133,11 @@ class AddTorrentViewController: FormViewController {
             <<< SegmentedRow<String> {
                 $0.tag = CodingKeys.torrentType.rawValue
                 $0.options = ["Magnet Link", "Torrent File"]
-                }.onChange { row in
+                }.onChange { [weak self] row in
                     if let value = row.value, let type = TorrentType(rawValue: value) {
-                        self.torrentType = type
+                        self?.torrentType = type
                     }
-                }
+            }
 
             <<< URLRow {
                 $0.title = "URL:"
@@ -187,7 +192,7 @@ class AddTorrentViewController: FormViewController {
         }
     }
 
-    // swiftlint:disable:next function_body_length
+    // swiftlint:disable:next function_body_length cyclomatic_complexity
     func showTorrentConfig(name: String, hash: String, url: URL) {
         self.torrentName = name
         self.torrentHash = hash
@@ -216,132 +221,204 @@ class AddTorrentViewController: FormViewController {
             $0.tag = CodingKeys.configSection.rawValue
             }
             <<< TextRow {
-                $0.title = "Download Location:"
+                $0.title = "Download Location"
                 $0.tag = CodingKeys.downloadLocation.rawValue
-                $0.add(rule: RuleRequired())
                 $0.value = defaultConfig?.downloadLocation
-                }.onChange { row in
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
+                }.onChange { [weak self] row in
                     if let value = row.value {
-                        self.defaultConfig?.downloadLocation = value
-                }
-                }.cellUpdate { _, row in
-                    row.value = self.defaultConfig?.downloadLocation
-                }
-            <<< SwitchRow {
-                $0.title = "Move Completed:"
-                $0.tag = CodingKeys.moveCompleted.rawValue
-                $0.value = defaultConfig?.moveCompleted ?? false
-                }.onChange { row in
-                    if let value = row.value {
-                        self.defaultConfig?.moveCompleted = value
+                        self?.defaultConfig?.downloadLocation = value
                     }
-                }.cellUpdate { _, row in
-                    row.value = self.defaultConfig?.moveCompleted
+                }.cellUpdate { [weak self] cell, row in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    if !row.wasChanged {
+                        row.value = self?.defaultConfig?.downloadLocation
+                        row.cell.textField?.text = self?.defaultConfig?.downloadLocation
+                    }
+
+            }
+            <<< SwitchRow {
+                $0.title = "Move Completed"
+                $0.tag = CodingKeys.moveCompleted.rawValue
+                $0.value = defaultConfig?.moveCompleted
+                }.onChange { [weak self] row in
+                    if let value = row.value {
+                        self?.defaultConfig?.moveCompleted = value
+                    }
+                }.cellUpdate { [weak self] _, row in
+                    row.value = self?.defaultConfig?.moveCompleted
+                    if let moveComplete = self?.defaultConfig?.moveCompleted {
+                        row.cell.switchControl.setOn(moveComplete, animated: true)
+                    }
             }
 
             <<< TextRow {
-                $0.title = "Move Completed Path:"
+                $0.title = "Move Completed Path"
                 $0.tag = defaultConfig?.moveCompletedPath
                 $0.value = defaultConfig?.moveCompletedPath
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
                 $0.hidden = Condition.function([CodingKeys.moveCompleted.rawValue]) { form in
                     return !((form.rowBy(tag: CodingKeys.moveCompleted.rawValue) as? SwitchRow)?.value ?? false)
                 }
-                }.onChange { row in
+                }.onChange { [weak self] row in
                     if let value = row.value {
-                        self.defaultConfig?.moveCompletedPath = value
+                        self?.defaultConfig?.moveCompletedPath = value
                     }
-                }.cellUpdate { _, row in
-                    row.value = self.defaultConfig?.moveCompletedPath
+                }.cellUpdate { [weak self] cell, row in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    if !row.wasChanged {
+                        row.value = self?.defaultConfig?.moveCompletedPath
+                        row.cell.textField?.text = self?.defaultConfig?.moveCompletedPath
+                    }
+
             }
 
             <<< IntRow {
-                $0.title = "Max Upload Speed:"
-                $0.value = defaultConfig?.maxUploadSpeed ?? -1
+                $0.title = "Max Upload Speed (KiB/s)"
+                $0.value = defaultConfig?.maxUploadSpeed
+                $0.cell.textField.keyboardType = .numbersAndPunctuation
                 $0.add(rule: RuleRequired())
-                }.onChange { row in
+                $0.validationOptions = .validatesOnChange
+                }.onChange { [weak self] row in
                     if let value = row.value {
-                        self.defaultConfig?.maxUploadSpeed = value
+                        self?.defaultConfig?.maxUploadSpeed = value
                     }
-                }.cellUpdate { _, row in
-                    row.value = self.defaultConfig?.maxUploadSpeed
+                }.cellUpdate { [weak self] cell, row in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    if !row.wasChanged {
+                        if let speed = self?.defaultConfig?.maxUploadSpeed {
+                            row.cell.textField?.text = "\(speed)"
+                            row.value = self?.defaultConfig?.maxUploadSpeed
+                        }
+                    }
+
             }
 
             <<< IntRow {
-                $0.title = "Max Download Speed:"
-                $0.value = defaultConfig?.maxDownloadSpeed ?? -1
+                $0.title = "Max Download Speed (KiB/s)"
                 $0.add(rule: RuleRequired())
-                }.onChange { row in
+                $0.validationOptions = .validatesOnChange
+                $0.value = defaultConfig?.maxDownloadSpeed
+                $0.cell.textField.keyboardType = .numbersAndPunctuation
+                }.onChange { [weak self] row in
                     if let value = row.value {
-                        self.defaultConfig?.maxDownloadSpeed = value
+                        self?.defaultConfig?.maxDownloadSpeed = value
                     }
-                }.cellUpdate { _, row in
-                    row.value = self.defaultConfig?.maxDownloadSpeed
+                }.cellUpdate { [weak self] cell, row in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+
+                    if !row.wasChanged {
+                        if let speed = self?.defaultConfig?.maxDownloadSpeed {
+                            row.cell.textField?.text = "\(speed)"
+                            row.value = self?.defaultConfig?.maxDownloadSpeed
+                        }
+                    }
             }
 
             <<< IntRow {
-                $0.title = "Max Connections:"
-                $0.value = defaultConfig?.maxConnections ?? -1
+                $0.title = "Max Connections"
                 $0.add(rule: RuleRequired())
-                }.onChange { row in
+                $0.value = defaultConfig?.maxConnections
+                $0.validationOptions = .validatesOnChange
+                $0.cell.textField.keyboardType = .numbersAndPunctuation
+                }.onChange { [weak self] row in
                     if let value = row.value {
-                        self.defaultConfig?.maxConnections = value
+                        self?.defaultConfig?.maxConnections = value
                     }
-                }.cellUpdate { _, row in
-                    row.value = self.defaultConfig?.maxConnections
+                }.cellUpdate { [weak self] cell, row in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    if !row.wasChanged {
+                        if let connections = self?.defaultConfig?.maxConnections {
+                            row.cell.textField?.text = "\(connections)"
+                            row.value = self?.defaultConfig?.maxConnections
+                        }
+                    }
+
             }
 
             <<< IntRow {
-                $0.title = "Max Upload Slots:"
-                $0.value = defaultConfig?.maxUploadSlots ?? -1
+                $0.title = "Max Upload Slots"
                 $0.add(rule: RuleRequired())
-                }.onChange { row in
+                $0.value = defaultConfig?.maxUploadSlots
+                $0.validationOptions = .validatesOnChange
+                $0.cell.textField.keyboardType = .numbersAndPunctuation
+                }.onChange { [weak self] row in
                     if let value = row.value {
-                        self.defaultConfig?.maxUploadSlots = value
+                        self?.defaultConfig?.maxUploadSlots = value
                     }
-                }.cellUpdate { _, row in
-                    row.value = self.defaultConfig?.maxUploadSlots
+                }.cellUpdate { [weak self] cell, row in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    if !row.wasChanged {
+                        if let slots = self?.defaultConfig?.maxUploadSlots {
+                            row.cell.textField?.text = "\(slots)"
+                            row.value = self?.defaultConfig?.maxUploadSlots
+                        }
+                    }
+
             }
 
             <<< SwitchRow {
-                $0.title = "Add Paused:"
-                $0.value = defaultConfig?.addPaused ?? false
+                $0.title = "Add Paused"
                 $0.add(rule: RuleRequired())
-                }.onChange { row in
+                $0.value = defaultConfig?.addPaused
+                }.onChange { [weak self] row in
                     if let value = row.value {
-                        self.defaultConfig?.addPaused = value
+                        self?.defaultConfig?.addPaused = value
                     }
-                }.cellUpdate { _, row in
-                    row.value = self.defaultConfig?.addPaused
+                }.cellUpdate { [weak self] _, row in
+
+                    if !row.wasChanged {
+                        if let paused = self?.defaultConfig?.addPaused {
+                            row.cell.switchControl.setOn(paused, animated: true)
+                            row.value = self?.defaultConfig?.addPaused
+                        }
+                    }
             }
 
             <<< SwitchRow {
-                $0.title = "Compact Allocation:"
-                $0.value = defaultConfig?.compactAllocation ?? false
-                $0.add(rule: RuleRequired())
-                }.onChange { row in
+                $0.title = "Compact Allocation"
+                $0.value = defaultConfig?.compactAllocation
+                }.onChange { [weak self] row in
                     if let value = row.value {
-                        self.defaultConfig?.compactAllocation = value
+                        self?.defaultConfig?.compactAllocation = value
                     }
-                }.cellUpdate { _, row in
-                    row.value = self.defaultConfig?.compactAllocation
+                }.cellUpdate { [weak self] _, row in
+
+                    if !row.wasChanged {
+                        if let compactAllocation = self?.defaultConfig?.compactAllocation {
+                            row.cell.switchControl.setOn(compactAllocation, animated: true)
+                            row.value = self?.defaultConfig?.compactAllocation
+                        }
+                    }
             }
 
             <<< SwitchRow {
-                $0.title = "Prioritize First/Last Pieces:"
-                $0.value = defaultConfig?.prioritizeFirstLastPieces ?? false
-                $0.add(rule: RuleRequired())
-                }.onChange { row in
+                $0.title = "Prioritize First/Last Pieces"
+                $0.value = defaultConfig?.prioritizeFirstLastPieces
+                }.onChange { [weak self] row in
                     if let value = row.value {
-                        self.defaultConfig?.prioritizeFirstLastPieces = value
+                        self?.defaultConfig?.prioritizeFirstLastPieces = value
                     }
-                }.cellUpdate { _, row in
-                    row.value = self.defaultConfig?.prioritizeFirstLastPieces
-            }
+                }.cellUpdate { [weak self] _, row in
+
+                    if !row.wasChanged {
+                        if let val = self?.defaultConfig?.prioritizeFirstLastPieces {
+                            row.cell.switchControl.setOn(val, animated: true)
+                            row.value = self?.defaultConfig?.prioritizeFirstLastPieces
+                        }
+                    }
+        }
 
     }
 
     func uploadToServer() {
-        print("Should Add Torrent")
+
+        if (form.allRows.map { $0.isValid }).contains(false) {
+            showAlert(target: self, title: "Validation Error", message: "All fields are mandatory")
+            return
+        }
 
         guard
             let url = self.torrentURL,
@@ -349,10 +426,10 @@ class AddTorrentViewController: FormViewController {
             let torrentHash = self.torrentHash,
             let torrentType = self.torrentType,
             let defaultConfig = self.defaultConfig
-        else { return }
+            else { return }
 
         DispatchQueue.main.async {
-           MBProgressHUD.showAdded(to: self.view, animated: true)
+            MBProgressHUD.showAdded(to: self.view, animated: true)
         }
         switch torrentType {
         case .magnet: addMagnetLink(url: url, hash: torrentHash, config: defaultConfig)
@@ -362,80 +439,55 @@ class AddTorrentViewController: FormViewController {
 
     func addTorrentFile(fileName: String, hash: String, url: URL, config: TorrentConfig) {
         ClientManager.shared.activeClient?.addTorrentFile(fileName: fileName, url: url, with: config)
-            .always {
+            .always { [weak self] _ in
+                guard let self = self else { return }
                 DispatchQueue.main.async {
                     MBProgressHUD.hide(for: self.view, animated: true)
                 }
             }
-            .then { _ -> Void in
-                DispatchQueue.main.async {
-                    let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-                    hud.mode = MBProgressHUDMode.customView
-                    hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-checkmark"))
-                    hud.isSquare = false
-                    hud.label.text = "Torrent Successfully Added"
-                    hud.hide(animated: true, afterDelay: 1.5)
-                    hud.completionBlock = {
-                        if let onTorrentAdded = self.onTorrentAdded {
-                            onTorrentAdded(hash)
-                        }
+            .then { [weak self] _ -> Void in
+                guard let self = self else { return }
+                self.view.showHUD(title: "Torrent Successfully Added") {
+                    if let onTorrentAdded = self.onTorrentAdded {
+                        onTorrentAdded(hash)
                     }
                 }
-            }.catch { _ in
-                DispatchQueue.main.async {
-                    let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-                    hud.mode = MBProgressHUDMode.customView
-                    hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-cancel"))
-                    hud.isSquare = false
-                    hud.label.text = "Failed to Add Torrent"
-                    hud.hide(animated: true, afterDelay: 3.0)
-                }
+            }.catch { [weak self] _ in
+                guard let self = self else { return }
+                self.view.showHUD(title: "Failed to Add Torrent", type: .failure)
         }
     }
 
     func addMagnetLink(url: URL, hash: String, config: TorrentConfig) {
         ClientManager.shared.activeClient?.addTorrentMagnet(url: url, with: config)
-            .always {
+            .always { [weak self] _ in
+                guard let self = self else { return }
                 DispatchQueue.main.async {
                     MBProgressHUD.hide(for: self.view, animated: true)
                 }
             }
-            .then { _ -> Void in
-                DispatchQueue.main.async {
-                    let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-                    hud.mode = MBProgressHUDMode.customView
-                    hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-checkmark"))
-                    hud.isSquare = false
-                    hud.label.text = "Torrent Successfully Added"
-                    hud.hide(animated: true, afterDelay: 1.5)
-                    hud.completionBlock = {
-                        if let onTorrentAdded = self.onTorrentAdded {
-                            onTorrentAdded(hash)
-                        }
-
+            .then { [weak self] _ -> Void in
+                guard let self = self else { return }
+                self.view.showHUD(title: "Torrent Successfully Added") {
+                    if let onTorrentAdded = self.onTorrentAdded {
+                        onTorrentAdded(hash)
                     }
                 }
-            }.catch { _ in
-                //view.showHUD(title: <#T##String#>, type: <#T##UIView.HUDType#>, square: <#T##Bool#>, onCompletion: <#T##(() -> ())?##(() -> ())?##() -> ()#>)
-                DispatchQueue.main.async {
-                    let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-                    hud.mode = MBProgressHUDMode.customView
-                    hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-cancel"))
-                    hud.isSquare = false
-                    hud.label.text = "Failed to Add Torrent"
-                    hud.hide(animated: true, afterDelay: 3.0)
-                }
+            }.catch { [weak self] _ in
+                guard let self = self else { return }
+                self.view.showHUD(title: "Failed to Add Torrent", type: .failure)
         }
     }
 
     func getTorrentConfig() {
-        ClientManager.shared.activeClient?.getAddTorrentConfig().then { config -> Void in
-            self.defaultConfig = config
-            self.form.sectionBy(tag: CodingKeys.configSection.rawValue)?.reload()
-            }.catch { _ in
+        ClientManager.shared.activeClient?.getAddTorrentConfig().then { [weak self] config -> Void in
+            self?.defaultConfig = config
+            self?.form.sectionBy(tag: CodingKeys.configSection.rawValue)?.allRows.forEach { $0.updateCell() }
+            }.catch { [weak self] _ in
                 let dismiss = UIAlertAction(title: "Ok", style: .default) { _ in
-                    self.navigationController?.popViewController(animated: true)
+                    self?.navigationController?.popViewController(animated: true)
                 }
+                guard let self = self else { return }
                 showAlert(target: self, title: "Failure to load config",
                           message: "An error occurred while attempting to load in the default torrent configuration", actionList: [dismiss])
                 // swiftlint:disable:previous line_length

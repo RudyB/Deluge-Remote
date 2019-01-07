@@ -596,7 +596,7 @@ class DetailedTorrentViewController: FormViewController {
                 }
 
             <<< SwitchRow {
-                $0.title = "Prioritize First/Last"
+                $0.title = "Prioritize First/Last Pieces"
                 $0.tag = TorrentOptionsCodingKeys.prioritizeFirstLastPieces.rawValue
                 $0.value = torrentData?.prioritize_first_last
                 }.cellUpdate { [weak self] cell, _ in
