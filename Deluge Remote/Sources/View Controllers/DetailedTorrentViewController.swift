@@ -13,6 +13,21 @@ import UIKit
 // swiftlint:disable:next type_body_length
 class DetailedTorrentViewController: FormViewController {
 
+    enum TorrentOptionsCodingKeys: String {
+        case maxDownloadSpeed = "max_download_speed"
+        case maxUploadSpeed = "max_upload_speed"
+        case maxConnections = "max_connections"
+        case maxUploadSlots = "max_upload_slots"
+
+        case autoManaged = "auto_managed"
+        case stopSeedAtRatio = "stop_at_ratio"
+        case stopRatio = "stop_ratio"
+        case remoteAtRatio = "remove_at_ratio"
+        case moveCompleted = "move_completed"
+        case moveCompletedPath = "move_completed_path"
+        case prioritizeFirstLastPieces = "prioritize_first_last_pieces"
+    }
+
     @IBOutlet weak var deleteItem: UIBarButtonItem!
     @IBOutlet weak var playPauseItem: UIBarButtonItem!
 
@@ -96,11 +111,10 @@ class DetailedTorrentViewController: FormViewController {
 
     var refreshTimer: Timer?
 
-    var cancelRefresh = false
-
     deinit {
         Logger.info("Destroyed")
     }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Details"
@@ -114,10 +128,13 @@ class DetailedTorrentViewController: FormViewController {
 
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 44.0
+
         // Create Form
+        animateScroll = true // Enables smooth scrolling on navigation to off-screen rows
         createBasicInfoSection()
         createAdditionalInfoSection()
         createTorrentOptionsSection()
+
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -132,19 +149,7 @@ class DetailedTorrentViewController: FormViewController {
         }
     }
 
-    func reloadTableView() {
-        DispatchQueue.main.async {
-            if !self.cancelRefresh && !self.tableView.isEditing &&
-                !self.tableView.isDragging && !self.tableView.isDecelerating {
-                self.tableView.reloadData()
-                Logger.verbose("Reloaded Data")
-            } else {
-                Logger.debug("Reload Skipped")
-            }
-        }
-    }
-
-    // swiftlint:disable:next function_body_length cyclomatic_complexity
+    // swiftlint:disable:next function_body_length
     func createBasicInfoSection() {
         form +++ Section("Basic Info")
             <<< LabelRow {
@@ -156,15 +161,9 @@ class DetailedTorrentViewController: FormViewController {
                         cell.detailTextLabel?.text = torrentData.state
                         cell.height = self?.computeCellHeight(for: cell)
                         row.section?.header?.title = torrentData.name
-                        if let etaRow = self?.form.rowBy(tag: "ETA") as? LabelRow {
-                            etaRow.hidden = Condition(booleanLiteral: torrentData.eta == 0)
-                            if etaRow.isHidden != (torrentData.eta == 0) {
-                                etaRow.evaluateHidden()
-                                self?.reloadTableView()
-                            }
-                        }
                     }
             }
+
             <<< LabelRow {
                 $0.title = "ETA"
                 $0.tag = "ETA"
@@ -172,12 +171,10 @@ class DetailedTorrentViewController: FormViewController {
 
                 $0.cell.detailTextLabel?.text = torrentData?.eta.timeRemainingString()
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                if let eta = torrentData?.eta {
-                    $0.hidden = Condition(booleanLiteral: eta == 0)
-                } else {
-                    $0.hidden = Condition(booleanLiteral: true)
-                }
+                $0.hidden = Condition(booleanLiteral: torrentData?.eta ?? 0 == 0)
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.row.hidden = Condition(booleanLiteral: self?.torrentData?.eta ?? 0 == 0)
+                    cell.row.evaluateHidden()
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.eta.timeRemainingString()
                         cell.height = self?.computeCellHeight(for: cell)
@@ -391,8 +388,11 @@ class DetailedTorrentViewController: FormViewController {
                 $0.title = "Comments"
                 $0.cell.detailTextLabel?.numberOfLines = 0
                 $0.cell.detailTextLabel?.text = torrentData?.comment
+                $0.cell.row.hidden = Condition(booleanLiteral: torrentData?.comment.isEmpty ?? true)
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
+                        cell.row.hidden = Condition(booleanLiteral: torrentData.comment.isEmpty)
+                        cell.row.evaluateHidden()
                         cell.detailTextLabel?.text = torrentData.comment
                         cell.height = self?.computeCellHeight(for: cell)
                     }
@@ -420,144 +420,189 @@ class DetailedTorrentViewController: FormViewController {
         form +++ Section("Bandwidth")
             <<< IntRow {
                 $0.title = "Max Download Speed (KiB/s)"
+                $0.tag = TorrentOptionsCodingKeys.maxDownloadSpeed.rawValue
+                $0.value = Int(torrentData?.max_download_speed ?? -1)
                 $0.cell.textField.text = "\(Int(torrentData?.max_download_speed ?? -1))"
+                $0.cell.textField.keyboardType = .numbersAndPunctuation
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.textField.text = "\(Int(torrentData.max_download_speed))"
+                            cell.row.value = Int(torrentData.max_download_speed)
                         }
                     }
 
-                }.onCellHighlightChanged { [weak self] cell, _ in
-                    Logger.info(cell.textField.isFirstResponder)
-                    self?.cancelRefresh = cell.textField.isFirstResponder
-            }
+                }
+
             <<< IntRow {
                 $0.title  = "Max Upload Speed (KiB/s)"
+                $0.tag = TorrentOptionsCodingKeys.maxUploadSpeed.rawValue
                 $0.cell.textField.text = "\(Int(torrentData?.max_upload_speed ?? -1))"
+                $0.value = Int(torrentData?.max_upload_speed ?? -1)
+                $0.cell.textField.keyboardType = .numbersAndPunctuation
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
-                            cell.textField.text = "\(Int(torrentData.max_download_speed))"
+                            cell.textField.text = "\(Int(torrentData.max_upload_speed))"
+                            cell.row.value = Int(torrentData.max_upload_speed)
                         }
                     }
-                }.onCellHighlightChanged { [weak self] cell, _ in
-                    Logger.info(cell.textField.isFirstResponder)
-                    self?.cancelRefresh = cell.textField.isFirstResponder
-            }
+                }
+
             <<< IntRow {
                 $0.title  = "Max Connections"
+                $0.tag = TorrentOptionsCodingKeys.maxConnections.rawValue
                 $0.value = torrentData?.max_connections
+                $0.cell.textField.text = "\(torrentData?.max_connections ?? -1)"
+                $0.cell.textField.keyboardType = .numbersAndPunctuation
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.textField.text = "\(torrentData.max_connections)"
+                            cell.row.value = torrentData.max_connections
                         }
                     }
-                }.onCellHighlightChanged { [weak self] cell, _ in
-                    self?.cancelRefresh = cell.textField.isFirstResponder
-            }
+                }
 
             <<< IntRow {
                 $0.title  = "Max Upload Slots"
+                $0.tag = TorrentOptionsCodingKeys.maxUploadSlots.rawValue
                 $0.value = torrentData?.max_upload_slots
+                $0.cell.textField.text = "\(torrentData?.max_upload_slots ?? -1)"
+                $0.cell.textField.keyboardType = .numbersAndPunctuation
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.textField.text = "\(torrentData.max_upload_slots)"
+                            cell.row.value = torrentData.max_upload_slots
                         }
                     }
-                }.onCellHighlightChanged { [weak self] cell, _ in
-                    self?.cancelRefresh = cell.textField.isFirstResponder
-        }
+                }
+
         form +++ Section("Queue")
             <<< SwitchRow {
                 $0.title = "Auto Managed"
                 $0.value = torrentData?.is_auto_managed
-                }.cellUpdate { [weak self] cell, _ in
+                $0.tag = TorrentOptionsCodingKeys.autoManaged.rawValue
+                }
+                .cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.switchControl.setOn(torrentData.is_auto_managed, animated: true)
+                            cell.row.value = torrentData.is_auto_managed
                         }
                     }
             }
 
             <<< SwitchRow {
                 $0.title = "Stop Seed at Ratio"
-                $0.tag = "EnableStopAtRatio"
+                $0.tag = TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue
                 $0.value = torrentData?.stop_at_ratio.value
                 }.cellUpdate { [weak self] cell, _ in
+
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
-                            cell.switchControl.setOn(torrentData.stop_at_ratio.value, animated: true)
+                            DispatchQueue.main.async {
+                                cell.row.value = torrentData.stop_at_ratio.value
+                                cell.switchControl.setOn(torrentData.stop_at_ratio.value, animated: true)
+                            }
                         }
+
                     }
-            }
+                }
 
             <<< DecimalRow {
                 $0.title  = "\tStop Ratio"
+                $0.tag = TorrentOptionsCodingKeys.stopRatio.rawValue
                 $0.value = torrentData?.stop_ratio
-                $0.hidden = Condition.function(["EnableStopAtRatio"]) { form -> Bool in
-                    return !((form.rowBy(tag: "EnableStopAtRatio") as? SwitchRow)?.value ?? false)
+                $0.hidden = Condition.function([TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue]) { form -> Bool in
+                    return !((form.rowBy(tag: TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue) as? SwitchRow)?.value ?? false)
                 }
+                $0.cell.textField.keyboardType = .numbersAndPunctuation
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.textField.text = "\(torrentData.stop_ratio)"
+                            cell.row.value = torrentData.stop_ratio
                         }
                     }
-                }.onCellHighlightChanged { [weak self] cell, _ in
-                    self?.cancelRefresh = cell.textField.isFirstResponder
-            }
+                }
 
             <<< SwitchRow {
                 $0.title = "\tRemove at Ratio"
+                $0.tag = TorrentOptionsCodingKeys.remoteAtRatio.rawValue
                 $0.value = torrentData?.remove_at_ratio
-                $0.hidden = Condition.function(["EnableStopAtRatio"]) { form -> Bool in
-                    return !((form.rowBy(tag: "EnableStopAtRatio") as? SwitchRow)?.value ?? false)
+                $0.hidden = Condition.function([TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue]) { form -> Bool in
+                    return !((form.rowBy(tag: TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue) as? SwitchRow)?.value ?? false)
                 }
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.switchControl.setOn(torrentData.remove_at_ratio, animated: true)
+                            cell.row.value = torrentData.remove_at_ratio
                         }
                     }
             }
 
             <<< SwitchRow {
                 $0.title = "Move Completed"
-                $0.tag = "EnableMoveCompleted"
+                $0.tag = TorrentOptionsCodingKeys.moveCompleted.rawValue
                 $0.value = torrentData?.move_completed.value
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
-                            cell.switchControl.setOn(torrentData.move_completed.value, animated: true)
+                            DispatchQueue.main.async {
+                                cell.row.value = torrentData.move_completed.value
+                                cell.switchControl.setOn(torrentData.move_completed.value, animated: true)
+                            }
                         }
                     }
             }
 
             <<< TextRow {
                 $0.title = "\tPath"
+                $0.tag = TorrentOptionsCodingKeys.moveCompletedPath.rawValue
                 $0.value = torrentData?.move_completed_path
-                $0.hidden = Condition.function(["EnableMoveCompleted"]) { form -> Bool in
-                    return !((form.rowBy(tag: "EnableMoveCompleted") as? SwitchRow)?.value ?? false)
+                $0.hidden = Condition.function([TorrentOptionsCodingKeys.moveCompleted.rawValue]) { form -> Bool in
+                    return !((form.rowBy(tag: TorrentOptionsCodingKeys.moveCompleted.rawValue) as? SwitchRow)?.value ?? false)
                 }
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
+
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
+                            cell.row.value = torrentData.move_completed_path
                             cell.textField.text = torrentData.move_completed_path
                         }
                     }
-                }.onCellHighlightChanged { [weak self] cell, _ in
-                    self?.cancelRefresh = cell.textField.isFirstResponder
-            }
+                }
 
             <<< SwitchRow {
                 $0.title = "Prioritize First/Last"
+                $0.tag = TorrentOptionsCodingKeys.prioritizeFirstLastPieces.rawValue
                 $0.value = torrentData?.prioritize_first_last
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
+                            cell.row.value = torrentData.prioritize_first_last
                             cell.switchControl.setOn(torrentData.prioritize_first_last, animated: true)
                         }
                     }
@@ -565,6 +610,8 @@ class DetailedTorrentViewController: FormViewController {
         form +++ Section()
             <<< ButtonRow {
                 $0.title = "Apply Settings"
+                }.onCellSelection { [weak self] _, _ in
+                    self?.applyChanges()
         }
 
     }
@@ -575,6 +622,53 @@ class DetailedTorrentViewController: FormViewController {
             self?.getTorrentData(withHash: torrentHash)
         }
         Logger.info("Create New Data Timer")
+    }
+
+    func applyChanges() {
+
+        if (form.allRows.map { $0.isValid }).contains(false) {
+            showAlert(target: self, title: "Validation Error", message: "All fields are mandatory")
+        }
+
+        let formData = form.values(includeHidden: true)
+        guard
+            let torrentHash = torrentHash,
+            let maxDownloadSpeed = formData[TorrentOptionsCodingKeys.maxDownloadSpeed.rawValue] as? Int,
+            let maxUploadSpeed = formData[TorrentOptionsCodingKeys.maxUploadSpeed.rawValue] as? Int,
+            let maxConnections = formData[TorrentOptionsCodingKeys.maxConnections.rawValue] as? Int,
+            let maxUploadSlots = formData[TorrentOptionsCodingKeys.maxUploadSlots.rawValue] as? Int,
+            let isAutoManaged = formData[TorrentOptionsCodingKeys.autoManaged.rawValue] as? Bool,
+            let stopSeedAtRatio = formData[TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue] as? Bool,
+            let stopRatio = formData[TorrentOptionsCodingKeys.stopRatio.rawValue] as? Double,
+            let removeAtRatio = formData[TorrentOptionsCodingKeys.remoteAtRatio.rawValue] as? Bool,
+            let moveCompleted = formData[TorrentOptionsCodingKeys.moveCompleted.rawValue] as? Bool,
+            let moveCompletedPath = formData[TorrentOptionsCodingKeys.moveCompletedPath.rawValue] as? String,
+            let prioritizeFL = formData[TorrentOptionsCodingKeys.prioritizeFirstLastPieces.rawValue] as? Bool
+        else { return }
+
+        let params: [String: Any] = [
+            TorrentOptionsCodingKeys.maxDownloadSpeed.rawValue: maxDownloadSpeed,
+            TorrentOptionsCodingKeys.maxUploadSpeed.rawValue: maxUploadSpeed,
+            TorrentOptionsCodingKeys.maxConnections.rawValue: maxConnections,
+            TorrentOptionsCodingKeys.maxUploadSlots.rawValue: maxUploadSlots,
+
+            TorrentOptionsCodingKeys.autoManaged.rawValue: isAutoManaged,
+            TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue: stopSeedAtRatio,
+            TorrentOptionsCodingKeys.stopRatio.rawValue: stopRatio,
+            TorrentOptionsCodingKeys.remoteAtRatio.rawValue: removeAtRatio,
+            TorrentOptionsCodingKeys.moveCompleted.rawValue: moveCompleted,
+            TorrentOptionsCodingKeys.moveCompletedPath.rawValue: moveCompletedPath,
+            TorrentOptionsCodingKeys.prioritizeFirstLastPieces.rawValue: prioritizeFL
+        ]
+
+        ClientManager.shared.activeClient?.setTorrentOptions(hash: torrentHash, options: params)
+            .then { [weak self] _ -> Void in
+                self?.view.showHUD(title: "Updated Torrent Options")
+            }
+            .catch { [weak self] error -> Void in
+                self?.view.showHUD(title: "Failed to Update Torrent Options", type: .failure)
+                Logger.error(error)
+            }
     }
 
     func invalidateTimer() {
@@ -590,9 +684,12 @@ class DetailedTorrentViewController: FormViewController {
     func getTorrentData(withHash hash: String) {
         ClientManager.shared.activeClient?.getTorrentDetails(withHash: hash).then { [weak self] torrent -> Void in
             Logger.verbose("New Detail VC Data")
+
             self?.torrentData = torrent
             self?.playPauseItem.image = torrent.paused ?  #imageLiteral(resourceName: "play_filled") : #imageLiteral(resourceName: "icons8-pause")
-            self?.reloadTableView()
+            DispatchQueue.main.async {
+                self?.form.allRows.forEach { $0.updateCell() }
+            }
 
             }.catch { [weak self] error in
                 if let self = self, let error = error as? ClientError {
@@ -606,4 +703,4 @@ class DetailedTorrentViewController: FormViewController {
         }
     }
 
-}
+} // swiftlint:disable:this file_length

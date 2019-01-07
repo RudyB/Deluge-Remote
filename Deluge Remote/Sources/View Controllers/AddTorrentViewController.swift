@@ -7,6 +7,7 @@
 //
 
 import Eureka
+import Houston
 import MBProgressHUD
 import UIKit
 
@@ -63,6 +64,9 @@ class AddTorrentViewController: FormViewController {
             populateTorrentTypeSelection()
         }
 
+    }
+    deinit {
+        Logger.info("Destroyed")
     }
 
     func handleFormConfigurationFor(fileURL: URL) {
@@ -412,6 +416,7 @@ class AddTorrentViewController: FormViewController {
                     }
                 }
             }.catch { _ in
+                //view.showHUD(title: <#T##String#>, type: <#T##UIView.HUDType#>, square: <#T##Bool#>, onCompletion: <#T##(() -> ())?##(() -> ())?##() -> ()#>)
                 DispatchQueue.main.async {
                     let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
                     hud.mode = MBProgressHUDMode.customView

@@ -682,7 +682,8 @@ extension MainTableViewController: UISearchControllerDelegate {
 }
 
 extension Array where Iterator.Element == TorrentOverview {
-    func sort(by sortKey: MainTableViewController.SortKey, _ order: MainTableViewController.Order = .Ascending) -> [TorrentOverview] {
+    func sort(by sortKey: MainTableViewController.SortKey,
+              _ order: MainTableViewController.Order = .Ascending) -> [TorrentOverview] {
 
         var sortedContent = [TorrentOverview]()
 

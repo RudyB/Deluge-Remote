@@ -95,20 +95,8 @@ class DelugeClient {
     //  swiftlint:disable:previous type_body_length
     let clientConfig: ClientConfig
 
-    private lazy var Manager: Alamofire.SessionManager = {
-        // Create the server trust policies
-        let serverTrustPolicies: [String: ServerTrustPolicy] = [
-            self.clientConfig.hostname: .disableEvaluation
-        ]
-        // Create custom manager
-        let configuration = URLSessionConfiguration.default
-        configuration.httpAdditionalHeaders = Alamofire.SessionManager.defaultHTTPHeaders
-        let man = Alamofire.SessionManager(
-            configuration: configuration,
-            serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
-        )
-        return man
-    }()
+    private var Manager: Alamofire.SessionManager
+
     private static var _manager: Alamofire.SessionManager?
 
     /// Dispatch Queue used for JSON Serialization
@@ -117,6 +105,18 @@ class DelugeClient {
     init(config: ClientConfig) {
         self.clientConfig = config
         self.utilityQueue = DispatchQueue.global(qos: .userInitiated)
+
+        // Create the server trust policies
+        let serverTrustPolicies: [String: ServerTrustPolicy] = [
+            self.clientConfig.hostname: .disableEvaluation
+        ]
+        // Create custom manager
+        let configuration = URLSessionConfiguration.default
+        configuration.httpAdditionalHeaders = Alamofire.SessionManager.defaultHTTPHeaders
+        Manager = Alamofire.SessionManager(
+            configuration: configuration,
+            serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
+        )
     }
 
     /**
@@ -617,6 +617,25 @@ class DelugeClient {
                     case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                     }
                 }
+        }
+    }
+
+    func setTorrentOptions(hash: String, options: [String: Any]) -> Promise<Void> {
+        return Promise { fulfill, reject in
+        let params: Parameters = [
+            "id": arc4random(),
+            "method": "core.set_torrent_options",
+            "params": [[hash], options]
+        ]
+        Manager.request(self.clientConfig.url, method: .post, parameters: params,
+                        encoding: JSONEncoding.default)
+            .validate().response { response in
+                if let error = response.error {
+                    reject(error)
+                } else {
+                    fulfill(())
+                }
+        }
         }
     }
 
