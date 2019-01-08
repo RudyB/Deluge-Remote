@@ -45,8 +45,8 @@ class MainTableViewController: UITableViewController {
     var refreshDataTimer: Timer?
     var refreshAuthTimer: Timer?
 
-    var dataTransferTotalsView: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: 80, height: 22))
+    var dataTransferView: UIStackView = {
+        let view = UIStackView(frame: CGRect(x: 0, y: 0, width: 170, height: 22))
         view.backgroundColor = UIColor.clear
         return view
     }()
@@ -145,9 +145,6 @@ class MainTableViewController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateHeader),
                                                name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.recieveUpdateTableNotifcation),
-                                               name: NSNotification.Name(rawValue: "reloadTableView"), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleNewActiveClient),
                                                name: Notification.Name(ClientManager.NewActiveClientNotification),
                                                object: nil)
@@ -194,9 +191,21 @@ class MainTableViewController: UITableViewController {
     }
 
     func initUploadDownloadLabels() {
-        dataTransferTotalsView.addSubview(currentUploadSpeedLabel)
-        dataTransferTotalsView.addSubview(currentDownloadSpeedLabel)
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dataTransferTotalsView)
+        let currentDataView = UIStackView(frame: CGRect(x: 0, y: 0, width: 80, height: 22))
+        currentDataView.axis = .vertical
+        currentDataView.addArrangedSubview(currentUploadSpeedLabel)
+        currentDataView.addArrangedSubview(currentDownloadSpeedLabel)
+
+        let totalDataView = UIStackView(frame: CGRect(x: 0, y: 0, width: 80, height: 22))
+        totalDataView.axis = .vertical
+        totalDataView.addArrangedSubview(totalUploadLabel)
+        totalDataView.addArrangedSubview(totalDownloadLabel)
+
+        //dataTransferView.spacing = 10
+        dataTransferView.addArrangedSubview(currentDataView)
+        //dataTransferView.addArrangedSubview(totalDataView)
+
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dataTransferView)
     }
 
     func createRefreshDataTimer() {
@@ -229,6 +238,9 @@ class MainTableViewController: UITableViewController {
     }
 
     func refreshAuthentication () {
+
+        if ClientManager.shared.activeClient == nil { return }
+
         Logger.info("Began Auth Refresh")
         DispatchQueue.main.async {
             self.statusHeader.backgroundColor = UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0)
@@ -281,8 +293,7 @@ class MainTableViewController: UITableViewController {
         self.navigationItem.rightBarButtonItem?.isEnabled = false
         self.navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTableView"), object: nil)
-
+        reloadTableView()
         refreshAuthentication()
     }
 
@@ -319,27 +330,19 @@ class MainTableViewController: UITableViewController {
         }
     }
 
-    func recieveUpdateTableNotifcation() {
-        if !cancelNextRefresh {
-            if self.shouldRefresh && !self.tableView.isEditing &&
-                !self.tableView.isDragging && !self.tableView.isDecelerating {
+    func reloadTableView() {
 
-                DispatchQueue.global(qos: .userInteractive).async {
-                    self.tableViewDataSource = self.tableViewDataSource?.sort(by: self.activeSortKey, self.activeOrderKey)
-                    Logger.verbose("Updating Table View")
-                    self.tableView.performSelector(onMainThread: #selector(self.tableView.reloadData),
-                                                   with: nil, waitUntilDone: true)
-
-                    DispatchQueue.main.async {
-                        if self.isFiltering() {
-                            self.updateSearchResults(for: self.searchController)
-                        }
-                    }
+        DispatchQueue.global(qos: .userInteractive).async {
+            self.tableViewDataSource = self.tableViewDataSource?.sort(by: self.activeSortKey, self.activeOrderKey)
+            DispatchQueue.main.async {
+                Logger.verbose("Updating Table View")
+                self.tableView.reloadData()
+                if self.isFiltering() {
+                    self.updateSearchResults(for: self.searchController)
                 }
             }
-        } else {
-            cancelNextRefresh = false
         }
+
     }
 
     func displaySortByMenu() {
@@ -349,7 +352,7 @@ class MainTableViewController: UITableViewController {
         for item in SortKey.allCases {
             let action = UIAlertAction(title: item.rawValue, style: .default) { [weak self] _ in
                 self?.activeSortKey = item
-                NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
+                self?.reloadTableView()
                 UserDefaults.standard.set(item.rawValue, forKey: "SortKey")
             }
             actions.append(action)
@@ -367,7 +370,7 @@ class MainTableViewController: UITableViewController {
         for item in Order.allCases {
             let action = UIAlertAction(title: item.rawValue, style: .default) { [weak self] _ in
                 self?.activeOrderKey = item
-                NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
+                self?.reloadTableView()
                 UserDefaults.standard.set(item.rawValue, forKey: "OrderKey")
             }
             actions.append(action)
@@ -388,11 +391,15 @@ class MainTableViewController: UITableViewController {
             DispatchQueue.main.async {
                 self.currentDownloadSpeedLabel.text = "↓ \(status.payload_download_rate.transferRateString())"
                 self.currentUploadSpeedLabel.text = "↑ \(status.payload_upload_rate.transferRateString())"
+                self.totalDownloadLabel.text = "↓ \(status.total_payload_download.sizeString())"
+                self.totalUploadLabel.text = "↑ \(status.total_payload_upload.sizeString())"
             }
             }.catch { _ in
                 DispatchQueue.main.async {
                     self.currentDownloadSpeedLabel.text = "↓ 0 KiB/s"
                     self.currentUploadSpeedLabel.text = "↑ 0 KiB/s"
+                    self.totalDownloadLabel.text = "↓ 0 KiB"
+                    self.totalUploadLabel.text = "↑ 0 KiB"
                 }
         }
     }
@@ -404,11 +411,12 @@ class MainTableViewController: UITableViewController {
             createRefreshAuthTimer()
             return
         }
-        ClientManager.shared.activeClient?.getAllTorrents().then { tableViewData -> Void in
+        ClientManager.shared.activeClient?.getAllTorrents().then { [weak self] tableViewData -> Void in
+            guard let self = self else { return }
             DispatchQueue.main.async {
                 Logger.verbose("Torrent Data Successfully Downloaded")
                 self.tableViewDataSource = tableViewData
-                NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
+                self.reloadTableView()
             }
             }.catch { error in
                 self.isHostOnline = false
@@ -416,7 +424,7 @@ class MainTableViewController: UITableViewController {
                 self.resumeAllTorrentsBarButton.isEnabled = false
                 self.navigationItem.rightBarButtonItem?.isEnabled = false
                 self.tableViewDataSource?.removeAll()
-                NotificationCenter.default.post(name: Notification.Name("reloadTableView"), object: nil)
+                self.reloadTableView()
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
                 if let error = error as? ClientError {
                     Logger.error(error.domain())

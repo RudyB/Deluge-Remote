@@ -59,8 +59,8 @@ class AddClientViewController: UITableViewController {
                                           relativePath: relativePath, port: port,
                                           password: password, isHTTP: !sslEnabled)
 
-            let tempClient = DelugeClient(config: tempConfig)
-            tempClient.authenticate()
+            tempClient = DelugeClient(config: tempConfig)
+            tempClient?.authenticate()
                 .then { [weak self] isValidScheme -> Void in
                     guard let self = self else { return }
                     DispatchQueue.main.async {
@@ -97,6 +97,7 @@ class AddClientViewController: UITableViewController {
     public var onConfigAdded: ((ClientConfig) -> Void)?
 
     var config: ClientConfig?
+    var tempClient: DelugeClient?
 
     override func viewDidLoad() {
         super.viewDidLoad()
