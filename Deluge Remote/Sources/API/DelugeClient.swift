@@ -678,6 +678,7 @@ class DelugeClient {
                                 JSONDecoder().decode(DelugeResponse<SessionStatus>.self, from: data )
                             fulfill(torrent.result)
                         } catch let error {
+                            Logger.error(error)
                             reject(ClientError.torrentCouldNotBeParsed)
                         }
 

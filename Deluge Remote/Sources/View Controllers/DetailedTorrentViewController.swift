@@ -164,7 +164,11 @@ class DetailedTorrentViewController: FormViewController {
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.state
                         cell.height = self?.computeCellHeight(for: cell)
-                        row.section?.header?.title = torrentData.name
+                        if row.section?.header?.title != torrentData.name {
+                            row.section?.header?.title = torrentData.name
+                            row.section?.reload()
+                        }
+
                     }
             }
 

@@ -15,6 +15,7 @@
 		4716027A1DD433A700727CBD /* TorrentMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471602771DD433A700727CBD /* TorrentMetadata.swift */; };
 		47599CAD21E30BB3001CD9C7 /* HUDAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47599CAC21E30BB3001CD9C7 /* HUDAlert.swift */; };
 		477BFAEF21E442F8008E80CF /* DelugeRequestRetrier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477BFAEE21E442F8008E80CF /* DelugeRequestRetrier.swift */; };
+		477BFAF121E4748B008E80CF /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477BFAF021E4748B008E80CF /* String.swift */; };
 		477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7ADA21D3299300F78CE1 /* ClientConfig.swift */; };
 		477D7B3221D3EFE000F78CE1 /* ClientManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3121D3EFE000F78CE1 /* ClientManager.swift */; };
 		477D7B3621D605C200F78CE1 /* SessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3521D605C200F78CE1 /* SessionStatus.swift */; };
@@ -50,6 +51,7 @@
 		471602821DD5845500727CBD /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		47599CAC21E30BB3001CD9C7 /* HUDAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDAlert.swift; sourceTree = "<group>"; };
 		477BFAEE21E442F8008E80CF /* DelugeRequestRetrier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelugeRequestRetrier.swift; sourceTree = "<group>"; };
+		477BFAF021E4748B008E80CF /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		477D7ADA21D3299300F78CE1 /* ClientConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfig.swift; sourceTree = "<group>"; };
 		477D7B3121D3EFE000F78CE1 /* ClientManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientManager.swift; sourceTree = "<group>"; };
 		477D7B3521D605C200F78CE1 /* SessionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStatus.swift; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 			children = (
 				47B0E3D121E07B4200E3056A /* Int.swift */,
 				47B0E3D321E07B5B00E3056A /* Double.swift */,
+				477BFAF021E4748B008E80CF /* String.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -393,6 +396,7 @@
 			files = (
 				47BE37441DDD1FAF002A6042 /* AddClientViewController.swift in Sources */,
 				47B0E3D221E07B4200E3056A /* Int.swift in Sources */,
+				477BFAF121E4748B008E80CF /* String.swift in Sources */,
 				477D7B3221D3EFE000F78CE1 /* ClientManager.swift in Sources */,
 				477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */,
 				47F9C73321DC66790017281C /* TorrentConfig.swift in Sources */,

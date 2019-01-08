@@ -648,7 +648,7 @@ extension MainTableViewController: UISearchResultsUpdating {
 
         if scope == "Name" {
             filteredTableViewDataSource = tableViewDataSource?.filter {
-                return $0.name.lowercased().contains(searchText.lowercased())
+                return $0.name.parsedTorrentName().contains(searchText.parsedTorrentName())
                 } ?? []
         } else if scope == "Hash" {
             filteredTableViewDataSource = tableViewDataSource?.filter {
@@ -660,7 +660,7 @@ extension MainTableViewController: UISearchResultsUpdating {
                 } ?? []
         } else {
             filteredTableViewDataSource = tableViewDataSource?.filter {
-                return $0.name.lowercased().contains(searchText.lowercased()) ||
+                return $0.name.parsedTorrentName().contains(searchText.parsedTorrentName()) ||
                     $0.hash.lowercased().contains(searchText.lowercased()) ||
                     $0.tracker_host.lowercased().contains(searchText.lowercased())
                 } ?? []

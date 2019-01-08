@@ -31,10 +31,8 @@ class AddClientViewController: UITableViewController {
         sslEnabled = sender.selectedSegmentIndex == 1
     }
 
-    // swiftlint:disable:next function_body_length
     @IBAction func testConnectionAction(_ sender: Any) {
         var port: String = ""
-        var sslConfig: NetworkSecurity!
         sslEnabled = networkSecurityControl.selectedSegmentIndex == 1
 
         guard
@@ -47,12 +45,6 @@ class AddClientViewController: UITableViewController {
         let relativePath = relativePathTextField.text ?? ""
 
         port = portTextField.text ?? port
-        if sslEnabled {
-            sslConfig = NetworkSecurity.https(port: port)
-        } else {
-            sslConfig = NetworkSecurity.http(port: port)
-        }
-
         if nickname.isEmpty { showAlert(target: self, title: "Nickname cannot be left empty")}
         if hostname.isEmpty { showAlert(target: self, title: "Hostname cannot be empty")}
         if password.isEmpty { showAlert(target: self, title: "Password cannot be empty")}
@@ -65,7 +57,7 @@ class AddClientViewController: UITableViewController {
 
             let tempConfig = ClientConfig(nickname: nickname, hostname: hostname,
                                           relativePath: relativePath, port: port,
-                                          password: password, isHTTP: !self.sslEnabled)
+                                          password: password, isHTTP: !sslEnabled)
 
             let tempClient = DelugeClient(config: tempConfig)
             tempClient.authenticate()
