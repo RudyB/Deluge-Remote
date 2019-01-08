@@ -58,9 +58,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // swiftlint:disable:next line_length
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey: Any] = [:]) -> Bool {
-        // Determine who sent the URL.
-        let sendingAppID = options[.sourceApplication]
-        print("source application = \(sendingAppID ?? "Unknown")")
         NewTorrentNotifier.shared.userInfo = ["url": url, "isFileURL": url.isFileURL]
         return true
     }

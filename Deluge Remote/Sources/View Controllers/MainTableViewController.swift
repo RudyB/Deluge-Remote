@@ -230,27 +230,35 @@ class MainTableViewController: UITableViewController {
 
     func refreshAuthentication () {
         Logger.info("Began Auth Refresh")
+        DispatchQueue.main.async {
+            self.statusHeader.backgroundColor = UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0)
+            self.statusHeader.text = "Attempting Connection"
+        }
+
         _ = ClientManager.shared.activeClient?.authenticate()
-            .then { isAuthenticated -> Void in
-                self.isHostOnline = isAuthenticated
+            .then { [weak self] isAuthenticated -> Void in
+                self?.isHostOnline = isAuthenticated
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
-                self.navigationItem.rightBarButtonItem?.isEnabled = isAuthenticated
-                self.pauseAllTorrentsBarButton.isEnabled = isAuthenticated
-                self.resumeAllTorrentsBarButton.isEnabled = isAuthenticated
+                self?.navigationItem.rightBarButtonItem?.isEnabled = isAuthenticated
+                self?.pauseAllTorrentsBarButton.isEnabled = isAuthenticated
+                self?.resumeAllTorrentsBarButton.isEnabled = isAuthenticated
 
                 if isAuthenticated {
                     Logger.info("User Authenticated")
-                    self.invalidateRefreshAuthTimer()
-                    self.downloadNewData()
-                    self.updateSessionStats()
+                    self?.invalidateRefreshAuthTimer()
+                    self?.downloadNewData()
+                    self?.updateSessionStats()
                 } else {
                     Logger.warning("Bad Credentials")
                     DispatchQueue.main.async {
-                        self.statusHeader.text = "Bad Credentials"
+                        self?.statusHeader.text = "Bad Credentials"
+                    }
+                    self?.invalidateRefreshAuthTimer()
+                    // TODO: Turn into a toast
+                    if let self = self {
+                        showAlert(target: self, title: "Authentication Error", message: "Invalid Password")
                     }
 
-                    // TODO: Turn into a toast
-                    showAlert(target: self, title: "Authentication Error", message: "Invalid Password")
                 }
             }.catch { error in
                 self.isHostOnline = false
@@ -258,7 +266,6 @@ class MainTableViewController: UITableViewController {
                 if let error = error as? ClientError {
                     Logger.error(error.domain())
                     self.statusHeader.text = error.domain()
-                    //showAlert(target: self, title: "Error", message: error.domain())
                 } else {
                     Logger.error(error)
                     self.statusHeader.text = error.localizedDescription

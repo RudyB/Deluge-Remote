@@ -8,6 +8,7 @@
 
 import Alamofire
 import Foundation
+import Houston
 import PromiseKit
 
 typealias JSON = [String: Any]
@@ -97,8 +98,6 @@ class DelugeClient {
 
     private var Manager: Alamofire.SessionManager
 
-    private static var _manager: Alamofire.SessionManager?
-
     /// Dispatch Queue used for JSON Serialization
     let utilityQueue: DispatchQueue
 
@@ -117,55 +116,7 @@ class DelugeClient {
             configuration: configuration,
             serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
         )
-    }
-
-    /**
-     Static Function to determine if credentials are valid for a given server
-     
-     - Returns: `Promise<Bool>`. returns `true` if connection was successful
-     
-     - A rejected Promise if the authenication fails
-     - Possible Errors Propagated to Promise:
-     - ClientError.unexpectedResponse if the json cannot be parsed
-     - ClientError.incorrectPassword if the server responds the responce was false
-     */
-    static func validateCredentials(host: String, url: String, password: String) -> Promise<Bool> {
-
-        // Create the server trust policies
-        let serverTrustPolicies: [String: ServerTrustPolicy] = [
-            host: .disableEvaluation
-        ]
-        // Create custom manager
-        let configuration = URLSessionConfiguration.default
-        configuration.httpAdditionalHeaders = Alamofire.SessionManager.defaultHTTPHeaders
-        _manager = Alamofire.SessionManager(
-            configuration: configuration,
-            serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
-        )
-
-        let parameters: Parameters = [
-            "id": arc4random(),
-            "method": "auth.login",
-            "params": [password]
-        ]
-
-        return Promise { fulfill, reject in
-
-            _manager?.request(url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default).validate().responseJSON { response in
-                switch response.result {
-                case .success(let data):
-                    let json = data as? JSON
-                    guard let result = json?["result"] as? Bool else {
-                        reject(ClientError.unexpectedResponse)
-                        break
-                    }
-                    fulfill(result)
-
-                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
-                }
-            }
-        }
+        Manager.retrier = DelugeClientRequestRetrier()
     }
 
     /**
@@ -184,8 +135,30 @@ class DelugeClient {
      
      */
     func authenticate() -> Promise<Bool> {
-        // swiftlint:disable:next line_length
-        return DelugeClient.validateCredentials(host: clientConfig.hostname, url: clientConfig.url, password: clientConfig.password)
+        let parameters: Parameters = [
+            "id": arc4random(),
+            "method": "auth.login",
+            "params": [clientConfig.password]
+        ]
+
+        return Promise { fulfill, reject in
+            Manager.request(clientConfig.url, method: .post, parameters: parameters,
+                            encoding: JSONEncoding.default)
+                .validate().responseJSON { response in
+                    switch response.result {
+                    case .success(let data):
+                        let json = data as? JSON
+                        guard let result = json?["result"] as? Bool else {
+                            reject(ClientError.unexpectedResponse)
+                            break
+                        }
+                        fulfill(result)
+
+                    case .failure(let error):
+                        reject(ClientError.unexpectedError(error.localizedDescription))
+                    }
+            }
+        }
     }
 
     /**
@@ -207,23 +180,23 @@ class DelugeClient {
             ]
 
             Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default)
+                            encoding: JSONEncoding.default)
                 .validate().responseData(queue: utilityQueue) { response in
 
-                switch response.result {
-                case .success(let data):
+                    switch response.result {
+                    case .success(let data):
 
-                    do {
-                        let torrent = try
-                            JSONDecoder().decode(DelugeResponse<TorrentMetadata>.self, from: data )
-                        fulfill(torrent.result)
-                    } catch let error {
-                        print(error)
-                        reject(ClientError.torrentCouldNotBeParsed)
+                        do {
+                            let torrent = try
+                                JSONDecoder().decode(DelugeResponse<TorrentMetadata>.self, from: data )
+                            fulfill(torrent.result)
+                        } catch let error {
+                            Logger.error(error)
+                            reject(ClientError.torrentCouldNotBeParsed)
+                        }
+
+                    case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                     }
-
-                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
-                }
             }
         }
     }
@@ -246,22 +219,22 @@ class DelugeClient {
                                 "total_size", "all_time_download", "total_uploaded"]]
             ]
             Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default).validate().responseData(queue: utilityQueue) { response in
-                switch response.result {
-                case .success(let data):
+                            encoding: JSONEncoding.default).validate().responseData(queue: utilityQueue) { response in
+                                switch response.result {
+                                case .success(let data):
 
-                    guard let response = try?
-                        JSONDecoder().decode(DelugeResponse<[String:TorrentOverview]>.self, from: data ) else {
-                            reject(ClientError.unableToParseTableViewTorrent)
-                            break
-                    }
+                                    guard let response = try?
+                                        JSONDecoder().decode(DelugeResponse<[String:TorrentOverview]>.self, from: data ) else {
+                                            reject(ClientError.unableToParseTableViewTorrent)
+                                            break
+                                    }
 
-                    DispatchQueue.main.async {
-                        fulfill(Array(response.result.values))
-                    }
+                                    DispatchQueue.main.async {
+                                        fulfill(Array(response.result.values))
+                                    }
 
-                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
-                }
+                                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
+                                }
             }
         }
     }
@@ -282,11 +255,11 @@ class DelugeClient {
         ]
 
         Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                          encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
-            switch response.result {
-            case .success: onCompletion(APIResult.success(()))
-            case .failure(let error): onCompletion(APIResult.failure(ClientError.unableToPauseTorrent(error)))
-            }
+                        encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
+                            switch response.result {
+                            case .success: onCompletion(.success(()))
+                            case .failure(let error): onCompletion(.failure(ClientError.unableToPauseTorrent(error)))
+                            }
         }
     }
 
@@ -315,11 +288,11 @@ class DelugeClient {
         ]
 
         Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                          encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
-            switch response.result {
-            case .success: onCompletion(.success(Any.self))
-            case .failure(let error): onCompletion(.failure(ClientError.unableToPauseTorrent(error)))
-            }
+                        encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
+                            switch response.result {
+                            case .success: onCompletion(.success(Any.self))
+                            case .failure(let error): onCompletion(.failure(ClientError.unableToPauseTorrent(error)))
+                            }
         }
     }
 
@@ -341,11 +314,11 @@ class DelugeClient {
         ]
 
         Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                          encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
-            switch response.result {
-            case .success: onCompletion(APIResult.success(()))
-            case .failure(let error): onCompletion(APIResult.failure(ClientError.unableToResumeTorrent(error)))
-            }
+                        encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
+                            switch response.result {
+                            case .success: onCompletion(APIResult.success(()))
+                            case .failure(let error): onCompletion(APIResult.failure(ClientError.unableToResumeTorrent(error)))
+                            }
         }
     }
 
@@ -365,11 +338,11 @@ class DelugeClient {
         ]
 
         Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                          encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
-            switch response.result {
-            case .success: onCompletion(.success(Any.self))
-            case .failure(let error): onCompletion(.failure(ClientError.unableToResumeTorrent(error)))
-            }
+                        encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
+                            switch response.result {
+                            case .success: onCompletion(.success(Any.self))
+                            case .failure(let error): onCompletion(.failure(ClientError.unableToResumeTorrent(error)))
+                            }
         }
     }
 
@@ -394,17 +367,17 @@ class DelugeClient {
                 "params": [hash, removeData]
             ]
             Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
-                switch response.result {
-                case .success(let data):
-                    guard let json = data as? JSON, let result = json["result"] as? Bool else {
-                        reject(ClientError.unexpectedResponse)
-                        break
-                    }
-                    (result == true) ? fulfill(result) : reject(ClientError.unableToDeleteTorrent)
-                case .failure(let error):
-                    reject(ClientError.unexpectedError(error.localizedDescription))
-                }
+                            encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
+                                switch response.result {
+                                case .success(let data):
+                                    guard let json = data as? JSON, let result = json["result"] as? Bool else {
+                                        reject(ClientError.unexpectedResponse)
+                                        break
+                                    }
+                                    (result == true) ? fulfill(result) : reject(ClientError.unableToDeleteTorrent)
+                                case .failure(let error):
+                                    reject(ClientError.unexpectedError(error.localizedDescription))
+                                }
             }
         }
     }
@@ -421,18 +394,18 @@ class DelugeClient {
 
         return Promise { fulfill, reject in
             Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default)
+                            encoding: JSONEncoding.default)
                 .validate().responseJSON(queue: utilityQueue) { response in
-                switch response.result {
-                case .success(let json):
-                    // swiftlint:disable:next unused_optional_binding
-                    guard let json = json as? [String: Any], let _ = json["result"] as? String else {
-                        reject(ClientError.unableToAddTorrent)
-                        return
+                    switch response.result {
+                    case .success(let json):
+                        // swiftlint:disable:next unused_optional_binding
+                        guard let json = json as? [String: Any], let _ = json["result"] as? String else {
+                            reject(ClientError.unableToAddTorrent)
+                            return
+                        }
+                        fulfill(())
+                    case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                     }
-                    fulfill(())
-                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
-                }
             }
         }
     }
@@ -446,7 +419,7 @@ class DelugeClient {
 
         return Promise<(name: String, hash: String)> { fulfill, reject in
             Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default)
+                            encoding: JSONEncoding.default)
                 .validate().responseJSON(queue: utilityQueue) { response in
                     switch response.result {
                     case .success(let json):
@@ -455,9 +428,9 @@ class DelugeClient {
                             let result = json["result"] as? JSON,
                             let name = result["name"] as? String,
                             let hash = result["info_hash"] as? String
-                        else {
-                            reject(ClientError.unexpectedResponse)
-                            return
+                            else {
+                                reject(ClientError.unexpectedResponse)
+                                return
                         }
                         fulfill(name: name, hash: hash)
                     case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
@@ -471,8 +444,8 @@ class DelugeClient {
         return Promise { fulfill, reject in
             guard
                 let torrent = try? Data(contentsOf: url) else {
-                reject(ClientError.unexpectedError("Failed to create base64 encoded torrent"))
-                return
+                    reject(ClientError.unexpectedError("Failed to create base64 encoded torrent"))
+                    return
             }
 
             let parameters: Parameters = [
@@ -482,18 +455,18 @@ class DelugeClient {
             ]
 
             Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default)
+                            encoding: JSONEncoding.default)
                 .validate().responseJSON(queue: utilityQueue) { response in
-                switch response.result {
-                case .success(let json):
-                    // swiftlint:disable:next unused_optional_binding
-                    guard let json = json as? [String: Any], let _ = json["result"] as? String else {
-                        reject(ClientError.unableToAddTorrent)
-                        return
+                    switch response.result {
+                    case .success(let json):
+                        // swiftlint:disable:next unused_optional_binding
+                        guard let json = json as? [String: Any], let _ = json["result"] as? String else {
+                            reject(ClientError.unableToAddTorrent)
+                            return
+                        }
+                        fulfill(())
+                    case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                     }
-                    fulfill(())
-                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
-                }
             }
         }
     }
@@ -504,7 +477,7 @@ class DelugeClient {
 
             let headers = [
                 "Content-Type": "multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__"
-                ]
+            ]
             guard let torrentData = try? Data(contentsOf: fileUrl) else {
                 reject(ClientError.failedToConvertTorrentToData)
                 return
@@ -547,7 +520,7 @@ class DelugeClient {
                         "params": [fileName]
                     ]
                     self.Manager.request(self.clientConfig.url, method: .post,
-                                      parameters: parameters, encoding: JSONEncoding.default)
+                                         parameters: parameters, encoding: JSONEncoding.default)
                         .validate().responseJSON(queue: self.utilityQueue) { response in
                             switch response.result {
                             case .success(let json):
@@ -560,9 +533,9 @@ class DelugeClient {
                                     let fileTreeContents = fileTree["contents"] as? JSON,
                                     let rootKey = fileTreeContents.keys.first,
                                     let rootJSON = fileTreeContents[rootKey] as? JSON
-                                else {
-                                    reject(ClientError.unexpectedResponse)
-                                    return
+                                    else {
+                                        reject(ClientError.unexpectedResponse)
+                                        return
                                 }
 
                                 let type = fileTree["type"] as? String
@@ -596,12 +569,12 @@ class DelugeClient {
                 "max_upload_slots_per_torrent",
                 "max_upload_speed_per_torrent",
                 "prioritize_first_last_pieces"
-            ]]
+                ]]
         ]
 
         return Promise { fulfill, reject in
             Manager.request(self.clientConfig.url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default)
+                            encoding: JSONEncoding.default)
                 .validate().responseData(queue: utilityQueue) { response in
                     switch response.result {
                     case .success(let data):
@@ -616,26 +589,26 @@ class DelugeClient {
 
                     case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                     }
-                }
+            }
         }
     }
 
     func setTorrentOptions(hash: String, options: [String: Any]) -> Promise<Void> {
         return Promise { fulfill, reject in
-        let params: Parameters = [
-            "id": arc4random(),
-            "method": "core.set_torrent_options",
-            "params": [[hash], options]
-        ]
-        Manager.request(self.clientConfig.url, method: .post, parameters: params,
-                        encoding: JSONEncoding.default)
-            .validate().response { response in
-                if let error = response.error {
-                    reject(error)
-                } else {
-                    fulfill(())
-                }
-        }
+            let params: Parameters = [
+                "id": arc4random(),
+                "method": "core.set_torrent_options",
+                "params": [[hash], options]
+            ]
+            Manager.request(self.clientConfig.url, method: .post, parameters: params,
+                            encoding: JSONEncoding.default)
+                .validate().response { response in
+                    if let error = response.error {
+                        reject(error)
+                    } else {
+                        fulfill(())
+                    }
+            }
         }
     }
 
@@ -694,22 +667,22 @@ class DelugeClient {
                         ]]]
 
             Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                              encoding: JSONEncoding.default).validate().responseData(queue: utilityQueue) { response in
+                            encoding: JSONEncoding.default)
+                .validate().responseData(queue: utilityQueue) { response in
 
-                switch response.result {
-                case .success(let data):
+                    switch response.result {
+                    case .success(let data):
 
-                    do {
-                        let torrent = try
-                            JSONDecoder().decode(DelugeResponse<SessionStatus>.self, from: data )
-                        fulfill(torrent.result)
-                    } catch let error {
-                        print(error)
-                        reject(ClientError.torrentCouldNotBeParsed)
+                        do {
+                            let torrent = try
+                                JSONDecoder().decode(DelugeResponse<SessionStatus>.self, from: data )
+                            fulfill(torrent.result)
+                        } catch let error {
+                            reject(ClientError.torrentCouldNotBeParsed)
+                        }
+
+                    case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                     }
-
-                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
-                }
             }
         }
     }

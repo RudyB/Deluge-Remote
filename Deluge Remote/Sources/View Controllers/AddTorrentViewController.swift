@@ -117,7 +117,6 @@ class AddTorrentViewController: FormViewController {
 
                     showAlert(target: self, title: "Failure to load magnet URL",
                               message: "An error occurred while attempting to load the magnet URL")
-                    // swiftlint:disable:previous line_length
 
                 }
         }

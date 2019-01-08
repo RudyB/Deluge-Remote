@@ -37,7 +37,9 @@ class DetailedTorrentViewController: FormViewController {
             self?.invalidateTimer()
             guard let self = self, let torrentHash = self.torrentHash else { return }
             ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: false).then {_ in
-                self.navigationController?.popViewController(animated: true)
+                self.view.showHUD(title: "Torrent Successfully Deleted") {
+                    self.navigationController?.popViewController(animated: true)
+                }
                 }.catch { error in
                     if let error = error as? ClientError {
                         showAlert(target: self, title: "Error", message: error.domain())
@@ -51,7 +53,9 @@ class DetailedTorrentViewController: FormViewController {
             self?.invalidateTimer()
             guard let self = self, let torrentHash = self.torrentHash else { return }
             ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: true).then {_ in
-                self.navigationController?.popViewController(animated: true)
+                self.view.showHUD(title: "Torrent Successfully Deleted") {
+                    self.navigationController?.popViewController(animated: true)
+                }
                 }.catch { error in
                     if let error = error as? ClientError {
                         showAlert(target: self, title: "Error", message: error.domain())

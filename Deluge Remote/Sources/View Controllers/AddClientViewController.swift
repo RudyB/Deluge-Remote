@@ -13,10 +13,10 @@ class AddClientViewController: UITableViewController {
 
     @IBOutlet weak var nicknameTextField: UITextField!
     @IBOutlet weak var hostnameTextField: UITextField!
-	@IBOutlet weak var relativePathTextField: UITextField!
-	@IBOutlet weak var portTextField: UITextField!
-	@IBOutlet weak var passwordTextField: UITextField!
-	@IBOutlet weak var portTableViewCell: UITableViewCell!
+    @IBOutlet weak var relativePathTextField: UITextField!
+    @IBOutlet weak var portTextField: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var portTableViewCell: UITableViewCell!
     @IBOutlet weak var networkSecurityControl: UISegmentedControl!
 
     @IBAction func doneAction(_ sender: UIBarButtonItem) {
@@ -29,77 +29,76 @@ class AddClientViewController: UITableViewController {
 
     @IBAction func changeSSL(_ sender: UISegmentedControl) {
         sslEnabled = sender.selectedSegmentIndex == 1
-	}
+    }
 
     // swiftlint:disable:next function_body_length
-	@IBAction func testConnectionAction(_ sender: Any) {
-		var port: String = ""
-		var sslConfig: NetworkSecurity!
+    @IBAction func testConnectionAction(_ sender: Any) {
+        var port: String = ""
+        var sslConfig: NetworkSecurity!
         sslEnabled = networkSecurityControl.selectedSegmentIndex == 1
 
-		guard
+        guard
             let nickname = nicknameTextField.text,
             let hostname = hostnameTextField.text,
             let password = passwordTextField.text
-        else {
-			return
-		}
-		let relativePath = relativePathTextField.text ?? ""
+            else {
+                return
+        }
+        let relativePath = relativePathTextField.text ?? ""
 
         port = portTextField.text ?? port
-		if sslEnabled {
-			sslConfig = NetworkSecurity.https(port: port)
-		} else {
-			sslConfig = NetworkSecurity.http(port: port)
-		}
+        if sslEnabled {
+            sslConfig = NetworkSecurity.https(port: port)
+        } else {
+            sslConfig = NetworkSecurity.http(port: port)
+        }
 
         if nickname.isEmpty { showAlert(target: self, title: "Nickname cannot be left empty")}
-		if hostname.isEmpty { showAlert(target: self, title: "Hostname cannot be empty")}
-		if password.isEmpty { showAlert(target: self, title: "Password cannot be empty")}
-		if port.isEmpty { showAlert(target: self, title: "Port cannot be empty")}
+        if hostname.isEmpty { showAlert(target: self, title: "Hostname cannot be empty")}
+        if password.isEmpty { showAlert(target: self, title: "Password cannot be empty")}
+        if port.isEmpty { showAlert(target: self, title: "Port cannot be empty")}
 
-		if !hostname.isEmpty && !password.isEmpty && !port.isEmpty && !nickname.isEmpty {
+        if !hostname.isEmpty && !password.isEmpty && !port.isEmpty && !nickname.isEmpty {
             DispatchQueue.main.async {
                 MBProgressHUD.showAdded(to: self.view, animated: true)
             }
 
-			let url = buildURL(hostname: hostname, relativePath: relativePath, sslConfig: sslConfig)
-            // swiftlint:disable:next line_length
-            DelugeClient.validateCredentials(host: hostname, url: url, password: password).then { isValidScheme -> Void in
-                DispatchQueue.main.async {
-                    MBProgressHUD.hide(for: self.view, animated: true)
+            let tempConfig = ClientConfig(nickname: nickname, hostname: hostname,
+                                          relativePath: relativePath, port: port,
+                                          password: password, isHTTP: !self.sslEnabled)
 
-                    if isValidScheme {
-                        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
-                        hud.mode = MBProgressHUDMode.customView
-                        hud.customView = UIImageView(image: #imageLiteral(resourceName: "icons8-checkmark"))
-                        hud.isSquare = true
-                        hud.label.text = "Valid Configuration"
-                        hud.hide(animated: true, afterDelay: 1.5)
-                        self.config = ClientConfig(nickname: nickname, hostname: hostname,
-                                                   relativePath: relativePath, port: port,
-                                                   password: password, isHTTP: !self.sslEnabled)
-                        self.navigationItem.rightBarButtonItem?.isEnabled = true
-                    } else {
-                        showAlert(target: self, title: "Unable to Authenticate", message: "Invalid Password")
+            let tempClient = DelugeClient(config: tempConfig)
+            tempClient.authenticate()
+                .then { [weak self] isValidScheme -> Void in
+                    guard let self = self else { return }
+                    DispatchQueue.main.async {
+                        MBProgressHUD.hide(for: self.view, animated: true)
+
+                        if isValidScheme {
+                            self.view.showHUD(title: "Valid Configuration")
+                            self.config = tempConfig
+                            self.navigationItem.rightBarButtonItem?.isEnabled = true
+                        } else {
+                            showAlert(target: self, title: "Unable to Authenticate", message: "Invalid Password")
+                        }
                     }
-                }
 
-			}.catch { error in
-                DispatchQueue.main.async {
-                    MBProgressHUD.hide(for: self.view, animated: true)
-                    if let error = error as? ClientError {
-                        showAlert(target: self, title: "Connection failure", message: error.domain())
-                    } else {
-                        showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
+                }.catch { [weak self] error in
+                    guard let self = self else { return }
+                    DispatchQueue.main.async {
+                        MBProgressHUD.hide(for: self.view, animated: true)
+                        if let error = error as? ClientError {
+                            showAlert(target: self, title: "Connection failure", message: error.domain())
+                        } else {
+                            showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
+                        }
                     }
-                }
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	var sslEnabled: Bool = false
+    var sslEnabled: Bool = false
 
     static let storyboardIdentifier = "AddClientVC"
 
@@ -109,7 +108,7 @@ class AddClientViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-		self.navigationItem.rightBarButtonItem?.isEnabled = false
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
 
         if let config = config {
             self.title = "Edit Client"
@@ -126,13 +125,6 @@ class AddClientViewController: UITableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-	func buildURL(hostname: String, relativePath: String?, sslConfig: NetworkSecurity) -> String {
-		var host = hostname.replacingOccurrences(of: "http://", with: "")
-		host = host.replacingOccurrences(of: "https://", with: "")
-		let path = relativePath ?? ""
-		return "\(sslConfig.name())\(host):\(sslConfig.port())\(path)/json"
-	}
 
     // MARK: - Table view data source
 
