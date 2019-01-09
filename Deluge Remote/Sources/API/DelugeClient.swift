@@ -223,14 +223,12 @@ class DelugeClient {
                                 switch response.result {
                                 case .success(let data):
 
-                                    guard let response = try?
-                                        JSONDecoder().decode(DelugeResponse<[String:TorrentOverview]>.self, from: data ) else {
-                                            reject(ClientError.unableToParseTableViewTorrent)
-                                            break
-                                    }
-
-                                    DispatchQueue.main.async {
+                                    do {
+                                        let response = try JSONDecoder().decode(DelugeResponse<[String:TorrentOverview]>.self, from: data)
                                         fulfill(Array(response.result.values))
+                                    } catch {
+                                        reject(ClientError.unableToParseTableViewTorrent)
+                                        Logger.error(error)
                                     }
 
                                 case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
@@ -615,13 +613,11 @@ class DelugeClient {
     /**
      Gets the session status values `for keys`, these keys are taken
      from libtorrent's session status.
-     
-     - Parameter forKeys: List of keys. Keys are taken
-     from libtorrent's session status. See: http://www.rasterbar.com/products/libtorrent/manual.html#status
+     See: [http://www.rasterbar.com/products/libtorrent/manual.html#status](http://www.rasterbar.com/products/libtorrent/manual.html#status)
      
      */
-    // swiftlint:disable:next function_body_length
     func getSessionStatus() -> Promise<SessionStatus> {
+        // swiftlint:disable:previous function_body_length
         return Promise { fulfill, reject in
             let parameters: Parameters =
                 [

@@ -42,7 +42,7 @@ struct TorrentMetadata: Decodable {
     let num_peers: Int
     let num_seeds: Int
     let paused: Bool
-    let label: String
+    let label: String?
     let prioritize_first_last: Bool
     let progress: Double
     let remove_at_ratio: Bool
@@ -67,7 +67,7 @@ struct TorrentMetadata: Decodable {
     let upload_payload_rate: Int
     let comment: String
     let eta: Double
-    let file_progress: [Double]
+    let file_progress: DelugeFileProgress
     let files: [FileMetadata]
     let is_seed: Bool
     let name: String
