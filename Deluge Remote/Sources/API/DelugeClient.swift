@@ -26,6 +26,8 @@ enum ClientError: Error {
     case uploadFailed
     case unableToParseTorrentInfo
     case failedToConvertTorrentToData
+    case noHostsExist
+    case hostNotOnline
 
     // swiftlint:disable:next cyclomatic_complexity
     func domain() -> String {
@@ -54,6 +56,10 @@ enum ClientError: Error {
             return "The Torrent Info could not be parsed"
         case .failedToConvertTorrentToData:
             return "Conversion from URL to Data failed"
+        case .hostNotOnline:
+            return "Unable to Connect to Host because Daemon is offline."
+        case .noHostsExist:
+            return "No Deluge Daemons are configured in the webUI."
         }
     }
 }
@@ -111,12 +117,40 @@ class DelugeClient {
         ]
         // Create custom manager
         let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 5 // 5 second timeout
         configuration.httpAdditionalHeaders = Alamofire.SessionManager.defaultHTTPHeaders
         Manager = Alamofire.SessionManager(
             configuration: configuration,
             serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
         )
         Manager.retrier = DelugeClientRequestRetrier()
+    }
+
+    func authenticateAndConnect() -> Promise<Void> {
+
+        return authenticate()
+            .then { [weak self] isValid -> Promise<[Host]> in
+                guard let self = self, isValid else {
+                    throw ClientError.incorrectPassword
+                }
+                return self.getHosts()
+            }.then { [weak self] host -> Promise<HostStatus> in
+                guard let self = self, let host = host.first else {
+                    throw ClientError.noHostsExist
+                }
+                return self.getHostStatus(for: host)
+            }.then { [weak self] host -> Promise<Void> in
+                guard let self = self else {
+                    throw ClientError.unexpectedError("Self does not exist")
+                }
+                if host.status == "Online" {
+                    return self.connect(to: host)
+                } else if host.status == "Connected" {
+                    return Promise<Void>()
+                } else {
+                    throw ClientError.hostNotOnline
+                }
+        }
     }
 
     /**
@@ -134,7 +168,7 @@ class DelugeClient {
      - ClientError.incorrectPassword if the server responds the responce was false
      
      */
-    func authenticate() -> Promise<Bool> {
+    private func authenticate() -> Promise<Bool> {
         let parameters: Parameters = [
             "id": arc4random(),
             "method": "auth.login",
@@ -209,30 +243,34 @@ class DelugeClient {
      - Returns: A `Promise` embedded with a TableViewTorrent
      */
     func getAllTorrents() -> Promise<[TorrentOverview]> {
+        let parameters: Parameters = [
+            "id": arc4random(),
+            "method": "core.get_torrents_status",
+            "params": [[], ["name", "hash", "upload_payload_rate", "download_payload_rate", "ratio",
+                            "progress", "total_wanted", "state", "tracker_host", "label", "eta",
+                            "total_size", "all_time_download", "total_uploaded"]]
+        ]
+
         return Promise { fulfill, reject in
 
-            let parameters: Parameters = [
-                "id": arc4random(),
-                "method": "core.get_torrents_status",
-                "params": [[], ["name", "hash", "upload_payload_rate", "download_payload_rate", "ratio",
-                                "progress", "total_wanted", "state", "tracker_host", "label", "eta",
-                                "total_size", "all_time_download", "total_uploaded"]]
-            ]
             Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                            encoding: JSONEncoding.default).validate().responseData(queue: utilityQueue) { response in
-                                switch response.result {
-                                case .success(let data):
+                            encoding: JSONEncoding.default)
+                .validate().responseData(queue: utilityQueue) { response in
+                    switch response.result {
+                    case .success(let data):
 
-                                    do {
-                                        let response = try JSONDecoder().decode(DelugeResponse<[String:TorrentOverview]>.self, from: data)
-                                        fulfill(Array(response.result.values))
-                                    } catch {
-                                        reject(ClientError.unableToParseTableViewTorrent)
-                                        Logger.error(error)
-                                    }
+                        do {
+                            let response = try JSONDecoder()
+                                .decode(DelugeResponse<[String:TorrentOverview]>.self, from: data)
+                            fulfill(Array(response.result.values))
+                        } catch {
+                            reject(ClientError.unableToParseTableViewTorrent)
+                            Logger.error(error)
+                        }
 
-                                case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
-                                }
+                    case .failure(let error):
+                        reject(ClientError.unexpectedError(error.localizedDescription))
+                    }
             }
         }
     }
@@ -608,6 +646,87 @@ class DelugeClient {
                     }
             }
         }
+    }
+
+    func getHosts() -> Promise<[Host]> {
+        let params: Parameters = [
+            "id": arc4random(),
+            "method": "web.get_hosts",
+            "params": []
+        ]
+
+        return Promise { fulfill, reject in
+            Manager.request(self.clientConfig.url, method: .post, parameters: params, encoding: JSONEncoding.default)
+                .validate().responseJSON(queue: utilityQueue) { response in
+                    switch response.result {
+                    case .failure(let error):
+                        reject(error)
+                    case .success(let json):
+                        guard
+                            let json = json as? JSON,
+                            let result = json["result"] as? [[Any]]
+                        else {
+                            reject(ClientError.unexpectedResponse)
+                            return
+                        }
+                        let hosts = result.compactMap { Host(jsonArray: $0) }
+                        fulfill(hosts)
+                    }
+            }
+
+        }
+    }
+
+    func getHostStatus(for host: Host) -> Promise<HostStatus> {
+        let params: Parameters = [
+            "id": arc4random(),
+            "method": "web.get_host_status",
+            "params": [host.id]
+        ]
+
+        return Promise { fulfill, reject in
+            Manager.request(self.clientConfig.url, method: .post, parameters: params, encoding: JSONEncoding.default)
+                .validate().responseJSON(queue: utilityQueue) { response in
+                    switch response.result {
+                    case .failure(let error):
+                        reject(error)
+                    case .success(let json):
+                        guard
+                            let json = json as? JSON,
+                            let result = json["result"] as? [Any],
+                            let status = HostStatus(jsonArray: result)
+                        else {
+                                reject(ClientError.unexpectedResponse)
+                                return
+                        }
+
+                        fulfill(status)
+                    }
+            }
+
+        }
+    }
+
+    func connect(to host: Host) -> Promise<Void> {
+        let params: Parameters = [
+            "id": arc4random(),
+            "method": "web.connect",
+            "params": [host.id]
+        ]
+
+        return Promise { fulfill, reject in
+            Manager.request(clientConfig.url, method: .post, parameters: params, encoding: JSONEncoding.default)
+                .validate().responseJSON(queue: utilityQueue) { response in
+                    switch response.result {
+                    case .failure(let error):
+                        reject(error)
+                    case .success:
+                        fulfill(())
+                    }
+            }
+
+        }
+
     }
 
     /**

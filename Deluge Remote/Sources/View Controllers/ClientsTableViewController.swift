@@ -6,6 +6,7 @@
 //  Copyright © 2016 Rudy Bermudez. All rights reserved.
 //
 
+import Houston
 import UIKit
 import Valet
 
@@ -34,6 +35,10 @@ class ClientsTableViewController: UITableViewController {
            showAddClientVC()
 
         }
+    }
+
+    deinit {
+        Logger.debug("Destroyed")
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -121,11 +126,13 @@ class ClientsTableViewController: UITableViewController {
                     self?.configs[index.row] = config
                     ClientManager.shared.activeClient = DelugeClient(config: config)
                     self?.navigationController?.popViewController(animated: true)
+                    self?.tableView.reloadData()
                 }
             } else {
                 vc.onConfigAdded = { [weak self] config in
                     self?.configs[index.row] = config
                     self?.navigationController?.popViewController(animated: true)
+                    self?.tableView.reloadData()
                 }
             }
             self.navigationController?.pushViewController(vc, animated: true)

@@ -22,6 +22,7 @@ class DelugeClientRequestRetrier: RequestRetrier {
 
         guard
             request.task?.response == nil,
+            error._code != NSURLErrorTimedOut,
             let url = request.request?.url?.absoluteString
         else {
             removeCachedUrlRequest(url: request.request?.url?.absoluteString)

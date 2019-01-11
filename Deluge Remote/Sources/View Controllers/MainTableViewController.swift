@@ -29,22 +29,7 @@ class MainTableViewController: UITableViewController {
         case Descending
     }
 
-    var activeSortKey = SortKey.Name
-    var activeOrderKey = Order.Ascending
-
-    // MARK: - Properties
-    let byteCountFormatter = ByteCountFormatter()
-    let searchController = UISearchController(searchResultsController: nil)
-
-    var tableViewDataSource: [TorrentOverview]?
-    var filteredTableViewDataSource = [TorrentOverview]()
-    var isHostOnline: Bool = false
-    var cancelNextRefresh = false
-    var shouldRefresh = true
-
-    var refreshDataTimer: Timer?
-    var refreshAuthTimer: Timer?
-
+    // MARK: - Views
     var dataTransferView: UIStackView = {
         let view = UIStackView(frame: CGRect(x: 0, y: 0, width: 170, height: 22))
         view.backgroundColor = UIColor.clear
@@ -54,7 +39,7 @@ class MainTableViewController: UITableViewController {
     var currentUploadSpeedLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 80, height: 11))
         label.font = label.font.withSize(11)
-        label.text = "↑ 0 KiB/s"
+        label.text = "↑ Zero KB/s"
         label.backgroundColor = UIColor.clear
         return label
     }()
@@ -62,23 +47,7 @@ class MainTableViewController: UITableViewController {
     var currentDownloadSpeedLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 11, width: 80, height: 11))
         label.font = label.font.withSize(11)
-        label.text = "↓ 0 KiB/s"
-        label.backgroundColor = UIColor.clear
-        return label
-    }()
-
-    var totalUploadLabel: UILabel = {
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 80, height: 11))
-        label.font = label.font.withSize(11)
-        label.text = "↑ 0 KiB"
-        label.backgroundColor = UIColor.clear
-        return label
-    }()
-
-    var totalDownloadLabel: UILabel = {
-        let label = UILabel(frame: CGRect(x: 0, y: 11, width: 80, height: 11))
-        label.font = label.font.withSize(11)
-        label.text = "↓ 0 KiB/s"
+        label.text = "↓ Zero KB/s"
         label.backgroundColor = UIColor.clear
         return label
     }()
@@ -99,6 +68,8 @@ class MainTableViewController: UITableViewController {
         label.autoresizingMask = UIViewAutoresizing.flexibleLeftMargin
         return label
     }()
+
+    // MARK: - IBOutlets
 
     @IBOutlet weak var resumeAllTorrentsBarButton: UIBarButtonItem!
     @IBAction func resumeAllTorrentsAction(_ sender: Any) {
@@ -122,6 +93,23 @@ class MainTableViewController: UITableViewController {
         showAlert(target: self, title: title, message: nil, style: .actionSheet, actionList: [sortBy, orderAs, cancel])
     }
 
+    // MARK: - Properties
+
+    var activeSortKey = SortKey.Name
+    var activeOrderKey = Order.Ascending
+    let byteCountFormatter = ByteCountFormatter()
+    let searchController = UISearchController(searchResultsController: nil)
+
+    var tableViewDataSource: [TorrentOverview]?
+    var filteredTableViewDataSource = [TorrentOverview]()
+
+    var isHostOnline: Bool = false
+
+    var executeNextStepTimer: Timer?
+
+    var shouldRefreshTableView = true
+    var allowDelayedExecutionOfNextStep = true
+
     // MARK: - UI Methods
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -138,16 +126,17 @@ class MainTableViewController: UITableViewController {
 
         self.initUploadDownloadLabels()
         statusHeader.frame = CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: 22)
+
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
         self.navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
+
         self.tableView.accessibilityScroll(UIAccessibilityScrollDirection.down)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateHeader),
-                                               name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
-
+        // Setup Notification Center
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleNewActiveClient),
                                                name: Notification.Name(ClientManager.NewActiveClientNotification),
                                                object: nil)
+
         NotificationCenter.default.addObserver(self, selector:
             #selector(self.handleAddTorrentNotification(notification:)),
                                                name: Notification.Name("AddTorrentNotification"), object: nil)
@@ -167,23 +156,16 @@ class MainTableViewController: UITableViewController {
         searchController.searchBar.scopeButtonTitles = ["All", "Name", "Hash", "Tracker"]
         searchController.searchBar.delegate = self
 
-        // Authenticate to Client
-        refreshAuthentication()
     }
 
     override func viewWillAppear(_ animated: Bool) {
-
-        // Authenticate to Client
-        refreshAuthentication()
-
-        // Begin Data Download
-        shouldRefresh = true
-        createRefreshDataTimer()
+        allowDelayedExecutionOfNextStep = true
+        executeNextStep()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
-        invalidateRefreshDataTimer()
-        invalidateRefreshAuthTimer()
+        allowDelayedExecutionOfNextStep = false
+        cancelDelayedExecuteNextStep()
     }
 
     override func didReceiveMemoryWarning() {
@@ -196,119 +178,86 @@ class MainTableViewController: UITableViewController {
         currentDataView.addArrangedSubview(currentUploadSpeedLabel)
         currentDataView.addArrangedSubview(currentDownloadSpeedLabel)
 
-        let totalDataView = UIStackView(frame: CGRect(x: 0, y: 0, width: 80, height: 22))
-        totalDataView.axis = .vertical
-        totalDataView.addArrangedSubview(totalUploadLabel)
-        totalDataView.addArrangedSubview(totalDownloadLabel)
-
-        //dataTransferView.spacing = 10
         dataTransferView.addArrangedSubview(currentDataView)
-        //dataTransferView.addArrangedSubview(totalDataView)
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dataTransferView)
     }
 
-    func createRefreshDataTimer() {
-        if !(refreshDataTimer?.isValid ?? false) {
-            refreshDataTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
-                self?.downloadNewData()
-                self?.updateSessionStats()
-            }
-            Logger.info("Created Refresh Data Timer")
-        }
-    }
-
-    func invalidateRefreshDataTimer() {
-        refreshDataTimer?.invalidate()
-        Logger.info("Invalidated Refresh Data Timer")
-    }
-
-    func createRefreshAuthTimer() {
-        if !(refreshAuthTimer?.isValid ?? false) {
-            refreshAuthTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
-                self?.refreshAuthentication()
-            }
-            Logger.info("Created Refresh Auth Timer")
-        }
-    }
-
-    func invalidateRefreshAuthTimer() {
-        refreshAuthTimer?.invalidate()
-        Logger.info("Invalidated Refresh Auth Timer")
-    }
-
-    func refreshAuthentication () {
-
-        if ClientManager.shared.activeClient == nil { return }
-
-        Logger.info("Began Auth Refresh")
-        DispatchQueue.main.async {
-            self.statusHeader.backgroundColor = UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0)
-            self.statusHeader.text = "Attempting Connection"
-        }
-
-        _ = ClientManager.shared.activeClient?.authenticate()
-            .then { [weak self] isAuthenticated -> Void in
-                self?.isHostOnline = isAuthenticated
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
-                self?.navigationItem.rightBarButtonItem?.isEnabled = isAuthenticated
-                self?.pauseAllTorrentsBarButton.isEnabled = isAuthenticated
-                self?.resumeAllTorrentsBarButton.isEnabled = isAuthenticated
-
-                if isAuthenticated {
-                    Logger.info("User Authenticated")
-                    self?.invalidateRefreshAuthTimer()
-                    self?.downloadNewData()
-                    self?.updateSessionStats()
-                } else {
-                    Logger.warning("Bad Credentials")
-                    DispatchQueue.main.async {
-                        self?.statusHeader.text = "Bad Credentials"
-                    }
-                    self?.invalidateRefreshAuthTimer()
-                    // TODO: Turn into a toast
-                    if let self = self {
-                        showAlert(target: self, title: "Authentication Error", message: "Invalid Password")
-                    }
-
+    func delayedExecuteNextStep() {
+        if allowDelayedExecutionOfNextStep {
+            if !(executeNextStepTimer?.isValid ?? false) {
+                executeNextStepTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
+                    self?.executeNextStep()
                 }
-            }.catch { error in
-                self.isHostOnline = false
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
-                if let error = error as? ClientError {
-                    Logger.error(error.domain())
-                    self.statusHeader.text = error.domain()
-                } else {
-                    Logger.error(error)
-                    self.statusHeader.text = error.localizedDescription
-                    //showAlert(target: self, title: "Error", message: error.localizedDescription)
-                }
+            } else {
+                Logger.warning("Prevented Redundant Delayed Next Step")
+            }
+        } else {
+            Logger.warning("Prevented Request for Delayed Next Step")
+        }
+    }
+
+    func cancelDelayedExecuteNextStep() {
+        Logger.info("Cancelling Delayed Execute of Next Step")
+        executeNextStepTimer?.invalidate()
+    }
+
+    func executeNextStep() {
+        if ClientManager.shared.activeClient == nil { return } // This will keep the timer from restarting
+
+        if isHostOnline {
+            downloadNewData()
+        } else {
+            refreshAuthentication()
         }
     }
 
     func handleNewActiveClient() {
         Logger.debug("New Client")
-        self.tableViewDataSource?.removeAll()
-        self.isHostOnline = false
-        self.navigationItem.rightBarButtonItem?.isEnabled = false
-        self.navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
+
+        isHostOnline = false
+        navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
+
+        // Reset UI
+        pauseAllTorrentsBarButton.isEnabled = false
+        resumeAllTorrentsBarButton.isEnabled = false
+        navigationItem.rightBarButtonItem?.isEnabled = false
+        currentDownloadSpeedLabel.text = "↓ Zero KB/s"
+        currentUploadSpeedLabel.text = "↑ Zero KB/s"
+        tableViewDataSource?.removeAll()
         reloadTableView()
-        refreshAuthentication()
+        updateHeader()
+
+        executeNextStep()
     }
 
-    func updateHeader() {
+    func updateHeader(with customMsg: String? = nil, isError: Bool = false, color: UIColor? = nil) {
         guard ClientManager.shared.activeClient != nil else {
-            self.statusHeader.text = "No Active Config"
-            self.statusHeader.backgroundColor = UIColor(red: 0.98, green: 0.196, blue: 0.196, alpha: 0.85)
+            statusHeader.text = "No Active Config"
+            statusHeader.backgroundColor = UIColor(red: 0.98, green: 0.196, blue: 0.196, alpha: 0.85)
             return
         }
-        if isHostOnline {
-            self.statusHeader.text = "Host Online"
-            self.statusHeader.backgroundColor = UIColor(red: 0.302, green: 0.584, blue: 0.772, alpha: 0.85)
+
+        if let headerText = customMsg {
+            self.statusHeader.text = headerText
+            if let color = color {
+                self.statusHeader.backgroundColor = color
+            } else {
+                if isError {
+                    statusHeader.backgroundColor = UIColor(red: 0.98, green: 0.196, blue: 0.196, alpha: 0.85)
+                } else {
+                    statusHeader.backgroundColor = UIColor(red: 0.302, green: 0.584, blue: 0.772, alpha: 0.85)
+                }
+            }
+
         } else {
-            self.statusHeader.text = "Host Offline"
-            self.statusHeader.backgroundColor = UIColor(red: 0.98, green: 0.196, blue: 0.196, alpha: 0.85)
+            if isHostOnline {
+                statusHeader.text = "Host Online"
+                statusHeader.backgroundColor = UIColor(red: 0.302, green: 0.584, blue: 0.772, alpha: 0.85)
+            } else {
+                statusHeader.text =  "Host Offline"
+                statusHeader.backgroundColor = UIColor(red: 0.98, green: 0.196, blue: 0.196, alpha: 0.85)
+            }
         }
     }
 
@@ -331,6 +280,8 @@ class MainTableViewController: UITableViewController {
     }
 
     func reloadTableView() {
+
+        if !shouldRefreshTableView { return }
 
         DispatchQueue.global(qos: .userInteractive).async {
             self.tableViewDataSource = self.tableViewDataSource?.sort(by: self.activeSortKey, self.activeOrderKey)
@@ -385,78 +336,135 @@ class MainTableViewController: UITableViewController {
 
     // MARK: - Deluge UI Wrapper Methods
 
-    func updateSessionStats() {
-        if !isHostOnline { return }
-        ClientManager.shared.activeClient?.getSessionStatus().then { status -> Void in
-            DispatchQueue.main.async {
-                self.currentDownloadSpeedLabel.text = "↓ \(status.payload_download_rate.transferRateString())"
-                self.currentUploadSpeedLabel.text = "↑ \(status.payload_upload_rate.transferRateString())"
-                self.totalDownloadLabel.text = "↓ \(status.total_payload_download.sizeString())"
-                self.totalUploadLabel.text = "↑ \(status.total_payload_upload.sizeString())"
-            }
-            }.catch { _ in
-                DispatchQueue.main.async {
-                    self.currentDownloadSpeedLabel.text = "↓ 0 KiB/s"
-                    self.currentUploadSpeedLabel.text = "↑ 0 KiB/s"
-                    self.totalDownloadLabel.text = "↓ 0 KiB"
-                    self.totalUploadLabel.text = "↑ 0 KiB"
+    func refreshAuthentication () {
+
+        guard let client = ClientManager.shared.activeClient else { return }
+        Logger.info("Began Auth Refresh")
+
+        firstly {
+            client.authenticateAndConnect()
+        }.then { [weak self] _ -> Void in
+            Logger.info("User Authenticated")
+            self?.isHostOnline = true
+
+            // Enable UI Components
+            self?.navigationItem.rightBarButtonItem?.isEnabled = true
+            self?.pauseAllTorrentsBarButton.isEnabled = true
+            self?.resumeAllTorrentsBarButton.isEnabled = true
+
+            self?.updateHeader()
+            self?.executeNextStep()
+        }.catch { [weak self] error in
+            self?.isHostOnline = false
+
+            // Disable UI Components
+            self?.pauseAllTorrentsBarButton.isEnabled = false
+            self?.resumeAllTorrentsBarButton.isEnabled = false
+            self?.navigationItem.rightBarButtonItem?.isEnabled = false
+
+            self?.currentDownloadSpeedLabel.text = "↓ Zero KB/s"
+            self?.currentUploadSpeedLabel.text = "↑ Zero KB/s"
+
+            self?.tableViewDataSource?.removeAll()
+            self?.reloadTableView()
+
+            self?.delayedExecuteNextStep()
+
+            var errorMsg = ""
+            if let error = error as? ClientError {
+                switch error {
+                case .incorrectPassword:
+                    errorMsg = "Incorrect Password"
+                    self?.cancelDelayedExecuteNextStep() // No Point for the next step to process
+                case .noHostsExist:
+                    errorMsg = "No Hosts Configured for WebUI"
+                case .hostNotOnline:
+                    errorMsg = "Default Daemon for WebUI Offline"
+                default:
+                    errorMsg = "Host Offline"
                 }
+                Logger.error(error.domain())
+            } else {
+                Logger.error(error)
+                errorMsg = error.localizedDescription
+            }
+
+            self?.updateHeader(with: errorMsg, isError: true)
+
         }
     }
 
     func downloadNewData() {
+
+        guard let client = ClientManager.shared.activeClient else { return }
         Logger.verbose("Attempting to get all torrents")
-        if !isHostOnline {
-            Logger.info("Host not online")
-            createRefreshAuthTimer()
-            return
-        }
-        ClientManager.shared.activeClient?.getAllTorrents().then { [weak self] tableViewData -> Void in
+
+        firstly {
+            client.getAllTorrents()
+        }.then { [weak self] data -> Void in
+            self?.tableViewDataSource = data
+            self?.reloadTableView()
+        }.then {
+              client.getSessionStatus()
+        }.then { [weak self] status -> Void in
+            self?.currentDownloadSpeedLabel.text = "↓ \(status.payload_download_rate.transferRateString())"
+            self?.currentUploadSpeedLabel.text = "↑ \(status.payload_upload_rate.transferRateString())"
+        }.then { [weak self] _ -> Void in
+            self?.updateHeader()
+            self?.delayedExecuteNextStep()
+        }.catch { [weak self] error in
             guard let self = self else { return }
-            DispatchQueue.main.async {
-                Logger.verbose("Torrent Data Successfully Downloaded")
-                self.tableViewDataSource = tableViewData
-                self.reloadTableView()
+
+            self.isHostOnline = false
+
+            // Disable UI Components
+            self.pauseAllTorrentsBarButton.isEnabled = false
+            self.resumeAllTorrentsBarButton.isEnabled = false
+            self.navigationItem.rightBarButtonItem?.isEnabled = false
+
+            self.currentDownloadSpeedLabel.text = "↓ Zero KB/s"
+            self.currentUploadSpeedLabel.text = "↑ Zero KB/s"
+
+            self.tableViewDataSource?.removeAll()
+            self.reloadTableView()
+
+            self.updateHeader()
+
+            if let error = error as? ClientError {
+                Logger.error(error.domain())
+                showAlert(target: self, title: "Error", message: error.domain())
+            } else {
+                Logger.error(error)
+                showAlert(target: self, title: "Error", message: error.localizedDescription)
             }
-            }.catch { error in
-                self.isHostOnline = false
-                self.pauseAllTorrentsBarButton.isEnabled = false
-                self.resumeAllTorrentsBarButton.isEnabled = false
-                self.navigationItem.rightBarButtonItem?.isEnabled = false
-                self.tableViewDataSource?.removeAll()
-                self.reloadTableView()
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateStatusHeader"), object: nil)
-                if let error = error as? ClientError {
-                    Logger.error(error.domain())
-                    showAlert(target: self, title: "Error", message: error.domain())
-                } else {
-                    Logger.error(error)
-                    showAlert(target: self, title: "Error", message: error.localizedDescription)
-                }
+
+            self.executeNextStep() // Immediately execute the next step
         }
     }
 
     func pauseAllTorrents() {
-        ClientManager.shared.activeClient?.pauseAllTorrents { result in
+        ClientManager.shared.activeClient?.pauseAllTorrents { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success:
-                // TODO: HUD Here
-                Logger.debug("All Torrents Paused")
+                self.view.showHUD(title: "Successfully Paused")
+                Logger.verbose("All Torrents Paused Successfully")
             case .failure(let error):
-                // TODO: HUD Here
+                self.view.showHUD(title: "Failed to Pause All Torrents", type: .failure)
                 Logger.error(error)
             }
         }
     }
 
     func resumeAllTorrents() {
-        ClientManager.shared.activeClient?.resumeAllTorrents { result in
+        ClientManager.shared.activeClient?.resumeAllTorrents { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success:
-                // TODO: HUD Here
-                Logger.debug("All Torrents Resumed")
+                self.view.showHUD(title: "Successfully Resumed")
+                Logger.verbose("All Torrents Resumed")
             case .failure(let error):
-                // TODO: HUD Here
+                self.view.showHUD(title: "Failed to Resume All Torrents", type: .failure)
                 Logger.error(error)
             }
         }
@@ -487,7 +495,7 @@ class MainTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return self.shouldRefresh ? self.statusHeader : nil
+        return self.statusHeader
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -542,8 +550,11 @@ class MainTableViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
+    override func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
+        shouldRefreshTableView = false
+    }
     override func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
-        cancelNextRefresh = false
+        shouldRefreshTableView = true
     }
 
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -673,7 +684,6 @@ extension MainTableViewController: UISearchResultsUpdating {
                     $0.tracker_host.lowercased().contains(searchText.lowercased())
                 } ?? []
         }
-        // TODO: Sort the Filtered Data
         tableView.reloadData()
     }
 

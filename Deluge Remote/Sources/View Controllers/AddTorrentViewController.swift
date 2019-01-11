@@ -67,7 +67,7 @@ class AddTorrentViewController: FormViewController {
     }
 
     deinit {
-        Logger.info("Destroyed")
+        Logger.debug("Destroyed")
     }
 
     func handleFormConfigurationFor(fileURL: URL) {

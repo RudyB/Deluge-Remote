@@ -6,6 +6,7 @@
 //  Copyright © 2016 Rudy Bermudez. All rights reserved.
 //
 
+import Houston
 import MBProgressHUD
 import UIKit
 
@@ -60,19 +61,14 @@ class AddClientViewController: UITableViewController {
                                           password: password, isHTTP: !sslEnabled)
 
             tempClient = DelugeClient(config: tempConfig)
-            tempClient?.authenticate()
-                .then { [weak self] isValidScheme -> Void in
+            tempClient?.authenticateAndConnect()
+                .then { [weak self] _ -> Void in
                     guard let self = self else { return }
                     DispatchQueue.main.async {
                         MBProgressHUD.hide(for: self.view, animated: true)
-
-                        if isValidScheme {
-                            self.view.showHUD(title: "Valid Configuration")
-                            self.config = tempConfig
-                            self.navigationItem.rightBarButtonItem?.isEnabled = true
-                        } else {
-                            showAlert(target: self, title: "Unable to Authenticate", message: "Invalid Password")
-                        }
+                        self.view.showHUD(title: "Valid Configuration")
+                        self.config = tempConfig
+                        self.navigationItem.rightBarButtonItem?.isEnabled = true
                     }
 
                 }.catch { [weak self] error in
@@ -98,6 +94,10 @@ class AddClientViewController: UITableViewController {
 
     var config: ClientConfig?
     var tempClient: DelugeClient?
+
+    deinit {
+        Logger.debug("Destroyed")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()

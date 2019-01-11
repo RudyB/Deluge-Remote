@@ -28,6 +28,7 @@ class DetailedTorrentViewController: FormViewController {
         case prioritizeFirstLastPieces = "prioritize_first_last_pieces"
     }
 
+    // MARK: - IBOutlets
     @IBOutlet weak var deleteItem: UIBarButtonItem!
     @IBOutlet weak var playPauseItem: UIBarButtonItem!
 
@@ -110,14 +111,17 @@ class DetailedTorrentViewController: FormViewController {
 
     }
 
+    // MARK: - Properties
     var torrentData: TorrentMetadata?
     var torrentHash: String?
 
     var refreshTimer: Timer?
 
     deinit {
-        Logger.info("Destroyed")
+        Logger.debug("Destroyed")
     }
+
+    // MARK: - View Related Methods
 
     override func viewDidLoad() {
         super.viewDidLoad()
