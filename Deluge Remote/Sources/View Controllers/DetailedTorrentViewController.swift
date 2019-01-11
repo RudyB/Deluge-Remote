@@ -401,14 +401,18 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Comments"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                $0.cell.detailTextLabel?.text = torrentData?.comment
                 $0.cell.row.hidden = Condition(booleanLiteral: torrentData?.comment.isEmpty ?? true)
                 }.cellUpdate { [weak self] cell, _ in
                     if let torrentData = self?.torrentData {
-                        cell.row.hidden = Condition(booleanLiteral: torrentData.comment.isEmpty)
-                        cell.row.evaluateHidden()
-                        cell.detailTextLabel?.text = torrentData.comment
-                        cell.height = self?.computeCellHeight(for: cell)
+                        DispatchQueue.main.async {
+                            cell.row.value = torrentData.comment
+                            cell.height = self?.computeCellHeight(for: cell)
+                            cell.row.hidden = Condition(booleanLiteral: torrentData.comment.isEmpty)
+
+                            if cell.row.isHidden != torrentData.comment.isEmpty {
+                                cell.row.evaluateHidden()
+                            }
+                        }
                     }
         }
 
@@ -701,8 +705,11 @@ class DetailedTorrentViewController: FormViewController {
 
             self?.torrentData = torrent
             self?.playPauseItem.image = torrent.paused ?  #imageLiteral(resourceName: "play_filled") : #imageLiteral(resourceName: "icons8-pause")
-            DispatchQueue.main.async {
-                self?.form.allRows.forEach { $0.updateCell() }
+
+            self?.form.allRows.forEach { row in
+                DispatchQueue.main.async {
+                    row.updateCell()
+                }
             }
 
             }.catch { [weak self] error in
