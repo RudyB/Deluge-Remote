@@ -82,12 +82,13 @@ class DetailedTorrentViewController: FormViewController {
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
+                        self.view.showHUD(title: "Successfully Resumed Torrent")
                         UIView.animate(withDuration: 1.0) {
                             self.playPauseItem.image = #imageLiteral(resourceName: "icons8-pause")
                         }
 
                     case .failure:
-                        showAlert(target: self, title: "Failed To Resume Torrent")
+                        self.view.showHUD(title: "Failed To Resume Torrent", type: .failure)
                     }
                 }
 
@@ -98,12 +99,13 @@ class DetailedTorrentViewController: FormViewController {
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
+                        self.view.showHUD(title: "Successfully Paused Torrent")
                         UIView.animate(withDuration: 1.0) {
                             self.playPauseItem.image = #imageLiteral(resourceName: "play_filled")
                         }
 
                     case .failure:
-                        showAlert(target: self, title: "Failed to Pause Torrent")
+                        self.view.showHUD(title: "Failed to Pause Torrent", type: .failure)
                     }
                 }
             }

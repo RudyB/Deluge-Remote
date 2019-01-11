@@ -22,6 +22,7 @@ class MainTableViewController: UITableViewController {
         case UploadSpeed = "Upload Speed"
         case TotalDownload = "Total Download"
         case TotalUpload = "Total Upload"
+        case DateAdded = "Date Added"
     }
 
     enum Order: String, CaseIterable {
@@ -79,7 +80,7 @@ class MainTableViewController: UITableViewController {
     @IBAction func pauseAllTorrentsAction(_ sender: Any) {
         (isHostOnline == true) ? self.pauseAllTorrents() : ()
     }
-    @IBAction func displaySortMenu(_ sender: UIBarButtonItem) {
+    @IBAction func displayOrganizeMenu(_ sender: UIBarButtonItem) {
 
         let title = "Sorted by: \(activeSortKey.rawValue) (\(activeOrderKey.rawValue))"
         let orderAs = UIAlertAction(title: "Order As", style: .default) { [weak self] _ in
@@ -114,6 +115,7 @@ class MainTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Load the user's last sort key and order Key
         if let sortKeyString = UserDefaults.standard.string(forKey: "SortKey"),
             let sortKey = SortKey(rawValue: sortKeyString) {
             self.activeSortKey = sortKey
@@ -143,7 +145,6 @@ class MainTableViewController: UITableViewController {
         NewTorrentNotifier.shared.didMainTableVCCreateObserver = true
 
         // Setup the Search Controller
-        searchController.delegate = self
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = true
@@ -183,54 +184,6 @@ class MainTableViewController: UITableViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dataTransferView)
     }
 
-    func delayedExecuteNextStep() {
-        if allowDelayedExecutionOfNextStep {
-            if !(executeNextStepTimer?.isValid ?? false) {
-                executeNextStepTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
-                    self?.executeNextStep()
-                }
-            } else {
-                Logger.warning("Prevented Redundant Delayed Next Step")
-            }
-        } else {
-            Logger.warning("Prevented Request for Delayed Next Step")
-        }
-    }
-
-    func cancelDelayedExecuteNextStep() {
-        Logger.info("Cancelling Delayed Execute of Next Step")
-        executeNextStepTimer?.invalidate()
-    }
-
-    func executeNextStep() {
-        if ClientManager.shared.activeClient == nil { return } // This will keep the timer from restarting
-
-        if isHostOnline {
-            downloadNewData()
-        } else {
-            refreshAuthentication()
-        }
-    }
-
-    func handleNewActiveClient() {
-        Logger.debug("New Client")
-
-        isHostOnline = false
-        navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
-
-        // Reset UI
-        pauseAllTorrentsBarButton.isEnabled = false
-        resumeAllTorrentsBarButton.isEnabled = false
-        navigationItem.rightBarButtonItem?.isEnabled = false
-        currentDownloadSpeedLabel.text = "↓ Zero KB/s"
-        currentUploadSpeedLabel.text = "↑ Zero KB/s"
-        tableViewDataSource?.removeAll()
-        reloadTableView()
-        updateHeader()
-
-        executeNextStep()
-    }
-
     func updateHeader(with customMsg: String? = nil, isError: Bool = false, color: UIColor? = nil) {
         guard ClientManager.shared.activeClient != nil else {
             statusHeader.text = "No Active Config"
@@ -257,24 +210,6 @@ class MainTableViewController: UITableViewController {
             } else {
                 statusHeader.text =  "Host Offline"
                 statusHeader.backgroundColor = UIColor(red: 0.98, green: 0.196, blue: 0.196, alpha: 0.85)
-            }
-        }
-    }
-
-    func handleAddTorrentNotification(notification: NSNotification) {
-        NewTorrentNotifier.shared.userInfo = nil
-        guard
-            let userInfo = notification.userInfo,
-            userInfo["url"] as? URL != nil,
-            userInfo["isFileURL"] as? Bool != nil
-            else { return }
-
-        if ClientManager.shared.activeClient != nil {
-            self.performSegue(withIdentifier: "addTorrentSegue", sender: userInfo)
-        } else {
-            DispatchQueue.main.async {
-                showAlert(target: self, title: "Error",
-                          message: "You cannot add a torrent without an active configuration")
             }
         }
     }
@@ -334,12 +269,84 @@ class MainTableViewController: UITableViewController {
                   style: .actionSheet, actionList: actions)
     }
 
+    // MARK: - Helper Functions
+
+    func handleAddTorrentNotification(notification: NSNotification) {
+        NewTorrentNotifier.shared.userInfo = nil
+        guard
+            let userInfo = notification.userInfo,
+            userInfo["url"] as? URL != nil,
+            userInfo["isFileURL"] as? Bool != nil
+            else { return }
+
+        if ClientManager.shared.activeClient != nil {
+            self.performSegue(withIdentifier: "addTorrentSegue", sender: userInfo)
+        } else {
+            DispatchQueue.main.async {
+                showAlert(target: self, title: "Error",
+                          message: "You cannot add a torrent without an active configuration")
+            }
+        }
+    }
+
+    func delayedExecuteNextStep() {
+        if allowDelayedExecutionOfNextStep {
+            if !(executeNextStepTimer?.isValid ?? false) {
+                executeNextStepTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
+                    self?.executeNextStep()
+                }
+            } else {
+                Logger.warning("Prevented Redundant Delayed Next Step")
+            }
+        } else {
+            Logger.warning("Prevented Request for Delayed Next Step")
+        }
+    }
+
+    func cancelDelayedExecuteNextStep() {
+        Logger.info("Cancelling Delayed Execute of Next Step")
+        executeNextStepTimer?.invalidate()
+    }
+
+    func executeNextStep() {
+        if ClientManager.shared.activeClient == nil { return } // This will keep the timer from restarting
+
+        if isHostOnline {
+            downloadNewData()
+        } else {
+            refreshAuthentication()
+        }
+    }
+
+    func handleNewActiveClient() {
+        Logger.debug("New Client")
+
+        isHostOnline = false
+        navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
+
+        // Reset UI
+        pauseAllTorrentsBarButton.isEnabled = false
+        resumeAllTorrentsBarButton.isEnabled = false
+        navigationItem.rightBarButtonItem?.isEnabled = false
+        currentDownloadSpeedLabel.text = "↓ Zero KB/s"
+        currentUploadSpeedLabel.text = "↑ Zero KB/s"
+        tableViewDataSource?.removeAll()
+        reloadTableView()
+        updateHeader()
+
+        executeNextStep()
+    }
+
     // MARK: - Deluge UI Wrapper Methods
 
     func refreshAuthentication () {
+        // swiftlint:disable:previous function_body_length
 
         guard let client = ClientManager.shared.activeClient else { return }
         Logger.info("Began Auth Refresh")
+
+        updateHeader(with: "Attempting Connection",
+                     color: UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0))
 
         firstly {
             client.authenticateAndConnect()
@@ -368,7 +375,7 @@ class MainTableViewController: UITableViewController {
             self?.tableViewDataSource?.removeAll()
             self?.reloadTableView()
 
-            self?.delayedExecuteNextStep()
+            self?.delayedExecuteNextStep() // Queue delayed exec. of next step
 
             var errorMsg = ""
             if let error = error as? ClientError {
@@ -390,7 +397,6 @@ class MainTableViewController: UITableViewController {
             }
 
             self?.updateHeader(with: errorMsg, isError: true)
-
         }
     }
 
@@ -470,20 +476,6 @@ class MainTableViewController: UITableViewController {
         }
     }
 
-    func removeTorrent(withHash hash: String, removeData: Bool, onSuccess: @escaping () -> Void) {
-        ClientManager.shared.activeClient?.removeTorrent(withHash: hash, removeData: removeData).then { _ -> Void in
-            onSuccess()
-            }.catch { error in
-                if let error = error as? ClientError {
-                    Logger.error(error.domain())
-                    showAlert(target: self, title: "Error", message: error.domain())
-                } else {
-                    Logger.error(error)
-                    showAlert(target: self, title: "Error", message: error.localizedDescription)
-                }
-        }
-    }
-
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -505,8 +497,9 @@ class MainTableViewController: UITableViewController {
 
         if isFiltering() {
             return filteredTableViewDataSource.count
+        } else {
+            return tableViewDataSource.count
         }
-        return tableViewDataSource.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -567,9 +560,11 @@ class MainTableViewController: UITableViewController {
             // handle delete (by removing the data from your array and updating the tableview)
             if let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell {
 
-                let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { _ in
-                    self.removeTorrent(withHash: cell.torrentHash, removeData: false) {
-                        DispatchQueue.main.async {
+                let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { [weak self] _ in
+
+                    ClientManager.shared.activeClient?.removeTorrent(withHash: cell.torrentHash, removeData: false)
+                        .then { [weak self] _ -> Void in
+                            guard let self = self else { return }
                             if self.isFiltering() {
                                 self.tableViewDataSource?.removeAll {
                                     $0 == self.filteredTableViewDataSource[indexPath.row]
@@ -581,13 +576,19 @@ class MainTableViewController: UITableViewController {
                                 tableView.deleteRows(at: [indexPath], with: .fade)
                             }
                             self.tableView.setEditing(false, animated: true)
+                            self.view.showHUD(title: "Torrent Successfully Deleted")
                         }
-                    }
-                }
+                        .catch { [weak self] error in
+                            self?.view.showHUD(title: "Failed to Delete Torrent", type: .failure)
+                        }
 
-                let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { _ in
-                    self.removeTorrent(withHash: cell.torrentHash, removeData: true) {
-                        DispatchQueue.main.async {
+                    }
+
+                let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { [weak self] _ in
+
+                    ClientManager.shared.activeClient?.removeTorrent(withHash: cell.torrentHash, removeData: false)
+                        .then { [weak self] _ -> Void in
+                            guard let self = self else { return }
                             if self.isFiltering() {
                                 self.tableViewDataSource?.removeAll {
                                     $0 == self.filteredTableViewDataSource[indexPath.row]
@@ -599,12 +600,15 @@ class MainTableViewController: UITableViewController {
                                 tableView.deleteRows(at: [indexPath], with: .fade)
                             }
                             self.tableView.setEditing(false, animated: true)
+                            self.view.showHUD(title: "Torrent Successfully Deleted")
                         }
+                        .catch { [weak self] error in
+                            self?.view.showHUD(title: "Failed to Delete Torrent", type: .failure)
                     }
-
                 }
-                let cancel = UIAlertAction(title: "Cancel", style: .cancel) { _ in
-                    self.tableView.setEditing(false, animated: true)
+
+                let cancel = UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
+                    self?.tableView.setEditing(false, animated: true)
                 }
 
                 showAlert(target: self, title: "Remove the selected Torrent?",
@@ -650,8 +654,6 @@ class MainTableViewController: UITableViewController {
 
 // MARK: - UISearchResultsUpdating Extension
 extension MainTableViewController: UISearchResultsUpdating {
-
-    // MARK: - Private instance methods
 
     func isFiltering() -> Bool {
         let searchBarScopeIsFiltering = searchController.searchBar.selectedScopeButtonIndex != 0
@@ -702,10 +704,7 @@ extension MainTableViewController: UISearchBarDelegate {
     }
 }
 
-extension MainTableViewController: UISearchControllerDelegate {
-
-}
-
+// MARK: - Extension for sorting torrents
 extension Array where Iterator.Element == TorrentOverview {
     func sort(by sortKey: MainTableViewController.SortKey,
               _ order: MainTableViewController.Order = .Ascending) -> [TorrentOverview] {
@@ -744,6 +743,10 @@ extension Array where Iterator.Element == TorrentOverview {
         case .State:
             sortedContent = self.sorted {
                 ($0.state.lowercased(), $0.name.lowercased()) < ($1.state.lowercased(), $1.name.lowercased())
+            }
+        case .DateAdded:
+            sortedContent = self.sorted {
+                ($0.time_added, $0.name.lowercased()) < ($1.time_added, $1.name.lowercased())
             }
         }
 

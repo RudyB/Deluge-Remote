@@ -248,7 +248,7 @@ class DelugeClient {
             "method": "core.get_torrents_status",
             "params": [[], ["name", "hash", "upload_payload_rate", "download_payload_rate", "ratio",
                             "progress", "total_wanted", "state", "tracker_host", "label", "eta",
-                            "total_size", "all_time_download", "total_uploaded"]]
+                            "total_size", "all_time_download", "total_uploaded", "time_added"]]
         ]
 
         return Promise { fulfill, reject in
@@ -395,7 +395,7 @@ class DelugeClient {
      
      - Returns:  `Promise<Bool>`. If successful, bool will always be true.
      */
-    func removeTorrent(withHash hash: String, removeData: Bool) -> Promise <Bool> {
+    func removeTorrent(withHash hash: String, removeData: Bool) -> Promise <Void> {
         return Promise { fulfill, reject in
             let parameters: Parameters = [
                 "id": arc4random(),
@@ -403,17 +403,18 @@ class DelugeClient {
                 "params": [hash, removeData]
             ]
             Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                            encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
-                                switch response.result {
-                                case .success(let data):
-                                    guard let json = data as? JSON, let result = json["result"] as? Bool else {
-                                        reject(ClientError.unexpectedResponse)
-                                        break
-                                    }
-                                    (result == true) ? fulfill(result) : reject(ClientError.unableToDeleteTorrent)
-                                case .failure(let error):
-                                    reject(ClientError.unexpectedError(error.localizedDescription))
-                                }
+                            encoding: JSONEncoding.default)
+                .validate().responseJSON(queue: utilityQueue) { response in
+                    switch response.result {
+                    case .success(let data):
+                        guard let json = data as? JSON, let result = json["result"] as? Bool else {
+                            reject(ClientError.unexpectedResponse)
+                            break
+                        }
+                        (result == true) ? fulfill(()) : reject(ClientError.unableToDeleteTorrent)
+                    case .failure(let error):
+                        reject(ClientError.unexpectedError(error.localizedDescription))
+                    }
             }
         }
     }

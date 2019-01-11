@@ -23,6 +23,7 @@ struct TorrentOverview: Decodable, Equatable {
 	let state: String
 	let tracker_host: String
 	let label: String?
+    let time_added: Double
 	let eta: Double
     let total_size: Int
     let all_time_download: Int
