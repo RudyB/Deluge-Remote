@@ -418,6 +418,7 @@ class DetailedTorrentViewController: FormViewController {
 
                         cell.detailTextLabel?.text = torrentData.comment
                     }
+                    row.reload()
         }
     }
 
