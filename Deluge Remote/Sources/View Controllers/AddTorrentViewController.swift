@@ -31,7 +31,8 @@ class AddTorrentViewController: FormViewController {
         case torrentType
         case magnetURL
         // Torrent Config
-        case configSection
+        case bandwidthConfig
+        case queueConfig
         case addPaused
         case maxDownloadSpeed
         case maxUploadSpeed
@@ -216,83 +217,8 @@ class AddTorrentViewController: FormViewController {
                 $0.cell.textLabel?.adjustsFontSizeToFitWidth = true
         }
 
-        form +++ Section("Torrent Configuration") {
-            $0.tag = CodingKeys.configSection.rawValue
-            }
-            <<< TextRow {
-                $0.title = "Download Location"
-                $0.tag = CodingKeys.downloadLocation.rawValue
-                $0.value = defaultConfig?.downloadLocation
-                $0.add(rule: RuleRequired())
-                $0.validationOptions = .validatesOnChange
-                }.onChange { [weak self] row in
-                    if let value = row.value {
-                        self?.defaultConfig?.downloadLocation = value
-                    }
-                }.cellUpdate { [weak self] cell, row in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
-                    if !row.wasChanged {
-                        row.value = self?.defaultConfig?.downloadLocation
-                        row.cell.textField?.text = self?.defaultConfig?.downloadLocation
-                    }
-
-            }
-            <<< SwitchRow {
-                $0.title = "Move Completed"
-                $0.tag = CodingKeys.moveCompleted.rawValue
-                $0.value = defaultConfig?.moveCompleted
-                }.onChange { [weak self] row in
-                    if let value = row.value {
-                        self?.defaultConfig?.moveCompleted = value
-                    }
-                }.cellUpdate { [weak self] _, row in
-                    row.value = self?.defaultConfig?.moveCompleted
-                    if let moveComplete = self?.defaultConfig?.moveCompleted {
-                        row.cell.switchControl.setOn(moveComplete, animated: true)
-                    }
-            }
-
-            <<< TextRow {
-                $0.title = "Move Completed Path"
-                $0.tag = defaultConfig?.moveCompletedPath
-                $0.value = defaultConfig?.moveCompletedPath
-                $0.add(rule: RuleRequired())
-                $0.validationOptions = .validatesOnChange
-                $0.hidden = Condition.function([CodingKeys.moveCompleted.rawValue]) { form in
-                    return !((form.rowBy(tag: CodingKeys.moveCompleted.rawValue) as? SwitchRow)?.value ?? false)
-                }
-                }.onChange { [weak self] row in
-                    if let value = row.value {
-                        self?.defaultConfig?.moveCompletedPath = value
-                    }
-                }.cellUpdate { [weak self] cell, row in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
-                    if !row.wasChanged {
-                        row.value = self?.defaultConfig?.moveCompletedPath
-                        row.cell.textField?.text = self?.defaultConfig?.moveCompletedPath
-                    }
-
-            }
-
-            <<< IntRow {
-                $0.title = "Max Upload Speed (KiB/s)"
-                $0.value = defaultConfig?.maxUploadSpeed
-                $0.cell.textField.keyboardType = .numbersAndPunctuation
-                $0.add(rule: RuleRequired())
-                $0.validationOptions = .validatesOnChange
-                }.onChange { [weak self] row in
-                    if let value = row.value {
-                        self?.defaultConfig?.maxUploadSpeed = value
-                    }
-                }.cellUpdate { [weak self] cell, row in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
-                    if !row.wasChanged {
-                        if let speed = self?.defaultConfig?.maxUploadSpeed {
-                            row.cell.textField?.text = "\(speed)"
-                            row.value = self?.defaultConfig?.maxUploadSpeed
-                        }
-                    }
-
+        form +++ Section("Bandwidth Config") {
+            $0.tag = CodingKeys.bandwidthConfig.rawValue
             }
 
             <<< IntRow {
@@ -314,6 +240,27 @@ class AddTorrentViewController: FormViewController {
                             row.value = self?.defaultConfig?.maxDownloadSpeed
                         }
                     }
+            }
+
+            <<< IntRow {
+                $0.title = "Max Upload Speed (KiB/s)"
+                $0.value = defaultConfig?.maxUploadSpeed
+                $0.cell.textField.keyboardType = .numbersAndPunctuation
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
+                }.onChange { [weak self] row in
+                    if let value = row.value {
+                        self?.defaultConfig?.maxUploadSpeed = value
+                    }
+                }.cellUpdate { [weak self] cell, row in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    if !row.wasChanged {
+                        if let speed = self?.defaultConfig?.maxUploadSpeed {
+                            row.cell.textField?.text = "\(speed)"
+                            row.value = self?.defaultConfig?.maxUploadSpeed
+                        }
+                    }
+
             }
 
             <<< IntRow {
@@ -354,6 +301,64 @@ class AddTorrentViewController: FormViewController {
                             row.cell.textField?.text = "\(slots)"
                             row.value = self?.defaultConfig?.maxUploadSlots
                         }
+                    }
+
+        }
+
+        form +++ Section("Queue Configuration") {
+            $0.tag = CodingKeys.queueConfig.rawValue
+            }
+            <<< TextRow {
+                $0.title = "Download Location"
+                $0.tag = CodingKeys.downloadLocation.rawValue
+                $0.value = defaultConfig?.downloadLocation
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
+                }.onChange { [weak self] row in
+                    if let value = row.value {
+                        self?.defaultConfig?.downloadLocation = value
+                    }
+                }.cellUpdate { [weak self] cell, row in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    if !row.wasChanged {
+                        row.value = self?.defaultConfig?.downloadLocation
+                        row.cell.textField?.text = self?.defaultConfig?.downloadLocation
+                    }
+
+            }
+            <<< SwitchRow {
+                $0.title = "Move Completed"
+                $0.tag = CodingKeys.moveCompleted.rawValue
+                $0.value = defaultConfig?.moveCompleted
+                }.onChange { [weak self] row in
+                    if let value = row.value {
+                        self?.defaultConfig?.moveCompleted = value
+                    }
+                }.cellUpdate { [weak self] _, row in
+                    row.value = self?.defaultConfig?.moveCompleted
+                    if let moveComplete = self?.defaultConfig?.moveCompleted {
+                        row.cell.switchControl.setOn(moveComplete, animated: true)
+                    }
+            }
+
+            <<< TextRow {
+                $0.title = "\tPath"
+                $0.tag = defaultConfig?.moveCompletedPath
+                $0.value = defaultConfig?.moveCompletedPath
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
+                $0.hidden = Condition.function([CodingKeys.moveCompleted.rawValue]) { form in
+                    return !((form.rowBy(tag: CodingKeys.moveCompleted.rawValue) as? SwitchRow)?.value ?? false)
+                }
+                }.onChange { [weak self] row in
+                    if let value = row.value {
+                        self?.defaultConfig?.moveCompletedPath = value
+                    }
+                }.cellUpdate { [weak self] cell, row in
+                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    if !row.wasChanged {
+                        row.value = self?.defaultConfig?.moveCompletedPath
+                        row.cell.textField?.text = self?.defaultConfig?.moveCompletedPath
                     }
 
             }
@@ -481,7 +486,8 @@ class AddTorrentViewController: FormViewController {
     func getTorrentConfig() {
         ClientManager.shared.activeClient?.getAddTorrentConfig().then { [weak self] config -> Void in
             self?.defaultConfig = config
-            self?.form.sectionBy(tag: CodingKeys.configSection.rawValue)?.allRows.forEach { $0.updateCell() }
+            self?.form.sectionBy(tag: CodingKeys.bandwidthConfig.rawValue)?.allRows.forEach { $0.updateCell() }
+            self?.form.sectionBy(tag: CodingKeys.queueConfig.rawValue)?.allRows.forEach { $0.updateCell() }
             }.catch { [weak self] _ in
                 let dismiss = UIAlertAction(title: "Ok", style: .default) { _ in
                     self?.navigationController?.popViewController(animated: true)
