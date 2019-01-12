@@ -398,24 +398,27 @@ class DetailedTorrentViewController: FormViewController {
                         cell.height = self?.computeCellHeight(for: cell)
                     }
             }
+
             <<< LabelRow {
                 $0.title = "Comments"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                $0.cell.row.hidden = Condition(booleanLiteral: torrentData?.comment.isEmpty ?? true)
-                }.cellUpdate { [weak self] cell, _ in
-                    if let torrentData = self?.torrentData {
-                        DispatchQueue.main.async {
-                            cell.row.value = torrentData.comment
-                            cell.height = self?.computeCellHeight(for: cell)
-                            cell.row.hidden = Condition(booleanLiteral: torrentData.comment.isEmpty)
+                $0.cell.row.hidden = Condition(booleanLiteral: torrentData?.comment
+                    .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+                }.cellUpdate {[weak self] cell, row in
+                    DispatchQueue.main.async {
+                        guard let torrentData = self?.torrentData else { return }
 
-                            if cell.row.isHidden != torrentData.comment.isEmpty {
-                                cell.row.evaluateHidden()
-                            }
-                        }
+                        row.hidden = Condition(booleanLiteral: torrentData.comment
+                            .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+                        row.evaluateHidden()
+
+                        row.value = torrentData.comment
+                        cell.height = self?.computeCellHeight(for: cell)
+
+                        cell.detailTextLabel?.text = torrentData.comment
                     }
         }
-
     }
 
     // swiftlint:disable:next cyclomatic_complexity function_body_length
