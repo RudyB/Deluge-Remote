@@ -451,11 +451,15 @@ class MainTableViewController: UITableViewController {
     func pauseAllTorrents() {
         ClientManager.shared.activeClient?.pauseAllTorrents { [weak self] result in
             guard let self = self else { return }
+            let haptic = UINotificationFeedbackGenerator()
+            haptic.prepare()
             switch result {
             case .success:
+                haptic.notificationOccurred(.success)
                 self.view.showHUD(title: "Successfully Paused")
                 Logger.verbose("All Torrents Paused Successfully")
             case .failure(let error):
+                haptic.notificationOccurred(.error)
                 self.view.showHUD(title: "Failed to Pause All Torrents", type: .failure)
                 Logger.error(error)
             }
@@ -465,11 +469,15 @@ class MainTableViewController: UITableViewController {
     func resumeAllTorrents() {
         ClientManager.shared.activeClient?.resumeAllTorrents { [weak self] result in
             guard let self = self else { return }
+            let haptic = UINotificationFeedbackGenerator()
+            haptic.prepare()
             switch result {
             case .success:
+                haptic.notificationOccurred(.success)
                 self.view.showHUD(title: "Successfully Resumed")
                 Logger.verbose("All Torrents Resumed")
             case .failure(let error):
+                haptic.notificationOccurred(.error)
                 self.view.showHUD(title: "Failed to Resume All Torrents", type: .failure)
                 Logger.error(error)
             }

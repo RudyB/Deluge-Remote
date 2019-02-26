@@ -573,6 +573,7 @@
 					"$(SRCROOT)/NSBencodeSerialization/M13OrderedDictionary",
 				);
 				INFOPLIST_FILE = "Deluge Remote/Resources/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
@@ -594,6 +595,7 @@
 					"$(SRCROOT)/NSBencodeSerialization/M13OrderedDictionary",
 				);
 				INFOPLIST_FILE = "Deluge Remote/Resources/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";

@@ -37,33 +37,47 @@ class DetailedTorrentViewController: FormViewController {
         let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .destructive) { [weak self] _ in
             self?.invalidateTimer()
             guard let self = self, let torrentHash = self.torrentHash else { return }
-            ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: false).then {_ in
+            var haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
+            haptic?.prepare()
+            ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: false).then {_ -> Void in
+                haptic?.notificationOccurred(.success)
                 self.view.showHUD(title: "Torrent Successfully Deleted") {
                     self.navigationController?.popViewController(animated: true)
                 }
                 }.catch { error in
+                    haptic?.notificationOccurred(.error)
                     if let error = error as? ClientError {
                         showAlert(target: self, title: "Error", message: error.domain())
                     } else {
                         showAlert(target: self, title: "Error", message: error.localizedDescription)
                     }
+                }.always {
+                    haptic = nil
             }
+
         }
 
         let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .destructive) { [weak self] _ in
             self?.invalidateTimer()
             guard let self = self, let torrentHash = self.torrentHash else { return }
-            ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: true).then {_ in
+            var haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
+            haptic?.prepare()
+            ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: true).then {_ -> Void in
+                haptic?.notificationOccurred(.success)
                 self.view.showHUD(title: "Torrent Successfully Deleted") {
                     self.navigationController?.popViewController(animated: true)
                 }
                 }.catch { error in
+                    haptic?.notificationOccurred(.error)
                     if let error = error as? ClientError {
                         showAlert(target: self, title: "Error", message: error.domain())
                     } else {
                         showAlert(target: self, title: "Error", message: error.localizedDescription)
                     }
-            }
+                }.always {
+                    haptic = nil
+                }
+
         }
 
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
@@ -75,6 +89,8 @@ class DetailedTorrentViewController: FormViewController {
     @IBAction func playPauseAction(_ sender: UIBarButtonItem) {
         guard let torrentData = torrentData else { return }
 
+        let haptic = UINotificationFeedbackGenerator()
+        haptic.prepare()
         if torrentData.paused {
             ClientManager.shared.activeClient?.resumeTorrent(withHash: torrentData.hash) { [weak self] result in
 
@@ -82,12 +98,14 @@ class DetailedTorrentViewController: FormViewController {
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
+                        haptic.notificationOccurred(.success)
                         self.view.showHUD(title: "Successfully Resumed Torrent")
                         UIView.animate(withDuration: 1.0) {
                             self.playPauseItem.image = #imageLiteral(resourceName: "icons8-pause")
                         }
 
                     case .failure:
+                        haptic.notificationOccurred(.error)
                         self.view.showHUD(title: "Failed To Resume Torrent", type: .failure)
                     }
                 }
@@ -99,12 +117,14 @@ class DetailedTorrentViewController: FormViewController {
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
+                        haptic.notificationOccurred(.success)
                         self.view.showHUD(title: "Successfully Paused Torrent")
                         UIView.animate(withDuration: 1.0) {
                             self.playPauseItem.image = #imageLiteral(resourceName: "play_filled")
                         }
 
                     case .failure:
+                        haptic.notificationOccurred(.error)
                         self.view.showHUD(title: "Failed to Pause Torrent", type: .failure)
                     }
                 }

@@ -100,7 +100,10 @@
                                     <outlet property="nameLabel" destination="A5X-yh-Ba3" id="0lD-Z3-6ih"/>
                                     <outlet property="progressBar" destination="p6h-H6-bH5" id="gqu-IA-8Gv"/>
                                     <outlet property="uploadSpeedLabel" destination="UP3-sF-XlC" id="Zrz-Za-Cgi"/>
-                                    <segue destination="lav-RO-0t1" kind="show" identifier="detailedTorrentViewSegue" id="zSY-5d-U02"/>
+                                    <segue destination="lav-RO-0t1" kind="show" identifier="detailedTorrentViewSegue" id="zSY-5d-U02">
+                                        <segue key="commit" inheritsFrom="parent" id="zcc-WB-L9z"/>
+                                        <segue key="preview" inheritsFrom="commit" id="hJD-PT-OWr"/>
+                                    </segue>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -459,6 +462,7 @@
                             </connections>
                         </barButtonItem>
                     </toolbarItems>
+                    <value key="contentSizeForViewInPopover" type="size" width="0.0" height="0.0"/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="deleteItem" destination="dtq-Xa-qLh" id="2dK-uY-ltq"/>
@@ -498,4 +502,7 @@
         <image name="icons8-pause" width="75" height="75"/>
         <image name="settings" width="100" height="100"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="zSY-5d-U02"/>
+    </inferredMetricsTieBreakers>
 </document>
