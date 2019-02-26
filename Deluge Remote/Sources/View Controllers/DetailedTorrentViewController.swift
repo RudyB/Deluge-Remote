@@ -40,7 +40,9 @@ class DetailedTorrentViewController: FormViewController {
             var haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
             haptic?.prepare()
             ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: false).then {_ -> Void in
-                haptic?.notificationOccurred(.success)
+                DispatchQueue.main.async {
+                     haptic?.notificationOccurred(.success)
+                }
                 self.view.showHUD(title: "Torrent Successfully Deleted") {
                     self.navigationController?.popViewController(animated: true)
                 }
@@ -63,7 +65,10 @@ class DetailedTorrentViewController: FormViewController {
             var haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
             haptic?.prepare()
             ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: true).then {_ -> Void in
-                haptic?.notificationOccurred(.success)
+
+                DispatchQueue.main.async {
+                    haptic?.notificationOccurred(.success)
+                }
                 self.view.showHUD(title: "Torrent Successfully Deleted") {
                     self.navigationController?.popViewController(animated: true)
                 }
@@ -89,8 +94,8 @@ class DetailedTorrentViewController: FormViewController {
     @IBAction func playPauseAction(_ sender: UIBarButtonItem) {
         guard let torrentData = torrentData else { return }
 
-        let haptic = UINotificationFeedbackGenerator()
-        haptic.prepare()
+        var haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
+        haptic?.prepare()
         if torrentData.paused {
             ClientManager.shared.activeClient?.resumeTorrent(withHash: torrentData.hash) { [weak self] result in
 
@@ -98,15 +103,19 @@ class DetailedTorrentViewController: FormViewController {
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
-                        haptic.notificationOccurred(.success)
-                        self.view.showHUD(title: "Successfully Resumed Torrent")
+                        DispatchQueue.main.async {
+                            haptic?.notificationOccurred(.success)
+                            self.view.showHUD(title: "Successfully Resumed Torrent")
+                        }
                         UIView.animate(withDuration: 1.0) {
                             self.playPauseItem.image = #imageLiteral(resourceName: "icons8-pause")
                         }
 
                     case .failure:
-                        haptic.notificationOccurred(.error)
-                        self.view.showHUD(title: "Failed To Resume Torrent", type: .failure)
+                        DispatchQueue.main.async {
+                            haptic?.notificationOccurred(.error)
+                            self.view.showHUD(title: "Failed To Resume Torrent", type: .failure)
+                        }
                     }
                 }
 
@@ -117,15 +126,19 @@ class DetailedTorrentViewController: FormViewController {
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
-                        haptic.notificationOccurred(.success)
-                        self.view.showHUD(title: "Successfully Paused Torrent")
+                        DispatchQueue.main.async {
+                            haptic?.notificationOccurred(.success)
+                            self.view.showHUD(title: "Successfully Paused Torrent")
+                        }
                         UIView.animate(withDuration: 1.0) {
                             self.playPauseItem.image = #imageLiteral(resourceName: "play_filled")
                         }
 
                     case .failure:
-                        haptic.notificationOccurred(.error)
-                        self.view.showHUD(title: "Failed to Pause Torrent", type: .failure)
+                        DispatchQueue.main.async {
+                            haptic?.notificationOccurred(.error)
+                            self.view.showHUD(title: "Failed to Pause Torrent", type: .failure)
+                        }
                     }
                 }
             }
