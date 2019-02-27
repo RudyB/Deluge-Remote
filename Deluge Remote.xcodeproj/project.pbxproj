@@ -33,6 +33,7 @@
 		47B0E3D421E07B5B00E3056A /* Double.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B0E3D321E07B5B00E3056A /* Double.swift */; };
 		47B0E3D721E07C0A00E3056A /* CustomAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B0E3D621E07C0A00E3056A /* CustomAlert.swift */; };
 		47BE37441DDD1FAF002A6042 /* AddClientViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */; };
+		47C20BC222268B4C0069A9B0 /* NetworkReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C20BC122268B4B0069A9B0 /* NetworkReachability.swift */; };
 		47D035631DD81B34003BB2A0 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035621DD81B34003BB2A0 /* MainTableViewController.swift */; };
 		47D035651DD81BA4003BB2A0 /* DetailedTorrentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035641DD81BA4003BB2A0 /* DetailedTorrentViewController.swift */; };
 		47F9C73321DC66790017281C /* TorrentConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F9C73221DC66790017281C /* TorrentConfig.swift */; };
@@ -72,6 +73,7 @@
 		47B0E3D321E07B5B00E3056A /* Double.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Double.swift; sourceTree = "<group>"; };
 		47B0E3D621E07C0A00E3056A /* CustomAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAlert.swift; sourceTree = "<group>"; };
 		47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddClientViewController.swift; sourceTree = "<group>"; };
+		47C20BC122268B4B0069A9B0 /* NetworkReachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkReachability.swift; sourceTree = "<group>"; };
 		47D035621DD81B34003BB2A0 /* MainTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
 		47D035641DD81BA4003BB2A0 /* DetailedTorrentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedTorrentViewController.swift; sourceTree = "<group>"; };
 		47F9C73221DC66790017281C /* TorrentConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentConfig.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 		47B0E3C721E071FF00E3056A /* API */ = {
 			isa = PBXGroup;
 			children = (
+				47C20BC122268B4B0069A9B0 /* NetworkReachability.swift */,
 				478D81C121DDF1CC0062A647 /* NewTorrentNotifier.swift */,
 				471602761DD433A700727CBD /* DelugeClient.swift */,
 				477BFAEE21E442F8008E80CF /* DelugeRequestRetrier.swift */,
@@ -407,6 +410,7 @@
 				477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */,
 				47F9C73321DC66790017281C /* TorrentConfig.swift in Sources */,
 				476A9BBA21E83822009C0971 /* Host.swift in Sources */,
+				47C20BC222268B4C0069A9B0 /* NetworkReachability.swift in Sources */,
 				478D81C221DDF1CC0062A647 /* NewTorrentNotifier.swift in Sources */,
 				47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */,
 				4716027A1DD433A700727CBD /* TorrentMetadata.swift in Sources */,

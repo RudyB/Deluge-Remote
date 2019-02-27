@@ -311,6 +311,12 @@ class MainTableViewController: UITableViewController {
     func executeNextStep() {
         if ClientManager.shared.activeClient == nil { return } // This will keep the timer from restarting
 
+        if !IsConnectedToNetwork() {
+            updateHeader(with: "No Active Internet Connection", isError: true, color: UIColor.red)
+            delayedExecuteNextStep()
+            return
+        }
+
         if isHostOnline {
             downloadNewData()
         } else {
