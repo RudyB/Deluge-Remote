@@ -9,6 +9,7 @@
 import Eureka
 import Houston
 import MBProgressHUD
+import PromiseKit
 import UIKit
 
 // swiftlint:disable:next type_body_length
@@ -73,7 +74,7 @@ class AddTorrentViewController: FormViewController {
 
     func handleFormConfigurationFor(fileURL: URL) {
         ClientManager.shared.activeClient?.getTorrentInfo(fileURL: fileURL)
-            .always { [weak self] _ in
+            .always { [weak self] in
                 if let self = self {
                     DispatchQueue.main.async {
                         MBProgressHUD.hide(for: self.view, animated: true)
@@ -101,7 +102,7 @@ class AddTorrentViewController: FormViewController {
 
     func handleFormConfigurationFor(magnetURL: URL) {
         ClientManager.shared.activeClient?.getMagnetInfo(url: magnetURL)
-            .always { [weak self] _ in
+            .always { [weak self] in
                 if let self = self {
                     DispatchQueue.main.async {
                         MBProgressHUD.hide(for: self.view, animated: true)
@@ -417,7 +418,7 @@ class AddTorrentViewController: FormViewController {
 
     }
 
-    func uploadToServer() {
+    @objc func uploadToServer() {
 
         if (form.allRows.map { $0.isValid }).contains(false) {
             showAlert(target: self, title: "Validation Error", message: "All fields are mandatory")
@@ -443,7 +444,7 @@ class AddTorrentViewController: FormViewController {
 
     func addTorrentFile(fileName: String, hash: String, url: URL, config: TorrentConfig) {
         ClientManager.shared.activeClient?.addTorrentFile(fileName: fileName, url: url, with: config)
-            .always { [weak self] _ in
+            .always { [weak self] in
                 guard let self = self else { return }
                 DispatchQueue.main.async {
                     MBProgressHUD.hide(for: self.view, animated: true)
@@ -464,7 +465,7 @@ class AddTorrentViewController: FormViewController {
 
     func addMagnetLink(url: URL, hash: String, config: TorrentConfig) {
         ClientManager.shared.activeClient?.addTorrentMagnet(url: url, with: config)
-            .always { [weak self] _ in
+            .always { [weak self] in
                 guard let self = self else { return }
                 DispatchQueue.main.async {
                     MBProgressHUD.hide(for: self.view, animated: true)
@@ -484,11 +485,14 @@ class AddTorrentViewController: FormViewController {
     }
 
     func getTorrentConfig() {
-        ClientManager.shared.activeClient?.getAddTorrentConfig().then { [weak self] config -> Void in
+        guard let client = ClientManager.shared.activeClient else { return }
+
+        when(fulfilled: client.authenticateAndConnect(), client.getAddTorrentConfig())
+        .then { [weak self] _, config -> Void in
             self?.defaultConfig = config
             self?.form.sectionBy(tag: CodingKeys.bandwidthConfig.rawValue)?.allRows.forEach { $0.updateCell() }
             self?.form.sectionBy(tag: CodingKeys.queueConfig.rawValue)?.allRows.forEach { $0.updateCell() }
-            }.catch { [weak self] _ in
+        }.catch { [weak self] _ in
                 let dismiss = UIAlertAction(title: "Ok", style: .default) { _ in
                     self?.navigationController?.popViewController(animated: true)
                 }

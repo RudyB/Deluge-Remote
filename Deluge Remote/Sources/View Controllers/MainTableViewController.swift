@@ -271,7 +271,7 @@ class MainTableViewController: UITableViewController {
 
     // MARK: - Helper Functions
 
-    func handleAddTorrentNotification(notification: NSNotification) {
+    @objc func handleAddTorrentNotification(notification: NSNotification) {
         NewTorrentNotifier.shared.userInfo = nil
         guard
             let userInfo = notification.userInfo,
@@ -324,7 +324,7 @@ class MainTableViewController: UITableViewController {
         }
     }
 
-    func handleNewActiveClient() {
+    @objc func handleNewActiveClient() {
         Logger.debug("New Client")
 
         isHostOnline = false

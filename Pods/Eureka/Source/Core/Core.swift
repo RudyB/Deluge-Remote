@@ -455,9 +455,7 @@ open class FormViewController: UIViewController, FormViewControllerProtocol, For
         if tableView == nil {
             tableView = UITableView(frame: view.bounds, style: tableViewStyle)
             tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            if #available(iOS 9.0, *) {
-                tableView.cellLayoutMarginsFollowReadableWidth = false
-            }
+            tableView.cellLayoutMarginsFollowReadableWidth = false
         }
         if tableView.superview == nil {
             view.addSubview(tableView)
@@ -1108,7 +1106,8 @@ extension FormViewControllerProtocol {
 
     // MARK: Helpers
 
-    func makeRowVisible(_ row: BaseRow, destinationScrollPosition: UITableView.ScrollPosition = .bottom) {
+    func makeRowVisible(_ row: BaseRow, destinationScrollPosition: UITableView.ScrollPosition? = .bottom) {
+	guard let destinationScrollPosition = destinationScrollPosition else { return }
         guard let cell = row.baseCell, let indexPath = row.indexPath, let tableView = tableView else { return }
         if cell.window == nil || (tableView.contentOffset.y + tableView.frame.size.height <= cell.frame.origin.y + cell.frame.size.height) {
             tableView.scrollToRow(at: indexPath, at: destinationScrollPosition, animated: true)

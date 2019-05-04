@@ -469,7 +469,7 @@ class DelugeClient {
                                 reject(ClientError.unexpectedResponse)
                                 return
                         }
-                        fulfill(name: name, hash: hash)
+                        fulfill((name: name, hash: hash))
                     case .failure(let error): reject(ClientError.unexpectedError(error.localizedDescription))
                     }
             }

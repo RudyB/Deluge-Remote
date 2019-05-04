@@ -9,7 +9,7 @@ target 'Deluge Remote' do
   use_frameworks!
   swift_version = "4.2"
   pod 'Alamofire'
-  pod 'PromiseKit'
+  pod 'PromiseKit', "~> 4.5.2"
   pod 'Valet' 
   pod 'Eureka'
   pod 'MBProgressHUD'

@@ -131,13 +131,13 @@ open class BaseRow: BaseRowType {
     /**
      Helps to pick destination part of the cell after scrolling
      */
-    open var destinationScrollPosition = UITableView.ScrollPosition.bottom
+    open var destinationScrollPosition: UITableView.ScrollPosition? = UITableView.ScrollPosition.bottom
 
     /**
      Returns the IndexPath where this row is in the current form.
      */
     public final var indexPath: IndexPath? {
-        guard let sectionIndex = section?.index, let rowIndex = section?.index(of: self) else { return nil }
+        guard let sectionIndex = section?.index, let rowIndex = section?.firstIndex(of: self) else { return nil }
         return IndexPath(row: rowIndex, section: sectionIndex)
     }
 

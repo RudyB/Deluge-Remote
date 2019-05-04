@@ -1500,6 +1500,38 @@
 			};
 			name = Release;
 		};
+		0A5EDEB5E747FB5A3C01A8A74E768F19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 47A8EFF1CFB82DB7E03FF0DC80B37195 /* Alamofire.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/Alamofire/Alamofire-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/Alamofire/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/Alamofire/Alamofire.modulemap";
+				PRODUCT_MODULE_NAME = Alamofire;
+				PRODUCT_NAME = Alamofire;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		0AA3B91655AF95B1F49159CD8085CD89 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1601,7 +1633,7 @@
 			};
 			name = Release;
 		};
-		25089DCC8E649DD5012081B800CA2656 /* Debug */ = {
+		2D6665140A14FE34DC05CF89387E798C /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4E8A5F530930F24580B2917E42755862 /* Houston.xcconfig */;
 			buildSettings = {
@@ -1625,14 +1657,15 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
-			name = Debug;
+			name = Release;
 		};
-		2A03D91D951518C100A4931F749127B5 /* Debug */ = {
+		2E9278E2913BC2126BC29FBE78815918 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 47A8EFF1CFB82DB7E03FF0DC80B37195 /* Alamofire.xcconfig */;
 			buildSettings = {
@@ -1656,46 +1689,14 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
-		4BC606179657B9980ACFCF8A95F63C4D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4E8A5F530930F24580B2917E42755862 /* Houston.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/Houston/Houston-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/Houston/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/Houston/Houston.modulemap";
-				PRODUCT_MODULE_NAME = Houston;
-				PRODUCT_NAME = Houston;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		500C543F4D092BA1502B710C8B09FE82 /* Debug */ = {
+		4152B77590CA101F9CB9DB4BF9C6BC1A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A266E6367BE0C6CE502BF90981F1FFBA /* PromiseKit.xcconfig */;
 			buildSettings = {
@@ -1719,14 +1720,14 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
-		6D6944D0CE3337A2887DA46CCB933B0F /* Release */ = {
+		453A910A0E19F83C731076B8DB7A40BD /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 06BA3B78B36AAEBE0A643F6AFF110364 /* MBProgressHUD.xcconfig */;
 			buildSettings = {
@@ -1750,7 +1751,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1791,38 +1792,6 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
-		};
-		6FF818DACFDE8C1B5B7A27F80A915ED8 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D66846285B1D9C8F8EEF4218AC096AE9 /* Eureka.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/Eureka/Eureka-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/Eureka/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/Eureka/Eureka.modulemap";
-				PRODUCT_MODULE_NAME = Eureka;
-				PRODUCT_NAME = Eureka;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
 		};
 		74227482B3ECE09A6A9FEB8B0485D7EF /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1917,7 +1886,7 @@
 			};
 			name = Release;
 		};
-		8A4B69B68C91611D8113C31BF52D073A /* Debug */ = {
+		9CFEB47D62F0249352E5C76911ED14C0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D66846285B1D9C8F8EEF4218AC096AE9 /* Eureka.xcconfig */;
 			buildSettings = {
@@ -1933,7 +1902,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Eureka/Eureka-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Eureka/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Eureka/Eureka.modulemap";
 				PRODUCT_MODULE_NAME = Eureka;
@@ -1941,16 +1910,17 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
-			name = Debug;
+			name = Release;
 		};
-		9446F1DF032A0B2E0A647898F1B3034E /* Release */ = {
+		BCCD9DA5EEE60168D6CD568B2FD86EAD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 47A8EFF1CFB82DB7E03FF0DC80B37195 /* Alamofire.xcconfig */;
+			baseConfigurationReference = D66846285B1D9C8F8EEF4218AC096AE9 /* Eureka.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -1961,26 +1931,25 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/Alamofire/Alamofire-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/Alamofire/Info.plist";
+				GCC_PREFIX_HEADER = "Target Support Files/Eureka/Eureka-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/Eureka/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/Alamofire/Alamofire.modulemap";
-				PRODUCT_MODULE_NAME = Alamofire;
-				PRODUCT_NAME = Alamofire;
+				MODULEMAP_FILE = "Target Support Files/Eureka/Eureka.modulemap";
+				PRODUCT_MODULE_NAME = Eureka;
+				PRODUCT_NAME = Eureka;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
-			name = Release;
+			name = Debug;
 		};
-		C25B1B8C8FC1C5520678DE0DE37BB03C /* Debug */ = {
+		D345B6805500CA090D0E6950EDA8CA87 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 06BA3B78B36AAEBE0A643F6AFF110364 /* MBProgressHUD.xcconfig */;
 			buildSettings = {
@@ -2004,14 +1973,45 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
-		F56564AE1ED447CE6A6306982506DA22 /* Release */ = {
+		EBD0E9620671353522BF14EA35AECC6D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4E8A5F530930F24580B2917E42755862 /* Houston.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/Houston/Houston-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/Houston/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/Houston/Houston.modulemap";
+				PRODUCT_MODULE_NAME = Houston;
+				PRODUCT_NAME = Houston;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		F9D6C8DCD36CBDCE5BD6CE29426DD6D0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A266E6367BE0C6CE502BF90981F1FFBA /* PromiseKit.xcconfig */;
 			buildSettings = {
@@ -2035,7 +2035,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -2049,8 +2049,8 @@
 		09600571F63852ACA3B7A23B4729B6A4 /* Build configuration list for PBXNativeTarget "MBProgressHUD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C25B1B8C8FC1C5520678DE0DE37BB03C /* Debug */,
-				6D6944D0CE3337A2887DA46CCB933B0F /* Release */,
+				D345B6805500CA090D0E6950EDA8CA87 /* Debug */,
+				453A910A0E19F83C731076B8DB7A40BD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2058,8 +2058,8 @@
 		11B0B8883FD9CC7D979B17FFF294E7E0 /* Build configuration list for PBXNativeTarget "PromiseKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				500C543F4D092BA1502B710C8B09FE82 /* Debug */,
-				F56564AE1ED447CE6A6306982506DA22 /* Release */,
+				4152B77590CA101F9CB9DB4BF9C6BC1A /* Debug */,
+				F9D6C8DCD36CBDCE5BD6CE29426DD6D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2094,8 +2094,8 @@
 		427F0F003A1AD80AE00155AFCDEFAC20 /* Build configuration list for PBXNativeTarget "Alamofire" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A03D91D951518C100A4931F749127B5 /* Debug */,
-				9446F1DF032A0B2E0A647898F1B3034E /* Release */,
+				2E9278E2913BC2126BC29FBE78815918 /* Debug */,
+				0A5EDEB5E747FB5A3C01A8A74E768F19 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2103,8 +2103,8 @@
 		773FAE139B2680FA424F54CC31E8733B /* Build configuration list for PBXNativeTarget "Eureka" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8A4B69B68C91611D8113C31BF52D073A /* Debug */,
-				6FF818DACFDE8C1B5B7A27F80A915ED8 /* Release */,
+				BCCD9DA5EEE60168D6CD568B2FD86EAD /* Debug */,
+				9CFEB47D62F0249352E5C76911ED14C0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2112,8 +2112,8 @@
 		B6524F848CC1BD2C35F3FDCEAF6201B9 /* Build configuration list for PBXNativeTarget "Houston" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				25089DCC8E649DD5012081B800CA2656 /* Debug */,
-				4BC606179657B9980ACFCF8A95F63C4D /* Release */,
+				EBD0E9620671353522BF14EA35AECC6D /* Debug */,
+				2D6665140A14FE34DC05CF89387E798C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
