@@ -665,17 +665,19 @@ class DetailedTorrentViewController: FormViewController {
         }
 
         form +++ Section()
-
-            <<< ButtonRow {
-                $0.title = "Apply Settings"
-                }.onCellSelection { [weak self] _, _ in
-                    self?.applyChanges()
-        }
             <<< ButtonRow {
                 $0.title = "Move Storage"
                 }.onCellSelection { [weak self] _, _ in
                     self?.moveStorage()
         }
+
+        form +++ Section()
+            <<< ButtonRow {
+                $0.title = "Apply Settings"
+                }.onCellSelection { [weak self] _, _ in
+                    self?.applyChanges()
+                }
+
     }
 
     func createNewTimer() {
@@ -748,8 +750,16 @@ class DetailedTorrentViewController: FormViewController {
                 let torrentHash = self?.torrentHash
             else { return }
             ClientManager.shared.activeClient?.moveTorrent(hash: torrentHash, filepath: filepath)
+                .then { [weak self] _ -> Void in
+                    DispatchQueue.main.async {
+                        self?.view.showHUD(title: "Moved Torrent", type: .success)
+                    }
+
+                }
                 .catch { [weak self] error -> Void in
-                self?.view.showHUD(title: "Failed to Move Torrent", type: .failure)
+                    DispatchQueue.main.async {
+                        self?.view.showHUD(title: "Failed to Move Torrent", type: .failure)
+                    }
                 Logger.error(error)
             }
         }
