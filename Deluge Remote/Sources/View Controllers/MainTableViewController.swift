@@ -601,7 +601,7 @@ class MainTableViewController: UITableViewController {
                             self.tableView.setEditing(false, animated: true)
                             self.view.showHUD(title: "Torrent Successfully Deleted")
                         }
-                        .catch { [weak self] error in
+                        .catch { [weak self] _ in
                             self?.view.showHUD(title: "Failed to Delete Torrent", type: .failure)
                         }
 
@@ -625,7 +625,7 @@ class MainTableViewController: UITableViewController {
                             self.tableView.setEditing(false, animated: true)
                             self.view.showHUD(title: "Torrent Successfully Deleted")
                         }
-                        .catch { [weak self] error in
+                        .catch { [weak self] _ in
                             self?.view.showHUD(title: "Failed to Delete Torrent", type: .failure)
                     }
                 }

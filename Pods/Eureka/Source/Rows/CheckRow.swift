@@ -27,7 +27,7 @@ import UIKit
 
 // MARK: CheckCell
 
-open class CheckCell: Cell<Bool>, CellType {
+public final class CheckCell: Cell<Bool>, CellType {
 
     required public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -37,7 +37,7 @@ open class CheckCell: Cell<Bool>, CellType {
         super.init(coder: aDecoder)
     }
 
-    open override func update() {
+    public override func update() {
         super.update()
         accessoryType = row.value == true ? .checkmark : .none
         editingAccessoryType = accessoryType
@@ -50,13 +50,13 @@ open class CheckCell: Cell<Bool>, CellType {
         }
     }
 
-    open override func setup() {
+    public override func setup() {
         super.setup()
         accessoryType = .checkmark
         editingAccessoryType = accessoryType
     }
 
-    open override func didSelect() {
+    public override func didSelect() {
         row.value = row.value ?? false ? false : true
         row.deselect()
         row.updateCell()

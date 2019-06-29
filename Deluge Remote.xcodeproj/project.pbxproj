@@ -340,7 +340,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Eureka/Eureka.framework",
 				"${BUILT_PRODUCTS_DIR}/Houston/Houston.framework",
@@ -359,7 +359,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		3AF8E106B2580CF5A2487982 /* [CP] Check Pods Manifest.lock */ = {
@@ -510,6 +510,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -561,6 +562,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -576,6 +578,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",
 					"$(SRCROOT)/NSBencodeSerialization/M13OrderedDictionary",
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Deluge Remote/Resources/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -598,6 +601,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",
 					"$(SRCROOT)/NSBencodeSerialization/M13OrderedDictionary",
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Deluge Remote/Resources/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
