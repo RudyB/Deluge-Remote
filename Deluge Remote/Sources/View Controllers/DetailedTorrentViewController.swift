@@ -26,6 +26,7 @@ class DetailedTorrentViewController: FormViewController {
         case moveCompleted = "move_completed"
         case moveCompletedPath = "move_completed_path"
         case prioritizeFirstLastPieces = "prioritize_first_last_pieces"
+        case downloadLocation = "download_location"
     }
 
     // MARK: - IBOutlets
@@ -662,13 +663,19 @@ class DetailedTorrentViewController: FormViewController {
                         }
                     }
         }
+
         form +++ Section()
+
             <<< ButtonRow {
                 $0.title = "Apply Settings"
                 }.onCellSelection { [weak self] _, _ in
                     self?.applyChanges()
         }
-
+            <<< ButtonRow {
+                $0.title = "Move Storage"
+                }.onCellSelection { [weak self] _, _ in
+                    self?.moveStorage()
+        }
     }
 
     func createNewTimer() {
@@ -724,6 +731,33 @@ class DetailedTorrentViewController: FormViewController {
                 self?.view.showHUD(title: "Failed to Update Torrent Options", type: .failure)
                 Logger.error(error)
             }
+    }
+
+    func moveStorage() {
+        let alert = UIAlertController(title: "Move Torrent", message: "Please enter a new directory",
+                                      preferredStyle: .alert)
+        alert.addTextField {  [weak self] textField in
+            textField.text = self?.torrentData?.save_path
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        let moveAction = UIAlertAction(title: "Move", style: .destructive) { [weak self] _ in
+            guard
+                let textfield = alert.textFields?.first,
+                let filepath = textfield.text,
+                let torrentHash = self?.torrentHash
+            else { return }
+            ClientManager.shared.activeClient?.moveTorrent(hash: torrentHash, filepath: filepath)
+                .catch { [weak self] error -> Void in
+                self?.view.showHUD(title: "Failed to Move Torrent", type: .failure)
+                Logger.error(error)
+            }
+        }
+
+        alert.addAction(moveAction)
+        alert.addAction(cancelAction)
+
+        self.present(alert, animated: true, completion: nil)
     }
 
     func invalidateTimer() {

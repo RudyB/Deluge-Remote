@@ -649,6 +649,25 @@ class DelugeClient {
         }
     }
 
+    func moveTorrent(hash: String, filepath: String) -> Promise<Void> {
+        return Promise { fulfill, reject in
+            let params: Parameters = [
+                "id": arc4random(),
+                "method": "core.move_storage",
+                "params": [[hash], filepath]
+            ]
+
+            Manager.request(self.clientConfig.url, method: .post, parameters: params, encoding: JSONEncoding.default)
+                .validate().response { response in
+                    if let error = response.error {
+                        reject(error)
+                    } else {
+                        fulfill(())
+                    }
+            }
+        }
+    }
+
     func getHosts() -> Promise<[Host]> {
         let params: Parameters = [
             "id": arc4random(),
