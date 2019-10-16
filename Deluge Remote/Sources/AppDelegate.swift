@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	var window: UIWindow?
 
     // swiftlint:disable:next line_length
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         let consoleDest = ConsoleDestination()
         Logger.add(destination: consoleDest)
@@ -57,7 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	}
 
     // swiftlint:disable:next line_length
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey: Any] = [:]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         NewTorrentNotifier.shared.userInfo = ["url": url, "isFileURL": url.isFileURL]
         return true
     }

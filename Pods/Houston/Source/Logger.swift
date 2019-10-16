@@ -81,7 +81,7 @@ open class Logger {
 	///   - function: The function where log was called
 	///   - line: The line number where log was called
 	public class func verbose(_ message: @autoclosure () -> Any, file: String = #file, function: String = #function, line: Int = #line) {
-		dispatch_log(.verbose, file: file, function: function, line: line, message: message)
+		dispatch_log(.verbose, file: file, function: function, line: line, message: message())
 	}
 	
 	/// Log something that will help with debugging (Low Priority)
@@ -93,7 +93,7 @@ open class Logger {
 	///   - function: The function where log was called
 	///   - line: The line number where log was called
 	public class func debug(_ message: @autoclosure () -> Any, file: String = #file, function: String = #function, line: Int = #line) {
-		dispatch_log(.debug, file: file, function: function, line: line, message: message)
+		dispatch_log(.debug, file: file, function: function, line: line, message: message())
 	}
 	
 	/// Log something that is not an issue or error (Regular Priority)
@@ -105,7 +105,7 @@ open class Logger {
 	///   - function: The function where log was called
 	///   - line: The line number where log was called
 	public class func info(_ message: @autoclosure () -> Any, file: String = #file, function: String = #function, line: Int = #line) {
-		dispatch_log(.info, file: file, function: function, line: line, message: message)
+		dispatch_log(.info, file: file, function: function, line: line, message: message())
 	}
 	
 	/// Log something that may lead to an error (High Priority)
@@ -117,7 +117,7 @@ open class Logger {
 	///   - function: The function where log was called
 	///   - line: The line number where log was called
 	public class func warning(_ message: @autoclosure () -> Any, file: String = #file, function: String = #function, line: Int = #line) {
-		dispatch_log(.warning, file: file, function: function, line: line, message: message)
+		dispatch_log(.warning, file: file, function: function, line: line, message: message())
 	}
 	
 	/// Log an error. This is something that is fatal. (Highest Priority)
@@ -129,7 +129,7 @@ open class Logger {
 	///   - function: The function where log was called
 	///   - line: The line number where log was called
 	public class func error(_ message: @autoclosure () -> Any, file: String = #file, function: String = #function, line: Int = #line) {
-		dispatch_log(.error, file: file, function: function, line: line, message: message)
+		dispatch_log(.error, file: file, function: function, line: line, message: message())
 	}
 	
 	/// Dispatch log to Destination if the destination minLevel permits it

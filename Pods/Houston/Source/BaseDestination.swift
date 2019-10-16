@@ -214,10 +214,14 @@ open class BaseDestination: Hashable {
 	}
 	
 	// MARK: - Hashable and Equitable
-	/// Hash value used for Hashable protocol
-	lazy public var hashValue: Int = self.defaultHashValue
-	/// Hash value used for Hashable protocol
-	open var defaultHashValue: Int {return 0}
+    
+    /// Hash value used for Hashable protocol
+    open var defaultHashValue: Int {return 0}
+    
+	/// Used for Hashable protocol
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.defaultHashValue)
+    }
 	
 	/// Used for Equitable protocol
 	public static func ==(lhs: BaseDestination, rhs: BaseDestination) -> Bool {

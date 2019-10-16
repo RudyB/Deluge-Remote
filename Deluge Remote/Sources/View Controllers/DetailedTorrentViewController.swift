@@ -170,7 +170,7 @@ class DetailedTorrentViewController: FormViewController {
         // Begin Data Download
         createNewTimer()
 
-        self.tableView.rowHeight = UITableViewAutomaticDimension
+        self.tableView.rowHeight = UITableView.automaticDimension
         self.tableView.estimatedRowHeight = 44.0
 
         // Create Form

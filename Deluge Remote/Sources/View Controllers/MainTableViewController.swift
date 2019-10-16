@@ -66,7 +66,7 @@ class MainTableViewController: UITableViewController {
 
         label.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         label.textAlignment = NSTextAlignment.center
-        label.autoresizingMask = UIViewAutoresizing.flexibleLeftMargin
+        label.autoresizingMask = UIView.AutoresizingMask.flexibleLeftMargin
         return label
     }()
 
@@ -578,8 +578,8 @@ class MainTableViewController: UITableViewController {
     }
 
     // swiftlint:disable:next line_length
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == UITableViewCellEditingStyle.delete {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == UITableViewCell.EditingStyle.delete {
             // handle delete (by removing the data from your array and updating the tableview)
             if let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell {
 

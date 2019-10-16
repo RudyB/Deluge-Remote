@@ -4,6 +4,7 @@
 
 [![Build Status](https://travis-ci.org/RudyB/Houston.svg?branch=master)](https://travis-ci.org/RudyB/Houston)
 [![Coverage Status](https://coveralls.io/repos/github/RudyB/Houston/badge.svg?branch=master)](https://coveralls.io/github/RudyB/Houston?branch=master)
+[![Documentation](https://rudyb.github.io/Houston/badge.svg)](https://rudyb.github.io/Houston)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Houston.svg)](https://cocoapods.org/pods/Houston)
 [![CocoaPods](https://img.shields.io/cocoapods/dt/Houston.svg)](https://cocoapods.org/pods/Houston)
 [![CocoaPods](https://img.shields.io/cocoapods/at/Houston.svg)](https://cocoapods.org/pods/Houston)
@@ -43,7 +44,7 @@ Inspired by [corey-rb](https://github.com/corey-rb)
 * iOS 8.0+
 * watchOS 2.0+
 * macOS 10.10+
-* Swift 4.0+
+* Swift 5.0+
 
 
 ## Installation
