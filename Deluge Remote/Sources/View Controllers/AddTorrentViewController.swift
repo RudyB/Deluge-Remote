@@ -487,8 +487,9 @@ class AddTorrentViewController: FormViewController {
     func getTorrentConfig() {
         guard let client = ClientManager.shared.activeClient else { return }
 
-        when(fulfilled: client.authenticateAndConnect(), client.getAddTorrentConfig())
-        .then { [weak self] _, config -> Void in
+        attempt { client.authenticateAndConnect() }
+        .then { client.getAddTorrentConfig()}
+        .then { [weak self] config -> Void in
             self?.defaultConfig = config
             self?.form.sectionBy(tag: CodingKeys.bandwidthConfig.rawValue)?.allRows.forEach { $0.updateCell() }
             self?.form.sectionBy(tag: CodingKeys.queueConfig.rawValue)?.allRows.forEach { $0.updateCell() }
