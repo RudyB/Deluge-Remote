@@ -69,7 +69,11 @@ open class _PickerInputCell<T> : Cell<T>, CellType, UIPickerViewDataSource, UIPi
             detailTextLabel?.text = nil
         }
 
-        textLabel?.textColor = row.isDisabled ? .gray : .black
+        if #available(iOS 13.0, *) {
+            textLabel?.textColor = row.isDisabled ? .tertiaryLabel : .label
+        } else {
+            textLabel?.textColor = row.isDisabled ? .gray : .black
+        }
         if row.isHighlighted {
             textLabel?.textColor = tintColor
         }
@@ -126,7 +130,7 @@ open class PickerInputCell<T>: _PickerInputCell<T> where T: Equatable {
     
     open override func update() {
         super.update()
-        if let selectedValue = pickerInputRow?.value, let index = pickerInputRow?.options.index(of: selectedValue) {
+        if let selectedValue = pickerInputRow?.value, let index = pickerInputRow?.options.firstIndex(of: selectedValue) {
             picker.selectRow(index, inComponent: 0, animated: true)
         }
     }

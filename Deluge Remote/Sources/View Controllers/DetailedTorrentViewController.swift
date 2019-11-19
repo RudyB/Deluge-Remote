@@ -40,13 +40,14 @@ class DetailedTorrentViewController: FormViewController {
             guard let self = self, let torrentHash = self.torrentHash else { return }
             var haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
             haptic?.prepare()
-            ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: false).then {_ -> Void in
-                DispatchQueue.main.async {
-                     haptic?.notificationOccurred(.success)
-                }
-                self.view.showHUD(title: "Torrent Successfully Deleted") {
-                    self.navigationController?.popViewController(animated: true)
-                }
+            ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: false)
+                .done {_ in
+                    DispatchQueue.main.async {
+                         haptic?.notificationOccurred(.success)
+                    }
+                    self.view.showHUD(title: "Torrent Successfully Deleted") {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }.catch { error in
                     haptic?.notificationOccurred(.error)
                     if let error = error as? ClientError {
@@ -54,10 +55,7 @@ class DetailedTorrentViewController: FormViewController {
                     } else {
                         showAlert(target: self, title: "Error", message: error.localizedDescription)
                     }
-                }.always {
-                    haptic = nil
-            }
-
+                }
         }
 
         let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .destructive) { [weak self] _ in
@@ -65,14 +63,14 @@ class DetailedTorrentViewController: FormViewController {
             guard let self = self, let torrentHash = self.torrentHash else { return }
             var haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
             haptic?.prepare()
-            ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: true).then {_ -> Void in
-
-                DispatchQueue.main.async {
-                    haptic?.notificationOccurred(.success)
-                }
-                self.view.showHUD(title: "Torrent Successfully Deleted") {
-                    self.navigationController?.popViewController(animated: true)
-                }
+            ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: true)
+                .done {_ in
+                    DispatchQueue.main.async {
+                        haptic?.notificationOccurred(.success)
+                    }
+                    self.view.showHUD(title: "Torrent Successfully Deleted") {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }.catch { error in
                     haptic?.notificationOccurred(.error)
                     if let error = error as? ClientError {
@@ -80,8 +78,6 @@ class DetailedTorrentViewController: FormViewController {
                     } else {
                         showAlert(target: self, title: "Error", message: error.localizedDescription)
                     }
-                }.always {
-                    haptic = nil
                 }
 
         }
@@ -95,7 +91,7 @@ class DetailedTorrentViewController: FormViewController {
     @IBAction func playPauseAction(_ sender: UIBarButtonItem) {
         guard let torrentData = torrentData else { return }
 
-        var haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
+        let haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
         haptic?.prepare()
         if torrentData.paused {
             ClientManager.shared.activeClient?.resumeTorrent(withHash: torrentData.hash) { [weak self] result in
@@ -201,6 +197,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.cell.detailTextLabel?.numberOfLines = 0
                 $0.value = torrentData?.state
                 }.cellUpdate { [weak self] cell, row in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.state
                         cell.height = self?.computeCellHeight(for: cell)
@@ -221,6 +218,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.cell.detailTextLabel?.numberOfLines = 0
                 $0.hidden = Condition(booleanLiteral: torrentData?.eta ?? 0 == 0)
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     cell.row.hidden = Condition(booleanLiteral: self?.torrentData?.eta ?? 0 == 0)
                     cell.row.evaluateHidden()
                     if let torrentData = self?.torrentData {
@@ -237,6 +235,7 @@ class DetailedTorrentViewController: FormViewController {
                 }
 
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = String(format: "%.1f%%", torrentData.progress)
                         cell.height = self?.computeCellHeight(for: cell)
@@ -248,6 +247,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.cell.detailTextLabel?.numberOfLines = 0
                 $0.cell.detailTextLabel?.text = torrentData?.total_size.sizeString()
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.total_size.sizeString()
                         cell.height = self?.computeCellHeight(for: cell)
@@ -259,6 +259,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.cell.detailTextLabel?.text = torrentData?.all_time_download.sizeString()
 
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.all_time_download.sizeString()
                         cell.height = self?.computeCellHeight(for: cell)
@@ -270,6 +271,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.cell.detailTextLabel?.text = torrentData?.total_uploaded.sizeString()
 
                 }.cellUpdate { [weak self] cell, _ in
+                   cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.total_uploaded.sizeString()
                         cell.height = self?.computeCellHeight(for: cell)
@@ -283,6 +285,7 @@ class DetailedTorrentViewController: FormViewController {
                 }
 
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = String(format: "%.3f", torrentData.ratio)
                         cell.height = self?.computeCellHeight(for: cell)
@@ -303,6 +306,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.cell.detailTextLabel?.text = torrentData?.message
 
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.message
                         cell.height = self?.computeCellHeight(for: cell)
@@ -314,6 +318,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.cell.detailTextLabel?.text = torrentData?.download_payload_rate.transferRateString()
 
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.download_payload_rate.transferRateString()
                         cell.height = self?.computeCellHeight(for: cell)
@@ -325,6 +330,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.cell.detailTextLabel?.text = torrentData?.upload_payload_rate.transferRateString()
 
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.upload_payload_rate.transferRateString()
                         cell.height = self?.computeCellHeight(for: cell)
@@ -337,6 +343,7 @@ class DetailedTorrentViewController: FormViewController {
                     $0.cell.detailTextLabel?.text = "\(data.num_seeds) (\(data.total_seeds))"
                 }
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = "\(torrentData.num_seeds) (\(torrentData.total_seeds))"
                         cell.height = self?.computeCellHeight(for: cell)
@@ -349,6 +356,7 @@ class DetailedTorrentViewController: FormViewController {
                     $0.cell.detailTextLabel?.text = "\(data.num_peers) (\(data.total_peers))"
                 }
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = "\(torrentData.num_peers) (\(torrentData.total_peers))"
                         cell.height = self?.computeCellHeight(for: cell)
@@ -359,6 +367,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.cell.detailTextLabel?.numberOfLines = 0
                 $0.cell.detailTextLabel?.text = torrentData?.save_path
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         cell.detailTextLabel?.text = torrentData.save_path
                         cell.height = self?.computeCellHeight(for: cell)
@@ -380,6 +389,7 @@ class DetailedTorrentViewController: FormViewController {
                     }
                 }
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         if let tracker = URL(string: torrentData.tracker) {
                             cell.detailTextLabel?.text = tracker.host
@@ -404,6 +414,7 @@ class DetailedTorrentViewController: FormViewController {
                     $0.cell.detailTextLabel?.text = formatter.string(from: TimeInterval(activeTime))
                 }
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         let formatter = DateComponentsFormatter()
                         formatter.allowedUnits = [.month, .day, .hour, .minute]
@@ -423,7 +434,7 @@ class DetailedTorrentViewController: FormViewController {
                         formatter.string(from: Date(timeIntervalSince1970: timeAdded))
                 }
                 }.cellUpdate { [weak self] cell, _ in
-
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         let formatter = DateFormatter()
                         formatter.dateFormat = "MM/dd/yyyy h:mm a"
@@ -439,6 +450,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.cell.row.hidden = Condition(booleanLiteral: torrentData?.comment
                     .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
                 }.cellUpdate {[weak self] cell, row in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     DispatchQueue.main.async {
                         guard let torrentData = self?.torrentData else { return }
 
@@ -479,12 +491,12 @@ class DetailedTorrentViewController: FormViewController {
                 $0.tag = TorrentOptionsCodingKeys.maxDownloadSpeed.rawValue
                 $0.value = Int(torrentData?.max_download_speed ?? -1)
                 $0.cell.textField.text = "\(Int(torrentData?.max_download_speed ?? -1))"
+                $0.cell.textField.textColor = .red
                 $0.cell.textField.keyboardType = .numbersAndPunctuation
                 $0.add(rule: RuleRequired())
                 $0.validationOptions = .validatesOnChange
                 }.cellUpdate { [weak self] cell, _ in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
-
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.textField.text = "\(Int(torrentData.max_download_speed))"
@@ -503,7 +515,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.add(rule: RuleRequired())
                 $0.validationOptions = .validatesOnChange
                 }.cellUpdate { [weak self] cell, _ in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.textField.text = "\(Int(torrentData.max_upload_speed))"
@@ -521,7 +533,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.add(rule: RuleRequired())
                 $0.validationOptions = .validatesOnChange
                 }.cellUpdate { [weak self] cell, _ in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.textField.text = "\(torrentData.max_connections)"
@@ -539,7 +551,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.add(rule: RuleRequired())
                 $0.validationOptions = .validatesOnChange
                 }.cellUpdate { [weak self] cell, _ in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.textField.text = "\(torrentData.max_upload_slots)"
@@ -555,6 +567,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.tag = TorrentOptionsCodingKeys.autoManaged.rawValue
                 }
                 .cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.switchControl.setOn(torrentData.is_auto_managed, animated: true)
@@ -568,7 +581,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.tag = TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue
                 $0.value = torrentData?.stop_at_ratio.value
                 }.cellUpdate { [weak self] cell, _ in
-
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             DispatchQueue.main.async {
@@ -591,7 +604,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.add(rule: RuleRequired())
                 $0.validationOptions = .validatesOnChange
                 }.cellUpdate { [weak self] cell, _ in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.textField.text = "\(torrentData.stop_ratio)"
@@ -608,6 +621,7 @@ class DetailedTorrentViewController: FormViewController {
                     return !((form.rowBy(tag: TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue) as? SwitchRow)?.value ?? false)
                 }
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.switchControl.setOn(torrentData.remove_at_ratio, animated: true)
@@ -621,6 +635,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.tag = TorrentOptionsCodingKeys.moveCompleted.rawValue
                 $0.value = torrentData?.move_completed.value
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             DispatchQueue.main.async {
@@ -642,7 +657,7 @@ class DetailedTorrentViewController: FormViewController {
                 $0.validationOptions = .validatesOnChange
 
                 }.cellUpdate { [weak self] cell, _ in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.row.value = torrentData.move_completed_path
@@ -656,6 +671,8 @@ class DetailedTorrentViewController: FormViewController {
                 $0.tag = TorrentOptionsCodingKeys.prioritizeFirstLastPieces.rawValue
                 $0.value = torrentData?.prioritize_first_last
                 }.cellUpdate { [weak self] cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
+
                     if let torrentData = self?.torrentData {
                         if !cell.row.wasChanged {
                             cell.row.value = torrentData.prioritize_first_last
@@ -726,7 +743,7 @@ class DetailedTorrentViewController: FormViewController {
         ]
 
         ClientManager.shared.activeClient?.setTorrentOptions(hash: torrentHash, options: params)
-            .then { [weak self] _ -> Void in
+            .done { [weak self] _ -> Void in
                 self?.view.showHUD(title: "Updated Torrent Options")
             }
             .catch { [weak self] error -> Void in
@@ -750,7 +767,7 @@ class DetailedTorrentViewController: FormViewController {
                 let torrentHash = self?.torrentHash
             else { return }
             ClientManager.shared.activeClient?.moveTorrent(hash: torrentHash, filepath: filepath)
-                .then { [weak self] _ -> Void in
+                .done { [weak self] _ in
                     DispatchQueue.main.async {
                         self?.view.showHUD(title: "Moved Torrent", type: .success)
                     }
@@ -781,18 +798,18 @@ class DetailedTorrentViewController: FormViewController {
     }
 
     func getTorrentData(withHash hash: String) {
-        ClientManager.shared.activeClient?.getTorrentDetails(withHash: hash).then { [weak self] torrent -> Void in
-            Logger.verbose("New Detail VC Data")
+        ClientManager.shared.activeClient?.getTorrentDetails(withHash: hash)
+            .done { [weak self] torrent in
+                Logger.verbose("New Detail VC Data")
 
-            self?.torrentData = torrent
-            self?.playPauseItem.image = torrent.paused ?  #imageLiteral(resourceName: "play_filled") : #imageLiteral(resourceName: "icons8-pause")
+                self?.torrentData = torrent
+                self?.playPauseItem.image = torrent.paused ?  #imageLiteral(resourceName: "play_filled") : #imageLiteral(resourceName: "icons8-pause")
 
-            self?.form.allRows.forEach { row in
-                DispatchQueue.main.async {
-                    row.updateCell()
+                self?.form.allRows.forEach { row in
+                    DispatchQueue.main.async {
+                        row.updateCell()
+                    }
                 }
-            }
-
             }.catch { [weak self] error in
                 if let self = self, let error = error as? ClientError {
                     let okButton = UIAlertAction(title: "Bummer", style: .default) { _ in

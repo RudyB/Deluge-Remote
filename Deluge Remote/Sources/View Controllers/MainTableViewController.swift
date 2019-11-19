@@ -356,7 +356,7 @@ class MainTableViewController: UITableViewController {
 
         firstly {
             client.authenticateAndConnect()
-        }.then { [weak self] _ -> Void in
+        }.done { [weak self] _ in
             Logger.info("User Authenticated")
             self?.isHostOnline = true
 
@@ -411,17 +411,24 @@ class MainTableViewController: UITableViewController {
         guard let client = ClientManager.shared.activeClient else { return }
         Logger.verbose("Attempting to get all torrents")
 
+        var status: SessionStatus?
+
         firstly {
             client.getAllTorrents()
-        }.then { [weak self] data -> Void in
+        }.done { [weak self] data -> Void in
             self?.tableViewDataSource = data
             self?.reloadTableView()
-        }.then {
-              client.getSessionStatus()
-        }.then { [weak self] status -> Void in
-            self?.currentDownloadSpeedLabel.text = "↓ \(status.payload_download_rate.transferRateString())"
-            self?.currentUploadSpeedLabel.text = "↑ \(status.payload_upload_rate.transferRateString())"
-        }.then { [weak self] _ -> Void in
+        }.done {_ in
+            status = try client.getSessionStatus().wait()
+        }.done { [weak self] in
+
+            let download  = status != nil ? status!.payload_download_rate.transferRateString() : ""
+            let upload = status != nil ? status!.payload_upload_rate.transferRateString()
+                : ""
+
+            self?.currentDownloadSpeedLabel.text = "↓ \(download)"
+            self?.currentUploadSpeedLabel.text = "↑ \(upload)"
+        }.done { [weak self] _ -> Void in
             self?.updateHeader()
             self?.delayedExecuteNextStep()
         }.catch { [weak self] error in
@@ -457,7 +464,7 @@ class MainTableViewController: UITableViewController {
     func pauseAllTorrents() {
         ClientManager.shared.activeClient?.pauseAllTorrents { [weak self] result in
             guard let self = self else { return }
-            var haptic: UINotificationFeedbackGenerator?  = UINotificationFeedbackGenerator()
+            let haptic: UINotificationFeedbackGenerator?  = UINotificationFeedbackGenerator()
             haptic?.prepare()
             switch result {
             case .success:
@@ -547,7 +554,7 @@ class MainTableViewController: UITableViewController {
         if currentItem.state == "Error" {
             cell.currentStatusLabel.textColor = UIColor.red
         } else {
-            cell.currentStatusLabel.textColor = UIColor.black
+            cell.currentStatusLabel.textColor = ColorCompatibility.label
         }
         cell.downloadSpeedLabel.text =
         "\(byteCountFormatter.string(fromByteCount: Int64(currentItem.download_payload_rate))) ↓"
@@ -586,7 +593,7 @@ class MainTableViewController: UITableViewController {
                 let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { [weak self] _ in
 
                     ClientManager.shared.activeClient?.removeTorrent(withHash: cell.torrentHash, removeData: false)
-                        .then { [weak self] _ -> Void in
+                        .done { [weak self] _ in
                             guard let self = self else { return }
                             if self.isFiltering() {
                                 self.tableViewDataSource?.removeAll {
@@ -610,7 +617,7 @@ class MainTableViewController: UITableViewController {
                 let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { [weak self] _ in
 
                     ClientManager.shared.activeClient?.removeTorrent(withHash: cell.torrentHash, removeData: false)
-                        .then { [weak self] _ -> Void in
+                        .done { [weak self] _ in
                             guard let self = self else { return }
                             if self.isFiltering() {
                                 self.tableViewDataSource?.removeAll {

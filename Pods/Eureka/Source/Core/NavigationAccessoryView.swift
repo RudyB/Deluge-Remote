@@ -65,10 +65,9 @@ open class NavigationAccessoryView: UIToolbar, NavigationAccessory {
         var imageLeftChevron = UIImage(named: "back-chevron", in: bundle, compatibleWith: nil)
         var imageRightChevron = UIImage(named: "forward-chevron", in: bundle, compatibleWith: nil)
         // RTL language support
-        if #available(iOS 9.0, *) {
-            imageLeftChevron = imageLeftChevron?.imageFlippedForRightToLeftLayoutDirection()
-            imageRightChevron = imageRightChevron?.imageFlippedForRightToLeftLayoutDirection()
-        }
+        imageLeftChevron = imageLeftChevron?.imageFlippedForRightToLeftLayoutDirection()
+        imageRightChevron = imageRightChevron?.imageFlippedForRightToLeftLayoutDirection()
+        
 
         previousButton = UIBarButtonItem(image: imageLeftChevron, style: .plain, target: self, action: #selector(didTapPrevious))
         nextButton = UIBarButtonItem(image: imageRightChevron, style: .plain, target: self, action: #selector(didTapNext))
@@ -97,7 +96,7 @@ open class NavigationAccessoryView: UIToolbar, NavigationAccessory {
             return previousButton.isEnabled
         }
         set {
-            previousButton.isEnabled = previousEnabled
+            previousButton.isEnabled = newValue
         }
     }
 
@@ -106,7 +105,7 @@ open class NavigationAccessoryView: UIToolbar, NavigationAccessory {
             return nextButton.isEnabled
         }
         set {
-            nextButton.isEnabled = nextEnabled
+            nextButton.isEnabled = newValue
         }
     }
 }

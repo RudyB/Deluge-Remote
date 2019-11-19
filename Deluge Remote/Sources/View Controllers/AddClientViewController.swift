@@ -62,7 +62,7 @@ class AddClientViewController: UITableViewController {
 
             tempClient = DelugeClient(config: tempConfig)
             tempClient?.authenticateAndConnect()
-                .then { [weak self] _ -> Void in
+                .done { [weak self] in
                     guard let self = self else { return }
                     DispatchQueue.main.async {
                         MBProgressHUD.hide(for: self.view, animated: true)
