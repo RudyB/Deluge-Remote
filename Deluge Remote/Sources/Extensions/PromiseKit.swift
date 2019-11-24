@@ -15,7 +15,7 @@ func attempt<T>(maximumRetryCount: Int = 3, delayBeforeRetry: DispatchTimeInterv
         attempts += 1
         return body().recover { error -> Promise<T> in
             guard attempts < maximumRetryCount else { throw error }
-            return after(interval: delayBeforeRetry).then(execute: attempt)
+            return after(delayBeforeRetry).then(attempt)
         }
     }
     return attempt()
