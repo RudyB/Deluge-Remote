@@ -8,19 +8,10 @@ target 'Deluge Remote' do
   # Pods for Deluge Remote
   use_frameworks!
   pod 'Alamofire'
-  pod "PromiseKit"
-  pod 'Valet'
   pod 'Eureka'
+  pod 'PromiseKit'
+  pod 'Valet'
   pod 'MBProgressHUD'
   pod 'Houston'
 end
 
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    if ['PromiseKit'].include? target.name
-      target.build_configurations.each do |config|
-        config.build_settings['SWIFT_VERSION'] = '4.0'
-      end
-    end
-  end
-end

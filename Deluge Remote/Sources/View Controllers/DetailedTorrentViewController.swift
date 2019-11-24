@@ -491,7 +491,6 @@ class DetailedTorrentViewController: FormViewController {
                 $0.tag = TorrentOptionsCodingKeys.maxDownloadSpeed.rawValue
                 $0.value = Int(torrentData?.max_download_speed ?? -1)
                 $0.cell.textField.text = "\(Int(torrentData?.max_download_speed ?? -1))"
-                $0.cell.textField.textColor = .red
                 $0.cell.textField.keyboardType = .numbersAndPunctuation
                 $0.add(rule: RuleRequired())
                 $0.validationOptions = .validatesOnChange

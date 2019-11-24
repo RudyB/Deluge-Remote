@@ -756,6 +756,7 @@ class DelugeClient {
      See: [http://www.rasterbar.com/products/libtorrent/manual.html#status](http://www.rasterbar.com/products/libtorrent/manual.html#status)
      
      */
+    @discardableResult
     func getSessionStatus() -> Promise<SessionStatus> {
         // swiftlint:disable:previous function_body_length
         return Promise { seal in

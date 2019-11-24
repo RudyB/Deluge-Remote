@@ -410,25 +410,21 @@ class MainTableViewController: UITableViewController {
 
         guard let client = ClientManager.shared.activeClient else { return }
         Logger.verbose("Attempting to get all torrents")
-
-        var status: SessionStatus?
-
         firstly {
             client.getAllTorrents()
         }.done { [weak self] data -> Void in
             self?.tableViewDataSource = data
             self?.reloadTableView()
-        }.done {_ in
-            status = try client.getSessionStatus().wait()
-        }.done { [weak self] in
+        }.then { _ in
+            client.getSessionStatus()
+        }.done { [weak self] status in
 
-            let download  = status != nil ? status!.payload_download_rate.transferRateString() : ""
-            let upload = status != nil ? status!.payload_upload_rate.transferRateString()
-                : ""
+            let download  = status.payload_download_rate.transferRateString()
+            let upload = status.payload_upload_rate.transferRateString()
 
             self?.currentDownloadSpeedLabel.text = "↓ \(download)"
             self?.currentUploadSpeedLabel.text = "↑ \(upload)"
-        }.done { [weak self] _ -> Void in
+        }.done { [weak self] _ in
             self?.updateHeader()
             self?.delayedExecuteNextStep()
         }.catch { [weak self] error in
