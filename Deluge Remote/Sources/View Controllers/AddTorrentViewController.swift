@@ -145,7 +145,8 @@ class AddTorrentViewController: FormViewController {
                 $0.tag = CodingKeys.magnetURL.rawValue
                 $0.validationOptions = .validatesOnBlur
                 $0.hidden = Condition.function([CodingKeys.torrentType.rawValue]) { form in
-                    let selection = (form.rowBy(tag: CodingKeys.torrentType.rawValue)as? SegmentedRow<String>)?.value ?? ""
+                    let selection = (form.rowBy(tag: CodingKeys.torrentType.rawValue)
+                        as? SegmentedRow<String>)?.value ?? ""
                     return selection != "Magnet Link"
                 }
                 }.cellUpdate { cell, _ in

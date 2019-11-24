@@ -38,7 +38,7 @@ class DetailedTorrentViewController: FormViewController {
         let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .destructive) { [weak self] _ in
             self?.invalidateTimer()
             guard let self = self, let torrentHash = self.torrentHash else { return }
-            var haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
+            let haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
             haptic?.prepare()
             ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: false)
                 .done {_ in
@@ -58,10 +58,11 @@ class DetailedTorrentViewController: FormViewController {
                 }
         }
 
-        let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .destructive) { [weak self] _ in
+        let deleteTorrentWithData = UIAlertAction(
+            title: "Delete Torrent with Data", style: .destructive) { [weak self] _ in
             self?.invalidateTimer()
             guard let self = self, let torrentHash = self.torrentHash else { return }
-            var haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
+            let haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
             haptic?.prepare()
             ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: true)
                 .done {_ in
@@ -597,7 +598,9 @@ class DetailedTorrentViewController: FormViewController {
                 $0.tag = TorrentOptionsCodingKeys.stopRatio.rawValue
                 $0.value = torrentData?.stop_ratio
                 $0.hidden = Condition.function([TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue]) { form -> Bool in
-                    return !((form.rowBy(tag: TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue) as? SwitchRow)?.value ?? false)
+                    return !((form.rowBy(tag:
+                        TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue)
+                        as? SwitchRow)?.value ?? false)
                 }
                 $0.cell.textField.keyboardType = .numbersAndPunctuation
                 $0.add(rule: RuleRequired())
@@ -617,7 +620,9 @@ class DetailedTorrentViewController: FormViewController {
                 $0.tag = TorrentOptionsCodingKeys.remoteAtRatio.rawValue
                 $0.value = torrentData?.remove_at_ratio
                 $0.hidden = Condition.function([TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue]) { form -> Bool in
-                    return !((form.rowBy(tag: TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue) as? SwitchRow)?.value ?? false)
+                    return !((form.rowBy(tag:
+                        TorrentOptionsCodingKeys.stopSeedAtRatio.rawValue)
+                        as? SwitchRow)?.value ?? false)
                 }
                 }.cellUpdate { [weak self] cell, _ in
                     cell.textLabel?.textColor = ColorCompatibility.label
@@ -650,7 +655,9 @@ class DetailedTorrentViewController: FormViewController {
                 $0.tag = TorrentOptionsCodingKeys.moveCompletedPath.rawValue
                 $0.value = torrentData?.move_completed_path
                 $0.hidden = Condition.function([TorrentOptionsCodingKeys.moveCompleted.rawValue]) { form -> Bool in
-                    return !((form.rowBy(tag: TorrentOptionsCodingKeys.moveCompleted.rawValue) as? SwitchRow)?.value ?? false)
+                    return !((form.rowBy(tag:
+                        TorrentOptionsCodingKeys.moveCompleted.rawValue) as? SwitchRow)?
+                        .value ?? false)
                 }
                 $0.add(rule: RuleRequired())
                 $0.validationOptions = .validatesOnChange

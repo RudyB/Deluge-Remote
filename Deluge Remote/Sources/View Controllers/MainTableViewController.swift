@@ -610,7 +610,8 @@ class MainTableViewController: UITableViewController {
 
                     }
 
-                let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { [weak self] _ in
+                let deleteTorrentWithData = UIAlertAction(
+                    title: "Delete Torrent with Data", style: .default) { [weak self] _ in
 
                     ClientManager.shared.activeClient?.removeTorrent(withHash: cell.torrentHash, removeData: false)
                         .done { [weak self] _ in

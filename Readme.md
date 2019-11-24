@@ -1,4 +1,7 @@
 # Deluge Remote
+[![Build Status](https://travis-ci.com/RudyB/Deluge-Remote.svg?branch=master)](https://travis-ci.com/RudyB/Deluge-Remote)
+![Swift Version](https://img.shields.io/badge/swift-5.0-brightgreen.svg)
+[![HitCount](http://hits.dwyl.io/RudyB/Deluge-Remote.svg)](http://hits.dwyl.io/RudyB/Deluge-Remote)
 
 Deluge Remote is a torrent remote controller for the Deluge Torrent Client (Written in Swift for iOS 12)
 
