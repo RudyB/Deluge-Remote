@@ -7,11 +7,11 @@ inhibit_all_warnings!
 target 'Deluge Remote' do
   # Pods for Deluge Remote
   use_frameworks!
-  pod 'Alamofire'
-  pod 'Eureka'
-  pod 'PromiseKit'
-  pod 'Valet'
-  pod 'MBProgressHUD'
-  pod 'Houston'
+  pod 'Alamofire', '~> 4.9'
+  pod 'Eureka', '~> 5.1'
+  pod 'PromiseKit', '~> 6.8'
+  pod 'Valet', '~> 3.2'
+  pod 'MBProgressHUD', '~> 1.1'
+  pod 'Houston', '~> 0.2'
 end
 

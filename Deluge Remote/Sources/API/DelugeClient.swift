@@ -353,7 +353,8 @@ class DelugeClient {
                         encoding: JSONEncoding.default).validate().responseJSON(queue: utilityQueue) { response in
                             switch response.result {
                             case .success: onCompletion(APIResult.success(()))
-                            case .failure(let error): onCompletion(APIResult.failure(ClientError.unableToResumeTorrent(error)))
+                            case .failure(let error): onCompletion(APIResult.failure(
+                                ClientError.unableToResumeTorrent(error)))
                             }
         }
     }
@@ -581,7 +582,8 @@ class DelugeClient {
                                 let info = TorrentInfo(name: torrentName, hash: torrentHash,
                                                        isDirectory: type == "dir", files: files)
                                 seal.fulfill(info)
-                            case .failure(let error): seal.reject(ClientError.unexpectedError(error.localizedDescription))
+                            case .failure(let error): seal.reject(
+                                ClientError.unexpectedError(error.localizedDescription))
                             }
                     }
 
@@ -807,17 +809,17 @@ class DelugeClient {
             Manager.request(clientConfig.url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
                 .validate().responseData(queue: utilityQueue) { response in
                     switch response.result {
-                        case .success(let data):
-                            do {
-                                let torrent = try JSONDecoder().decode(DelugeResponse<SessionStatus>.self, from: data )
-                                seal.fulfill(torrent.result)
-                            } catch let error {
-                                Logger.error(error)
-                                seal.reject(ClientError.torrentCouldNotBeParsed)
-                            }
+                    case .success(let data):
+                        do {
+                            let torrent = try JSONDecoder().decode(DelugeResponse<SessionStatus>.self, from: data )
+                            seal.fulfill(torrent.result)
+                        } catch let error {
+                            Logger.error(error)
+                            seal.reject(ClientError.torrentCouldNotBeParsed)
+                        }
 
-                        case .failure(let error):
-                            seal.reject(ClientError.unexpectedError(error.localizedDescription))
+                    case .failure(let error):
+                        seal.reject(ClientError.unexpectedError(error.localizedDescription))
                     }
             }
         }

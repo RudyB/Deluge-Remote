@@ -15,12 +15,12 @@ PODS:
   - Valet (3.2.6)
 
 DEPENDENCIES:
-  - Alamofire
-  - Eureka
-  - Houston
-  - MBProgressHUD
-  - PromiseKit
-  - Valet
+  - Alamofire (~> 4.9)
+  - Eureka (~> 5.1)
+  - Houston (~> 0.2)
+  - MBProgressHUD (~> 1.1)
+  - PromiseKit (~> 6.8)
+  - Valet (~> 3.2)
 
 SPEC REPOS:
   trunk:
@@ -39,6 +39,6 @@ SPEC CHECKSUMS:
   PromiseKit: c06835ba442ce5454ce3cdde470232804a6e4ff8
   Valet: dcc4ff74f0d010be665239ab89c7a4a5cd39ee33
 
-PODFILE CHECKSUM: ee9ae8a12ec06469e116f05e2de2b1c44424c98a
+PODFILE CHECKSUM: dc3d89ae3315ad84eebfc4f17b7502bff3781fa0
 
 COCOAPODS: 1.8.4
