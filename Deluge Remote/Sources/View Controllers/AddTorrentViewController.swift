@@ -74,7 +74,7 @@ class AddTorrentViewController: FormViewController {
 
     func handleFormConfigurationFor(fileURL: URL) {
         ClientManager.shared.activeClient?.getTorrentInfo(fileURL: fileURL)
-            .always { [weak self] in
+            .ensure { [weak self] in
                 if let self = self {
                     DispatchQueue.main.async {
                         MBProgressHUD.hide(for: self.view, animated: true)
@@ -82,7 +82,7 @@ class AddTorrentViewController: FormViewController {
                 }
 
             }
-            .then { [weak self] torrentInfo -> Void in
+            .done { [weak self] torrentInfo in
                 DispatchQueue.main.async {
                     self?.showTorrentConfig(name: torrentInfo.name, hash: torrentInfo.hash, url: fileURL)
                 }
@@ -102,14 +102,14 @@ class AddTorrentViewController: FormViewController {
 
     func handleFormConfigurationFor(magnetURL: URL) {
         ClientManager.shared.activeClient?.getMagnetInfo(url: magnetURL)
-            .always { [weak self] in
+            .ensure { [weak self] in
                 if let self = self {
                     DispatchQueue.main.async {
                         MBProgressHUD.hide(for: self.view, animated: true)
                     }
                 }
             }
-            .then { [weak self] output -> Void in
+            .done { [weak self] output in
                 DispatchQueue.main.async {
                     self?.showTorrentConfig(name: output.name, hash: output.hash, url: magnetURL)
                 }
@@ -145,10 +145,11 @@ class AddTorrentViewController: FormViewController {
                 $0.tag = CodingKeys.magnetURL.rawValue
                 $0.validationOptions = .validatesOnBlur
                 $0.hidden = Condition.function([CodingKeys.torrentType.rawValue]) { form in
-                    let selection = (form.rowBy(tag: CodingKeys.torrentType.rawValue)
-                        as? SegmentedRow<String>)?.value ?? ""
+                    let selection = (form.rowBy(tag: CodingKeys.torrentType.rawValue)as? SegmentedRow<String>)?.value ?? ""
                     return selection != "Magnet Link"
                 }
+                }.cellUpdate { cell, _ in
+                    cell.textLabel?.textColor = ColorCompatibility.label
                 }.onRowValidationChanged { cell, row in
                     if !row.isValid {
                         cell.titleLabel?.textColor = .red
@@ -233,7 +234,7 @@ class AddTorrentViewController: FormViewController {
                         self?.defaultConfig?.maxDownloadSpeed = value
                     }
                 }.cellUpdate { [weak self] cell, row in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
 
                     if !row.wasChanged {
                         if let speed = self?.defaultConfig?.maxDownloadSpeed {
@@ -254,7 +255,7 @@ class AddTorrentViewController: FormViewController {
                         self?.defaultConfig?.maxUploadSpeed = value
                     }
                 }.cellUpdate { [weak self] cell, row in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
                     if !row.wasChanged {
                         if let speed = self?.defaultConfig?.maxUploadSpeed {
                             row.cell.textField?.text = "\(speed)"
@@ -275,7 +276,7 @@ class AddTorrentViewController: FormViewController {
                         self?.defaultConfig?.maxConnections = value
                     }
                 }.cellUpdate { [weak self] cell, row in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
                     if !row.wasChanged {
                         if let connections = self?.defaultConfig?.maxConnections {
                             row.cell.textField?.text = "\(connections)"
@@ -296,7 +297,7 @@ class AddTorrentViewController: FormViewController {
                         self?.defaultConfig?.maxUploadSlots = value
                     }
                 }.cellUpdate { [weak self] cell, row in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
                     if !row.wasChanged {
                         if let slots = self?.defaultConfig?.maxUploadSlots {
                             row.cell.textField?.text = "\(slots)"
@@ -320,7 +321,7 @@ class AddTorrentViewController: FormViewController {
                         self?.defaultConfig?.downloadLocation = value
                     }
                 }.cellUpdate { [weak self] cell, row in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
                     if !row.wasChanged {
                         row.value = self?.defaultConfig?.downloadLocation
                         row.cell.textField?.text = self?.defaultConfig?.downloadLocation
@@ -356,7 +357,7 @@ class AddTorrentViewController: FormViewController {
                         self?.defaultConfig?.moveCompletedPath = value
                     }
                 }.cellUpdate { [weak self] cell, row in
-                    cell.titleLabel?.textColor = cell.row.isValid ? .black : .red
+                    cell.titleLabel?.textColor = cell.row.isValid ? ColorCompatibility.label : .red
                     if !row.wasChanged {
                         row.value = self?.defaultConfig?.moveCompletedPath
                         row.cell.textField?.text = self?.defaultConfig?.moveCompletedPath
@@ -444,13 +445,13 @@ class AddTorrentViewController: FormViewController {
 
     func addTorrentFile(fileName: String, hash: String, url: URL, config: TorrentConfig) {
         ClientManager.shared.activeClient?.addTorrentFile(fileName: fileName, url: url, with: config)
-            .always { [weak self] in
+            .ensure { [weak self] in
                 guard let self = self else { return }
                 DispatchQueue.main.async {
                     MBProgressHUD.hide(for: self.view, animated: true)
                 }
             }
-            .then { [weak self] _ -> Void in
+            .done { [weak self] _ in
                 guard let self = self else { return }
                 self.view.showHUD(title: "Torrent Successfully Added") {
                     if let onTorrentAdded = self.onTorrentAdded {
@@ -465,13 +466,13 @@ class AddTorrentViewController: FormViewController {
 
     func addMagnetLink(url: URL, hash: String, config: TorrentConfig) {
         ClientManager.shared.activeClient?.addTorrentMagnet(url: url, with: config)
-            .always { [weak self] in
+            .ensure { [weak self] in
                 guard let self = self else { return }
                 DispatchQueue.main.async {
                     MBProgressHUD.hide(for: self.view, animated: true)
                 }
             }
-            .then { [weak self] _ -> Void in
+            .done { [weak self] _ in
                 guard let self = self else { return }
                 self.view.showHUD(title: "Torrent Successfully Added") {
                     if let onTorrentAdded = self.onTorrentAdded {
@@ -487,9 +488,8 @@ class AddTorrentViewController: FormViewController {
     func getTorrentConfig() {
         guard let client = ClientManager.shared.activeClient else { return }
 
-        attempt { client.authenticateAndConnect() }
-        .then { client.getAddTorrentConfig()}
-        .then { [weak self] config -> Void in
+        when(fulfilled: client.authenticateAndConnect(), client.getAddTorrentConfig())
+        .done { [weak self] _, config in
             self?.defaultConfig = config
             self?.form.sectionBy(tag: CodingKeys.bandwidthConfig.rawValue)?.allRows.forEach { $0.updateCell() }
             self?.form.sectionBy(tag: CodingKeys.queueConfig.rawValue)?.allRows.forEach { $0.updateCell() }

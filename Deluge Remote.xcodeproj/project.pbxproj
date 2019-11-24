@@ -39,11 +39,13 @@
 		47D035651DD81BA4003BB2A0 /* DetailedTorrentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035641DD81BA4003BB2A0 /* DetailedTorrentViewController.swift */; };
 		47F9C73321DC66790017281C /* TorrentConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F9C73221DC66790017281C /* TorrentConfig.swift */; };
 		47F9C73621DC6EB80017281C /* AddTorrentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */; };
-		72AAC9B3468CEA7F804E6174 /* Pods_Deluge_Remote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CF321A6D6B9C0D635A92898 /* Pods_Deluge_Remote.framework */; };
+		7FD0633023848DC00087768F /* ColorCompatibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD0632F23848DC00087768F /* ColorCompatibility.swift */; };
+		9C068D981A3EADC993C51FF8 /* Pods_Deluge_Remote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65C63292489228B2E7C00946 /* Pods_Deluge_Remote.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3CF321A6D6B9C0D635A92898 /* Pods_Deluge_Remote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Deluge_Remote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		33937833BEFC95D5B10F19E4 /* Pods-Deluge Remote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Deluge Remote.debug.xcconfig"; path = "Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote.debug.xcconfig"; sourceTree = "<group>"; };
+		38A1CF2297BE28B0451C4BFE /* Pods-Deluge Remote.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Deluge Remote.release.xcconfig"; path = "Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote.release.xcconfig"; sourceTree = "<group>"; };
 		4716022E1DD4305800727CBD /* Deluge Remote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Deluge Remote.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		471602311DD4305800727CBD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		471602361DD4305800727CBD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -80,8 +82,8 @@
 		47D035641DD81BA4003BB2A0 /* DetailedTorrentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedTorrentViewController.swift; sourceTree = "<group>"; };
 		47F9C73221DC66790017281C /* TorrentConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentConfig.swift; sourceTree = "<group>"; };
 		47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTorrentViewController.swift; sourceTree = "<group>"; };
-		7929AB3E6A9A03F5F329C3D6 /* Pods-Deluge Remote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Deluge Remote.debug.xcconfig"; path = "Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote.debug.xcconfig"; sourceTree = "<group>"; };
-		EB81C83C0B88BC001F3F4E1D /* Pods-Deluge Remote.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Deluge Remote.release.xcconfig"; path = "Target Support Files/Pods-Deluge Remote/Pods-Deluge Remote.release.xcconfig"; sourceTree = "<group>"; };
+		65C63292489228B2E7C00946 /* Pods_Deluge_Remote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Deluge_Remote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FD0632F23848DC00087768F /* ColorCompatibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorCompatibility.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,7 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				72AAC9B3468CEA7F804E6174 /* Pods_Deluge_Remote.framework in Frameworks */,
+				9C068D981A3EADC993C51FF8 /* Pods_Deluge_Remote.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,8 +101,8 @@
 		05F2419722EE8DEE076C4BE1 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				7929AB3E6A9A03F5F329C3D6 /* Pods-Deluge Remote.debug.xcconfig */,
-				EB81C83C0B88BC001F3F4E1D /* Pods-Deluge Remote.release.xcconfig */,
+				33937833BEFC95D5B10F19E4 /* Pods-Deluge Remote.debug.xcconfig */,
+				38A1CF2297BE28B0451C4BFE /* Pods-Deluge Remote.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -111,7 +113,7 @@
 				471602301DD4305800727CBD /* Deluge Remote */,
 				4716022F1DD4305800727CBD /* Products */,
 				05F2419722EE8DEE076C4BE1 /* Pods */,
-				C1FA34A85A4B02DE8E5210DB /* Frameworks */,
+				CDA6E99FECF16F0F569C4B34 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -239,16 +241,17 @@
 		47B0E3D521E07C0A00E3056A /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				7FD0632F23848DC00087768F /* ColorCompatibility.swift */,
 				47B0E3D621E07C0A00E3056A /* CustomAlert.swift */,
 				47599CAC21E30BB3001CD9C7 /* HUDAlert.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		C1FA34A85A4B02DE8E5210DB /* Frameworks */ = {
+		CDA6E99FECF16F0F569C4B34 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3CF321A6D6B9C0D635A92898 /* Pods_Deluge_Remote.framework */,
+				65C63292489228B2E7C00946 /* Pods_Deluge_Remote.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -260,12 +263,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 471602401DD4305800727CBD /* Build configuration list for PBXNativeTarget "Deluge Remote" */;
 			buildPhases = (
-				C0FA977EA62C1C691D4D3CA0 /* [CP] Check Pods Manifest.lock */,
+				35D9B25181A3794AB1282A94 /* [CP] Check Pods Manifest.lock */,
 				4716022A1DD4305800727CBD /* Sources */,
 				4716022B1DD4305800727CBD /* Frameworks */,
 				4716022C1DD4305800727CBD /* Resources */,
 				477D7B4121D9DE5100F78CE1 /* ShellScript */,
-				EE642DF39132760684EE9DF4 /* [CP] Embed Pods Frameworks */,
+				885321AE86B479BBCFE6A669 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -304,10 +307,9 @@
 			};
 			buildConfigurationList = 471602291DD4305800727CBD /* Build configuration list for PBXProject "Deluge Remote" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -337,24 +339,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		477D7B4121D9DE5100F78CE1 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\nswiftlint autocorrect\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
-		};
-		C0FA977EA62C1C691D4D3CA0 /* [CP] Check Pods Manifest.lock */ = {
+		35D9B25181A3794AB1282A94 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -376,7 +361,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		EE642DF39132760684EE9DF4 /* [CP] Embed Pods Frameworks */ = {
+		477D7B4121D9DE5100F78CE1 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\nswiftlint autocorrect\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+		885321AE86B479BBCFE6A669 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -431,6 +433,7 @@
 				477BFAEF21E442F8008E80CF /* DelugeRequestRetrier.swift in Sources */,
 				47C22F42235643AB00E85A30 /* PromiseKit.swift in Sources */,
 				471602791DD433A700727CBD /* DelugeClient.swift in Sources */,
+				7FD0633023848DC00087768F /* ColorCompatibility.swift in Sources */,
 				47B0E3CA21E079ED00E3056A /* TorrentOverview.swift in Sources */,
 				47A716AD21DE86C200C7650C /* DelugeBool.swift in Sources */,
 				471602321DD4305800727CBD /* AppDelegate.swift in Sources */,
@@ -580,10 +583,11 @@
 		};
 		471602411DD4305800727CBD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7929AB3E6A9A03F5F329C3D6 /* Pods-Deluge Remote.debug.xcconfig */;
+			baseConfigurationReference = 33937833BEFC95D5B10F19E4 /* Pods-Deluge Remote.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "Deluge Remote/Deluge Remote.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NZ8449Y9W6;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",
@@ -594,6 +598,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
@@ -604,10 +609,11 @@
 		};
 		471602421DD4305800727CBD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EB81C83C0B88BC001F3F4E1D /* Pods-Deluge Remote.release.xcconfig */;
+			baseConfigurationReference = 38A1CF2297BE28B0451C4BFE /* Pods-Deluge Remote.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "Deluge Remote/Deluge Remote.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NZ8449Y9W6;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",
@@ -618,6 +624,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;

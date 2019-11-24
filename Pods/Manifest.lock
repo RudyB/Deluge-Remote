@@ -1,31 +1,29 @@
 PODS:
-  - Alamofire (4.9.0)
-  - Eureka (4.3.1)
+  - Alamofire (4.9.1)
+  - Eureka (5.1.0)
   - Houston (0.2.2)
   - MBProgressHUD (1.1.0)
-  - PromiseKit (4.5.2):
-    - PromiseKit/Foundation (= 4.5.2)
-    - PromiseKit/QuartzCore (= 4.5.2)
-    - PromiseKit/UIKit (= 4.5.2)
-  - PromiseKit/CorePromise (4.5.2)
-  - PromiseKit/Foundation (4.5.2):
+  - PromiseKit (6.12.0):
+    - PromiseKit/CorePromise (= 6.12.0)
+    - PromiseKit/Foundation (= 6.12.0)
+    - PromiseKit/UIKit (= 6.12.0)
+  - PromiseKit/CorePromise (6.12.0)
+  - PromiseKit/Foundation (6.12.0):
     - PromiseKit/CorePromise
-  - PromiseKit/QuartzCore (4.5.2):
+  - PromiseKit/UIKit (6.12.0):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (4.5.2):
-    - PromiseKit/CorePromise
-  - Valet (3.2.3)
+  - Valet (3.2.6)
 
 DEPENDENCIES:
   - Alamofire
-  - Eureka (~> 4.3.0)
+  - Eureka
   - Houston
   - MBProgressHUD
-  - PromiseKit (~> 4.5.2)
-  - Valet (<= 3.2.3)
+  - PromiseKit
+  - Valet
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - Alamofire
     - Eureka
     - Houston
@@ -34,13 +32,13 @@ SPEC REPOS:
     - Valet
 
 SPEC CHECKSUMS:
-  Alamofire: afc3e7c6db61476cb45cdd23fed06bad03bbc321
-  Eureka: 28ea296f06710f6745266b71f17862048941a32d
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  Eureka: 18a5076dcf0c41f9cd9748aa1c42f4d11434bdae
   Houston: c5865bdca6bcec5b3ce6570c49fcd19392a29778
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
-  PromiseKit: 743e497a5f505a470d3bbbf4ce0663c1268af0a4
-  Valet: 4af0382d4a94db5c7861504f751884f653437d24
+  PromiseKit: c06835ba442ce5454ce3cdde470232804a6e4ff8
+  Valet: dcc4ff74f0d010be665239ab89c7a4a5cd39ee33
 
-PODFILE CHECKSUM: ff85ec8479ba0f63719e30d21b0cb0a6d8d729c6
+PODFILE CHECKSUM: ee9ae8a12ec06469e116f05e2de2b1c44424c98a
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.8.4
