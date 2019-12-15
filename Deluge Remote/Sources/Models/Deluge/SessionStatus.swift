@@ -20,7 +20,7 @@ struct SessionStatus: Decodable {
     /// unchoke_counter tells the number of seconds until the next optimistic unchoke change
     /// and the start of the next unchoke interval.
     /// These numbers may be reset prematurely if a peer that is unchoked disconnects or becomes notinterested.
-    let unchoke_counter: Int
+    let unchoke_counter: Int?
 
     /// total_payload_upload is the total transfers of payload only.
     /// The payload does not include the bittorrent protocol overhead,
@@ -37,34 +37,34 @@ struct SessionStatus: Decodable {
     /// outgoing connections that still hasn't completed the TCP connection.
     let num_peers: Int
 
-    let tracker_download_rate: Int
+    let tracker_download_rate: Double
 
-    let tracker_upload_rate: Int
+    let tracker_upload_rate: Double
 
     /// up_bandwidth_bytes_queue count the number of bytes the connections are waiting for to be able to send.
     let up_bandwidth_bytes_queue: Int
 
     let ip_overhead_upload_rate: Int
 
-    let dht_download_rate: Int
+    let dht_download_rate: Double
 
-    let total_ip_overhead_download: Int
+    let total_ip_overhead_download: Double
 
-    let total_dht_download: Int
+    let total_dht_download: Double
 
     let total_ip_overhead_upload: Int
 
     /// dht_total_allocations is the number of nodes allocated dynamically for a particular DHT lookup.
     /// This represents roughly the amount of memory used by the DHT.
-    let dht_total_allocations: Int
+    let dht_total_allocations: Int?
 
     /// The dht_node_cache is set to the number of nodes in the node cache.
     /// These nodes are used to replace the regular nodes in the routing table in case any of them becomes unresponsive.
     let dht_node_cache: Int
 
-    let dht_upload_rate: Int
+    let dht_upload_rate: Double
 
-    let download_rate: Int
+    let download_rate: Double
 
     let total_tracker_upload: Int
 
@@ -96,7 +96,7 @@ struct SessionStatus: Decodable {
     /// down_bandwidth_bytes_queue count the number of bytes the connections are waiting for to be able to receive.
     let down_bandwidth_bytes_queue: Int
 
-    let has_incoming_connections: Bool
+    let has_incoming_connections: DelugeBool?
 
     let ip_overhead_download_rate: Int
 
@@ -115,5 +115,5 @@ struct SessionStatus: Decodable {
     /// optimistic_unchoke_counter tells the number of seconds until the next optimistic unchoke change
     /// and the start of the next unchoke interval.
     /// These numbers may be reset prematurely if a peer that is unchoked disconnects or becomes notinterested.
-    let optimistic_unchoke_counter: Int
+    let optimistic_unchoke_counter: Int?
 }
