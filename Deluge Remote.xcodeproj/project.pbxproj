@@ -27,6 +27,7 @@
 		47A716AD21DE86C200C7650C /* DelugeBool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A716AC21DE86C200C7650C /* DelugeBool.swift */; };
 		47A716B221DEB7E200C7650C /* TorrentFile@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 47A716B121DEB7E200C7650C /* TorrentFile@3x.png */; };
 		47A716B421DEB9B300C7650C /* FileIcon2@3X.png in Resources */ = {isa = PBXBuildFile; fileRef = 47A716B321DEB9B300C7650C /* FileIcon2@3X.png */; };
+		47B0A170244296FA000FB0CB /* SplitViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B0A16F244296FA000FB0CB /* SplitViewDelegate.swift */; };
 		47B0E3CA21E079ED00E3056A /* TorrentOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B0E3C921E079ED00E3056A /* TorrentOverview.swift */; };
 		47B0E3CD21E07A1900E3056A /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B0E3CC21E07A1900E3056A /* MainTableViewCell.swift */; };
 		47B0E3D221E07B4200E3056A /* Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B0E3D121E07B4200E3056A /* Int.swift */; };
@@ -68,6 +69,7 @@
 		47A716AC21DE86C200C7650C /* DelugeBool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelugeBool.swift; sourceTree = "<group>"; };
 		47A716B121DEB7E200C7650C /* TorrentFile@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "TorrentFile@3x.png"; sourceTree = "<group>"; };
 		47A716B321DEB9B300C7650C /* FileIcon2@3X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "FileIcon2@3X.png"; sourceTree = "<group>"; };
+		47B0A16F244296FA000FB0CB /* SplitViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplitViewDelegate.swift; sourceTree = "<group>"; };
 		47B0E3C921E079ED00E3056A /* TorrentOverview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorrentOverview.swift; sourceTree = "<group>"; };
 		47B0E3CC21E07A1900E3056A /* MainTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTableViewCell.swift; sourceTree = "<group>"; };
 		47B0E3D121E07B4200E3056A /* Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
@@ -244,6 +246,7 @@
 				7FD0632F23848DC00087768F /* ColorCompatibility.swift */,
 				47B0E3D621E07C0A00E3056A /* CustomAlert.swift */,
 				47599CAC21E30BB3001CD9C7 /* HUDAlert.swift */,
+				47B0A16F244296FA000FB0CB /* SplitViewDelegate.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -432,6 +435,7 @@
 				477BFAF321E5D2A2008E80CF /* DelugeFileProgress.swift in Sources */,
 				477BFAEF21E442F8008E80CF /* DelugeRequestRetrier.swift in Sources */,
 				47C22F42235643AB00E85A30 /* PromiseKit.swift in Sources */,
+				47B0A170244296FA000FB0CB /* SplitViewDelegate.swift in Sources */,
 				471602791DD433A700727CBD /* DelugeClient.swift in Sources */,
 				7FD0633023848DC00087768F /* ColorCompatibility.swift in Sources */,
 				47B0E3CA21E079ED00E3056A /* TorrentOverview.swift in Sources */,
@@ -598,7 +602,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
@@ -624,7 +628,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;

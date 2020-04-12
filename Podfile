@@ -8,7 +8,7 @@ target 'Deluge Remote' do
   # Pods for Deluge Remote
   use_frameworks!
   pod 'Alamofire', '~> 4.9'
-  pod 'Eureka', '~> 5.1'
+  pod 'Eureka', '~> 5.2'
   pod 'PromiseKit', '~> 6.8'
   pod 'Valet', '~> 3.2'
   pod 'MBProgressHUD', '~> 1.1'

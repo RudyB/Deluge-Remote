@@ -14,11 +14,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 	var window: UIWindow?
 
+    var splitViewDelegate = SplitViewDelegate()
+
     // swiftlint:disable:next line_length
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         let consoleDest = ConsoleDestination()
         Logger.add(destination: consoleDest)
+
+        if let splitViewController = self.window?.rootViewController as? UISplitViewController,
+            let navigationController = splitViewController.viewControllers.last as? UINavigationController {
+            splitViewController.delegate = splitViewDelegate
+            splitViewController.preferredDisplayMode = .allVisible
+            navigationController.topViewController?.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
+            navigationController.topViewController?.navigationItem.leftItemsSupplementBackButton = true
+        }
         return true
     }
 

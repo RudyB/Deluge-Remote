@@ -80,6 +80,8 @@ class MainTableViewController: UITableViewController {
     @IBAction func pauseAllTorrentsAction(_ sender: Any) {
         (isHostOnline == true) ? self.pauseAllTorrents() : ()
     }
+
+    @IBOutlet weak var organizeMenuBarButton: UIBarButtonItem!
     @IBAction func displayOrganizeMenu(_ sender: UIBarButtonItem) {
 
         let title = "Sorted by: \(activeSortKey.rawValue) (\(activeOrderKey.rawValue))"
@@ -91,10 +93,12 @@ class MainTableViewController: UITableViewController {
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
 
-        showAlert(target: self, title: title, message: nil, style: .actionSheet, actionList: [sortBy, orderAs, cancel])
+        showAlert(target: self, title: title, message: nil, style: .actionSheet, sender: sender, actionList: [sortBy, orderAs, cancel])
     }
 
     // MARK: - Properties
+
+    var collapseDetailViewController: Bool = true
 
     var activeSortKey = SortKey.Name
     var activeOrderKey = Order.Ascending
@@ -103,6 +107,8 @@ class MainTableViewController: UITableViewController {
 
     var tableViewDataSource: [TorrentOverview]?
     var filteredTableViewDataSource = [TorrentOverview]()
+    var selectedHash: String?
+    var animateToSelectedHash = false
 
     var isHostOnline: Bool = false
 
@@ -157,16 +163,13 @@ class MainTableViewController: UITableViewController {
         searchController.searchBar.scopeButtonTitles = ["All", "Name", "Hash", "Tracker"]
         searchController.searchBar.delegate = self
 
+        self.tableView.rowHeight = 60
+
     }
 
     override func viewWillAppear(_ animated: Bool) {
         allowDelayedExecutionOfNextStep = true
         executeNextStep()
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        allowDelayedExecutionOfNextStep = false
-        cancelDelayedExecuteNextStep()
     }
 
     override func didReceiveMemoryWarning() {
@@ -222,10 +225,14 @@ class MainTableViewController: UITableViewController {
             self.tableViewDataSource = self.tableViewDataSource?.sort(by: self.activeSortKey, self.activeOrderKey)
             DispatchQueue.main.async {
                 Logger.verbose("Updating Table View")
+
                 self.tableView.reloadData()
+
                 if self.isFiltering() {
                     self.updateSearchResults(for: self.searchController)
                 }
+
+                self.restoreSelectedRow()
             }
         }
 
@@ -246,7 +253,7 @@ class MainTableViewController: UITableViewController {
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         actions.append(cancel)
 
-        showAlert(target: self, title: "Sort By:", message: nil, style: .actionSheet, actionList: actions)
+        showAlert(target: self, title: "Sort By:", message: nil, style: .actionSheet, sender: organizeMenuBarButton, actionList: actions)
     }
 
     func displayOrderByMenu() {
@@ -266,7 +273,11 @@ class MainTableViewController: UITableViewController {
         actions.append(cancel)
 
         showAlert(target: self, title: "Order By:", message: nil,
-                  style: .actionSheet, actionList: actions)
+                  style: .actionSheet, sender: organizeMenuBarButton, actionList: actions)
+    }
+
+    func displayBlankDetailView() {
+        performSegue(withIdentifier: "detailedTorrentViewSegue", sender: nil)
     }
 
     // MARK: - Helper Functions
@@ -322,6 +333,31 @@ class MainTableViewController: UITableViewController {
         } else {
             refreshAuthentication()
         }
+    }
+
+    func restoreSelectedRow() {
+        if isFiltering() {
+            filteredTableViewDataSource.enumerated().forEach {
+                if $1.hash == selectedHash {
+                    tableView.selectRow(
+                        at: IndexPath(row: $0, section: 0),
+                        animated: animateToSelectedHash,
+                        scrollPosition: animateToSelectedHash ? .top : .none)
+                    return
+                }
+            }
+        } else {
+            tableViewDataSource?.enumerated().forEach {
+                if $1.hash == selectedHash {
+                    tableView.selectRow(
+                        at: IndexPath(row: $0, section: 0),
+                        animated: animateToSelectedHash,
+                        scrollPosition: animateToSelectedHash ? .top : .none)
+                    return
+                }
+            }
+        }
+        animateToSelectedHash = false
     }
 
     @objc func handleNewActiveClient() {
@@ -566,7 +602,11 @@ class MainTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        collapseDetailViewController = false
+
+        if let selectedCell = tableView.cellForRow(at: indexPath) as? MainTableViewCell {
+            selectedHash = selectedCell.torrentHash
+        }
     }
 
     override func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
@@ -649,13 +689,26 @@ class MainTableViewController: UITableViewController {
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "detailedTorrentViewSegue" {
-            if let destination = segue.destination as? DetailedTorrentViewController {
-                if let cell: MainTableViewCell = sender as? MainTableViewCell {
-                    destination.torrentHash = cell.torrentHash
-                }
-                if let torrentHash = sender as? String {
-                    destination.torrentHash = torrentHash
-                }
+            guard
+                let navigationController = segue.destination as? UINavigationController,
+                let destinationVC = navigationController.topViewController as? DetailedTorrentViewController
+            else {
+                fatalError()
+            }
+
+            destinationVC.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+            destinationVC.navigationItem.leftItemsSupplementBackButton = true
+            destinationVC.requestBlankDetailView = displayBlankDetailView
+
+            if let cell: MainTableViewCell = sender as? MainTableViewCell {
+                destinationVC.torrentHash = cell.torrentHash
+            }
+            if let torrentHash = sender as? String {
+                destinationVC.torrentHash = torrentHash
+                self.selectedHash = torrentHash
+                self.animateToSelectedHash = true
+            } else {
+                self.selectedHash = nil
             }
 
         } else if segue.identifier == "addTorrentSegue" {
@@ -714,6 +767,7 @@ extension MainTableViewController: UISearchResultsUpdating {
                 } ?? []
         }
         tableView.reloadData()
+        restoreSelectedRow()
     }
 
     func updateSearchResults(for searchController: UISearchController) {
@@ -783,4 +837,6 @@ extension Array where Iterator.Element == TorrentOverview {
         Logger.verbose("Sorted")
         return sortedContent
     }
-} // swiftlint:disable:this file_length
+}
+
+// swiftlint:disable:this file_length
