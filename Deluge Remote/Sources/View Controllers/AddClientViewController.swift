@@ -48,10 +48,9 @@ class AddClientViewController: UITableViewController {
         port = portTextField.text ?? port
         if nickname.isEmpty { showAlert(target: self, title: "Nickname cannot be left empty")}
         if hostname.isEmpty { showAlert(target: self, title: "Hostname cannot be empty")}
-        if password.isEmpty { showAlert(target: self, title: "Password cannot be empty")}
         if port.isEmpty { showAlert(target: self, title: "Port cannot be empty")}
 
-        if !hostname.isEmpty && !password.isEmpty && !port.isEmpty && !nickname.isEmpty {
+        if !hostname.isEmpty && !port.isEmpty && !nickname.isEmpty {
             DispatchQueue.main.async {
                 MBProgressHUD.showAdded(to: self.view, animated: true)
             }
