@@ -27,7 +27,7 @@ struct SessionStatus: Decodable {
     /// but only parts of the actual files to be downloaded.
     let total_payload_upload: Int
 
-    let upload_rate: Int
+    let upload_rate: Double
 
     /// payload_upload_rate is the rate of the payload down- and upload only.
     let payload_upload_rate: Int

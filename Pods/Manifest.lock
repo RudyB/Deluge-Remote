@@ -2,6 +2,7 @@ PODS:
   - Alamofire (4.9.1)
   - Eureka (5.2.1)
   - Houston (0.2.2)
+  - IQKeyboardManagerSwift (6.5.5)
   - MBProgressHUD (1.2.0)
   - PromiseKit (6.13.1):
     - PromiseKit/CorePromise (= 6.13.1)
@@ -18,6 +19,7 @@ DEPENDENCIES:
   - Alamofire (~> 4.9)
   - Eureka (~> 5.2)
   - Houston (~> 0.2)
+  - IQKeyboardManagerSwift
   - MBProgressHUD (~> 1.1)
   - PromiseKit (~> 6.8)
   - Valet (~> 3.2)
@@ -27,6 +29,7 @@ SPEC REPOS:
     - Alamofire
     - Eureka
     - Houston
+    - IQKeyboardManagerSwift
     - MBProgressHUD
     - PromiseKit
     - Valet
@@ -35,10 +38,11 @@ SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   Eureka: c883105488e05bc65539f583246ecf9657cabbfe
   Houston: c5865bdca6bcec5b3ce6570c49fcd19392a29778
+  IQKeyboardManagerSwift: 0fb93310284665245591f50f7a5e38de615960b7
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   Valet: 16d0537d70db79d9ba953b9060b5da4fb8004e51
 
-PODFILE CHECKSUM: 80a7407137b3922d73219bc44679c0e0100b5fc8
+PODFILE CHECKSUM: 9bfc817fee16758d58f6da27dedd473d9ed1d7db
 
 COCOAPODS: 1.9.3

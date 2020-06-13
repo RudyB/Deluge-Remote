@@ -13,5 +13,6 @@ target 'Deluge Remote' do
   pod 'Valet', '~> 3.2'
   pod 'MBProgressHUD', '~> 1.1'
   pod 'Houston', '~> 0.2'
+  pod 'IQKeyboardManagerSwift'
 end
 

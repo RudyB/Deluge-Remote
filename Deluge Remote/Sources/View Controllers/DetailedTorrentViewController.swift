@@ -219,6 +219,7 @@ class DetailedTorrentViewController: FormViewController {
                 self?.tableView.reloadData()
 
             }.catch { [weak self] error in
+                Logger.error(error)
                 if let self = self, let error = error as? ClientError {
                     let okButton = UIAlertAction(title: "Bummer", style: .default) { _ in
                         self.navigationController?.popViewController(animated: true)
@@ -235,12 +236,12 @@ class DetailedTorrentViewController: FormViewController {
             guard let torrentHash = self?.torrentHash else { return }
             self?.getTorrentData(withHash: torrentHash)
         }
-        Logger.info("Create New Data Timer")
+        Logger.debug("Create New Data Timer")
     }
 
     func stopAutoUpdater() {
            refreshTimer?.invalidate()
-           Logger.info("Invalidated Data Timer")
+           Logger.debug("Invalidated Data Timer")
        }
 
      // MARK: - Eureka Form Generation Methods

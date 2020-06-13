@@ -287,7 +287,8 @@ class MainTableViewController: UITableViewController {
         guard
             let userInfo = notification.userInfo,
             userInfo["url"] as? URL != nil,
-            userInfo["isFileURL"] as? Bool != nil
+            userInfo["isFileURL"] as? Bool != nil,
+            userInfo["isSecureResource"] as? Bool != nil
             else { return }
 
         if ClientManager.shared.activeClient != nil {
@@ -307,15 +308,15 @@ class MainTableViewController: UITableViewController {
                     self?.executeNextStep()
                 }
             } else {
-                Logger.warning("Prevented Redundant Delayed Next Step")
+                Logger.debug("Prevented Redundant Delayed Next Step")
             }
         } else {
-            Logger.warning("Prevented Request for Delayed Next Step")
+            Logger.debug("Prevented Request for Delayed Next Step")
         }
     }
 
     func cancelDelayedExecuteNextStep() {
-        Logger.info("Cancelling Delayed Execute of Next Step")
+        Logger.debug("Cancelling Delayed Execute of Next Step")
         executeNextStepTimer?.invalidate()
     }
 
@@ -385,7 +386,7 @@ class MainTableViewController: UITableViewController {
         // swiftlint:disable:previous function_body_length
 
         guard let client = ClientManager.shared.activeClient else { return }
-        Logger.info("Began Auth Refresh")
+        Logger.debug("Began Auth Refresh")
 
         updateHeader(with: "Attempting Connection",
                      color: UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0))
@@ -393,7 +394,7 @@ class MainTableViewController: UITableViewController {
         firstly {
             client.authenticateAndConnect()
         }.done { [weak self] _ in
-            Logger.info("User Authenticated")
+            Logger.debug("User Authenticated")
             self?.isHostOnline = true
 
             // Enable UI Components
@@ -715,9 +716,11 @@ class MainTableViewController: UITableViewController {
             if let destination = segue.destination as? AddTorrentViewController {
                 if let userInfo = sender as? [AnyHashable: Any],
                     let torrentURL = userInfo["url"] as? URL,
-                    let isFileURL = userInfo["isFileURL"] as? Bool {
+                    let isFileURL = userInfo["isFileURL"] as? Bool ,
+                    let isSecureResource = userInfo["isSecureResource"] as? Bool {
                     destination.torrentType = isFileURL ? .file : .magnet
                     destination.torrentURL = torrentURL
+                    destination.secureResource = isSecureResource;
                 }
 
                 destination.onTorrentAdded = { [weak self] torrentHash in

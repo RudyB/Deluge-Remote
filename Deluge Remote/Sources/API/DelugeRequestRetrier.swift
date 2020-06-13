@@ -30,7 +30,7 @@ class DelugeClientRequestRetrier: RequestRetrier {
             return
         }
 
-        Logger.info("Retrying: \(url)")
+        Logger.debug("Retrying: \(url)")
 
         guard let retryCount = retriedRequests[url] else {
             retriedRequests[url] = 1

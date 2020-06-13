@@ -20,6 +20,7 @@ class ClientsTableViewController: UITableViewController {
     @IBAction func AddClientAction(_ sender: UIBarButtonItem) {
         showAddClientVC()
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
