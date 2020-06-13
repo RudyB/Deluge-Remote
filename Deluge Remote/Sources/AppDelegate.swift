@@ -8,6 +8,7 @@
 
 import Houston
 import UIKit
+import IQKeyboardManagerSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -20,7 +21,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         let consoleDest = ConsoleDestination()
+        
+        let fileDest = FileDestination()
+        fileDest.logFileURL = getLogFile();
+        fileDest.minLevel = .info
+        
         Logger.add(destination: consoleDest)
+        Logger.add(destination: fileDest)
+        
+        IQKeyboardManager.shared.enable = true
 
         if let splitViewController = self.window?.rootViewController as? UISplitViewController,
             let navigationController = splitViewController.viewControllers.last as? UINavigationController {
@@ -29,6 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             navigationController.topViewController?.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
             navigationController.topViewController?.navigationItem.leftItemsSupplementBackButton = true
         }
+        Logger.info("Application Launching")
         return true
     }
 
@@ -68,7 +78,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // swiftlint:disable:next line_length
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        NewTorrentNotifier.shared.userInfo = ["url": url, "isFileURL": url.isFileURL]
+        Logger.debug(url)
+        let secureResource = url.startAccessingSecurityScopedResource()
+        
+        NewTorrentNotifier.shared.userInfo = ["url": url, "isFileURL": url.isFileURL, "isSecureResource": secureResource]
         return true
     }
 

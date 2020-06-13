@@ -26,6 +26,7 @@ class AddTorrentViewController: FormViewController {
     var torrentHash: String?
     var torrentURL: URL?
     var torrentType: TorrentType?
+    var secureResource = false
 
     enum CodingKeys: String {
         case selectionSection
@@ -76,6 +77,9 @@ class AddTorrentViewController: FormViewController {
         ClientManager.shared.activeClient?.getTorrentInfo(fileURL: fileURL)
             .ensure { [weak self] in
                 if let self = self {
+                    if self.secureResource {
+                        fileURL.stopAccessingSecurityScopedResource()
+                    }
                     DispatchQueue.main.async {
                         MBProgressHUD.hide(for: self.view, animated: true)
                     }

@@ -16,7 +16,7 @@ struct TorrentConfig: Decodable {
     var maxConnections: Int
     var moveCompletedPath: String
     var downloadLocation: String
-    var compactAllocation: Bool
+    var compactAllocation: Bool?
     var moveCompleted: Bool
     var maxUploadSlots: Int
 
