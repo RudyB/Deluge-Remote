@@ -285,11 +285,8 @@ class MainTableViewController: UITableViewController {
     @objc func handleAddTorrentNotification(notification: NSNotification) {
         NewTorrentNotifier.shared.userInfo = nil
         guard
-            let userInfo = notification.userInfo,
-            userInfo["url"] as? URL != nil,
-            userInfo["isFileURL"] as? Bool != nil,
-            userInfo["isSecureResource"] as? Bool != nil
-            else { return }
+            let userInfo = notification.userInfo
+        else { return }
 
         if ClientManager.shared.activeClient != nil {
             self.performSegue(withIdentifier: "addTorrentSegue", sender: userInfo)
@@ -714,13 +711,20 @@ class MainTableViewController: UITableViewController {
 
         } else if segue.identifier == "addTorrentSegue" {
             if let destination = segue.destination as? AddTorrentViewController {
-                if let userInfo = sender as? [AnyHashable: Any],
-                    let torrentURL = userInfo["url"] as? URL,
-                    let isFileURL = userInfo["isFileURL"] as? Bool ,
-                    let isSecureResource = userInfo["isSecureResource"] as? Bool {
-                    destination.torrentType = isFileURL ? .file : .magnet
-                    destination.torrentURL = torrentURL
-                    destination.secureResource = isSecureResource;
+                
+                
+                
+                if let userInfo = sender as? [AnyHashable: Any]
+                {
+                    if let url = userInfo["url"] as? URL {
+                        destination.torrentData = .magnet(url)
+                        destination.torrentType = .magnet
+                    }
+                    
+                    if let data = userInfo["data"] as? Data {
+                        destination.torrentData = .file(data)
+                        destination.torrentType = .file
+                    }
                 }
 
                 destination.onTorrentAdded = { [weak self] torrentHash in

@@ -19,14 +19,30 @@ class AddTorrentViewController: FormViewController {
         case magnet = "Magnet Link"
         case file = "Torrent File"
     }
+    
+    enum TorrentData
+    {
+        case magnet(URL)
+        case file(Data)
+        
+        var type: TorrentType {
+            switch self {
+            case .magnet(_):
+                return TorrentType.magnet
+            case .file(_):
+                return TorrentType.file
+            }
+        }
+    }
+
+    
     var defaultConfig: TorrentConfig?
     var onTorrentAdded: ((_ hash: String) -> Void)?
 
     var torrentName: String?
     var torrentHash: String?
-    var torrentURL: URL?
     var torrentType: TorrentType?
-    var secureResource = false
+    var torrentData: TorrentData?
 
     enum CodingKeys: String {
         case selectionSection
@@ -57,29 +73,33 @@ class AddTorrentViewController: FormViewController {
         getTorrentConfig()
 
         // Populate Form
-        if let torrentType = torrentType, let torrentURL = torrentURL {
-            MBProgressHUD.showAdded(to: self.view, animated: true)
-            switch torrentType {
-            case .file: handleFormConfigurationFor(fileURL: torrentURL)
-            case .magnet: handleFormConfigurationFor(magnetURL: torrentURL)
-            }
-        } else {
+        guard
+            let torrentData = torrentData
+        else
+        {
             populateTorrentTypeSelection()
+            return;
         }
-
+        torrentType = torrentData.type
+        
+        MBProgressHUD.showAdded(to: self.view, animated: true)
+        
+        switch torrentData {
+        case .file(let data):
+            handleFormConfigurationFor(torrent: data)
+        case .magnet(let url):
+            handleFormConfigurationFor(magnetURL: url)
+        }
     }
 
     deinit {
         Logger.debug("Destroyed")
     }
 
-    func handleFormConfigurationFor(fileURL: URL) {
-        ClientManager.shared.activeClient?.getTorrentInfo(fileURL: fileURL)
+    func handleFormConfigurationFor(torrent: Data) {
+        ClientManager.shared.activeClient?.getTorrentInfo(torrent: torrent)
             .ensure { [weak self] in
                 if let self = self {
-                    if self.secureResource {
-                        fileURL.stopAccessingSecurityScopedResource()
-                    }
                     DispatchQueue.main.async {
                         MBProgressHUD.hide(for: self.view, animated: true)
                     }
@@ -88,7 +108,7 @@ class AddTorrentViewController: FormViewController {
             }
             .done { [weak self] torrentInfo in
                 DispatchQueue.main.async {
-                    self?.showTorrentConfig(name: torrentInfo.name, hash: torrentInfo.hash, url: fileURL)
+                    self?.showTorrentConfig(name: torrentInfo.name, hash: torrentInfo.hash)
                 }
                 torrentInfo.files.prettyPrint()
             }.catch { [weak self] error in
@@ -98,7 +118,7 @@ class AddTorrentViewController: FormViewController {
                 } else {
                     showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
                 }
-                if self.torrentURL != nil {
+                if self.torrentType != nil {
                     self.populateTorrentTypeSelection()
                 }
         }
@@ -115,7 +135,8 @@ class AddTorrentViewController: FormViewController {
             }
             .done { [weak self] output in
                 DispatchQueue.main.async {
-                    self?.showTorrentConfig(name: output.name, hash: output.hash, url: magnetURL)
+                    self?.torrentData = TorrentData.magnet(magnetURL)
+                    self?.showTorrentConfig(name: output.name, hash: output.hash)
                 }
             }.catch { [weak self] _ in
                 guard let self = self else { return }
@@ -200,10 +221,9 @@ class AddTorrentViewController: FormViewController {
     }
 
     // swiftlint:disable:next function_body_length cyclomatic_complexity
-    func showTorrentConfig(name: String, hash: String, url: URL) {
+    func showTorrentConfig(name: String, hash: String) {
         self.torrentName = name
         self.torrentHash = hash
-        self.torrentURL = url
 
         form.sectionBy(tag: CodingKeys.selectionSection.rawValue)?.hidden = true
         form.sectionBy(tag: CodingKeys.selectionSection.rawValue)?.evaluateHidden()
@@ -432,24 +452,23 @@ class AddTorrentViewController: FormViewController {
         }
 
         guard
-            let url = self.torrentURL,
             let torrentName = self.torrentName,
             let torrentHash = self.torrentHash,
-            let torrentType = self.torrentType,
+            let torrentData = self.torrentData,
             let defaultConfig = self.defaultConfig
             else { return }
 
         DispatchQueue.main.async {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
-        switch torrentType {
-        case .magnet: addMagnetLink(url: url, hash: torrentHash, config: defaultConfig)
-        case .file: addTorrentFile(fileName: torrentName, hash: torrentHash, url: url, config: defaultConfig)
+        switch torrentData {
+        case .magnet(let url): addMagnetLink(url: url, hash: torrentHash, config: defaultConfig)
+        case .file(let data): addTorrentFile(fileName: torrentName, hash: torrentHash, data: data, config: defaultConfig)
         }
     }
 
-    func addTorrentFile(fileName: String, hash: String, url: URL, config: TorrentConfig) {
-        ClientManager.shared.activeClient?.addTorrentFile(fileName: fileName, url: url, with: config)
+    func addTorrentFile(fileName: String, hash: String, data: Data, config: TorrentConfig) {
+        ClientManager.shared.activeClient?.addTorrentFile(fileName: fileName, torrent: data, with: config)
             .ensure { [weak self] in
                 guard let self = self else { return }
                 DispatchQueue.main.async {
@@ -525,6 +544,15 @@ extension AddTorrentViewController: UIDocumentPickerDelegate {
             MBProgressHUD.showAdded(to: self.view, animated: true)
             // FIXME: Above Main Thread Checker: UI API called on a background thread
         }
-        handleFormConfigurationFor(fileURL: url)
+        
+        guard
+            let torrent = try? Data(contentsOf: url)
+        else {
+            Logger.error("Failed to create base64 encoded torrent")
+            return
+        }
+        
+        torrentData = TorrentData.file(torrent)
+        handleFormConfigurationFor(torrent: torrent)
     }
 } // swiftlint:disable:this file_length
