@@ -477,14 +477,9 @@ class DelugeClient {
         }
     }
 
-    func addTorrentFile(fileName: String, url: URL, with config: TorrentConfig) -> Promise<Void> {
+    func addTorrentFile(fileName: String, torrent: Data, with config: TorrentConfig) -> Promise<Void> {
 
         return Promise { seal in
-            guard
-                let torrent = try? Data(contentsOf: url) else {
-                    seal.reject(ClientError.unexpectedError("Failed to create base64 encoded torrent"))
-                    return
-            }
 
             let parameters: Parameters = [
                 "id": arc4random(),
@@ -509,17 +504,14 @@ class DelugeClient {
         }
     }
 
-    private func upload(fileUrl: URL) -> Promise<String> {
+    private func upload(torrentData: Data) -> Promise<String> {
 
         return Promise { seal in
 
             let headers = [
                 "Content-Type": "multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__"
             ]
-            guard let torrentData = try? Data(contentsOf: fileUrl) else {
-                seal.reject(ClientError.failedToConvertTorrentToData)
-                return
-            }
+
             // swiftlint:disable:next trailing_closure
             Manager.upload(multipartFormData: ({ multipartFormData in
                 multipartFormData.append(torrentData, withName: "file")
@@ -548,9 +540,9 @@ class DelugeClient {
         }
     }
 
-    func getTorrentInfo(fileURL: URL) -> Promise<TorrentInfo> {
+    func getTorrentInfo(torrent: Data) -> Promise<TorrentInfo> {
         return Promise { seal in
-            firstly { upload(fileUrl: fileURL) }
+            firstly { upload(torrentData: torrent) }
                 .done { fileName in
                     let parameters: Parameters = [
                         "id": arc4random(),

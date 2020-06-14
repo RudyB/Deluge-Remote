@@ -79,9 +79,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // swiftlint:disable:next line_length
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         Logger.debug(url)
-        let secureResource = url.startAccessingSecurityScopedResource()
         
-        NewTorrentNotifier.shared.userInfo = ["url": url, "isFileURL": url.isFileURL, "isSecureResource": secureResource]
+        if url.isFileURL
+        {
+            let secureResource = url.startAccessingSecurityScopedResource()
+            defer { if secureResource { url.stopAccessingSecurityScopedResource() } }
+            
+            guard
+                let torrent = try? Data(contentsOf: url)
+            else {
+                Logger.error("Failed to create base64 encoded torrent")
+                return false
+            }
+            NewTorrentNotifier.shared.userInfo = ["data": torrent]
+        }
+        else
+        {
+            NewTorrentNotifier.shared.userInfo = ["url": url]
+        }
+         
         return true
     }
 
