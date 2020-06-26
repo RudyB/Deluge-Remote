@@ -464,6 +464,7 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Active Time"
                 $0.cell.detailTextLabel?.numberOfLines = 0
+                $0.hidden = Condition(booleanLiteral: torrentData?.active_time ?? 0 == 0)
                 if let activeTime = torrentData?.active_time {
                     let formatter = DateComponentsFormatter()
                     formatter.allowedUnits = [.month, .day, .hour, .minute]
@@ -472,11 +473,17 @@ class DetailedTorrentViewController: FormViewController {
                 }
                 }.cellUpdate { [weak self] cell, _ in
                     cell.textLabel?.textColor = ColorCompatibility.label
+                    
                     if let torrentData = self?.torrentData {
+                        cell.row.hidden = Condition(booleanLiteral: torrentData.active_time ?? 0 == 0)
+                        cell.row.evaluateHidden()
                         let formatter = DateComponentsFormatter()
                         formatter.allowedUnits = [.month, .day, .hour, .minute]
                         formatter.unitsStyle = .abbreviated
-                        cell.detailTextLabel?.text = formatter.string(from: TimeInterval(torrentData.active_time))
+                        if let active_time = torrentData.active_time {
+                            cell.detailTextLabel?.text = formatter.string(from: TimeInterval(active_time))
+                        }
+                        
                         cell.height = self?.computeCellHeight(for: cell)
                     }
             }

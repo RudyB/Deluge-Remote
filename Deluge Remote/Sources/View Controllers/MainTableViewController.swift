@@ -171,6 +171,18 @@ class MainTableViewController: UITableViewController {
         allowDelayedExecutionOfNextStep = true
         executeNextStep()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print(self.splitViewController!.isCollapsed)
+        
+        if let selectionIndexPath = self.tableView.indexPathForSelectedRow {
+            if splitViewController!.isCollapsed {
+                self.tableView.deselectRow(at: selectionIndexPath, animated: false)
+            }
+            
+        }
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -336,7 +348,7 @@ class MainTableViewController: UITableViewController {
     func restoreSelectedRow() {
         if isFiltering() {
             filteredTableViewDataSource.enumerated().forEach {
-                if $1.hash == selectedHash {
+                if $1.hash == selectedHash && !splitViewController!.isCollapsed {
                     tableView.selectRow(
                         at: IndexPath(row: $0, section: 0),
                         animated: animateToSelectedHash,
@@ -346,7 +358,7 @@ class MainTableViewController: UITableViewController {
             }
         } else {
             tableViewDataSource?.enumerated().forEach {
-                if $1.hash == selectedHash {
+                if $1.hash == selectedHash && !splitViewController!.isCollapsed {
                     tableView.selectRow(
                         at: IndexPath(row: $0, section: 0),
                         animated: animateToSelectedHash,

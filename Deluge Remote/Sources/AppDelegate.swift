@@ -25,6 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let fileDest = FileDestination()
         fileDest.logFileURL = getLogFile();
         fileDest.minLevel = .info
+        fileDest.showLogLevelEmoji = false
         
         Logger.add(destination: consoleDest)
         Logger.add(destination: fileDest)

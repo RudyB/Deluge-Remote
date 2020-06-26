@@ -43,6 +43,8 @@ class AddTorrentViewController: FormViewController {
     var torrentHash: String?
     var torrentType: TorrentType?
     var torrentData: TorrentData?
+    
+    let pasteboard = UIPasteboard.general
 
     enum CodingKeys: String {
         case selectionSection
@@ -78,6 +80,9 @@ class AddTorrentViewController: FormViewController {
         else
         {
             populateTorrentTypeSelection()
+            checkPasteboardForMagnetLink()
+            NotificationCenter.default.addObserver(self, selector: #selector(self.checkPasteboardForMagnetLink),
+                                                   name: UIPasteboard.changedNotification, object: pasteboard)
             return;
         }
         torrentType = torrentData.type
@@ -94,8 +99,30 @@ class AddTorrentViewController: FormViewController {
 
     deinit {
         Logger.debug("Destroyed")
+        
+        NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: pasteboard)
     }
 
+    
+    @objc func checkPasteboardForMagnetLink()
+    {
+        guard
+            let url = pasteboard.url,
+            url.absoluteString.hasPrefix("magnet:?"),
+            let urlRow = form.rowBy(tag: CodingKeys.magnetURL.rawValue) as? URLRow,
+            let buttonRow = form.rowBy(tag: CodingKeys.torrentType.rawValue) as? SegmentedRow<String>
+        else { return }
+        
+        
+        if torrentData == nil || torrentType == TorrentType.magnet {
+            torrentType = .magnet // TODO: RudyB 6/14 - Make this click select the magnet option
+            urlRow.value = url
+            buttonRow.value = "Magnet Link"
+            buttonRow.reload()
+            urlRow.evaluateHidden()
+        }
+    }
+    
     func handleFormConfigurationFor(torrent: Data) {
         ClientManager.shared.activeClient?.getTorrentInfo(torrent: torrent)
             .ensure { [weak self] in
@@ -162,6 +189,9 @@ class AddTorrentViewController: FormViewController {
                 }.onChange { [weak self] row in
                     if let value = row.value, let type = TorrentType(rawValue: value) {
                         self?.torrentType = type
+                        if(type == TorrentType.magnet) {
+                            self?.checkPasteboardForMagnetLink()
+                        }
                     }
             }
 
