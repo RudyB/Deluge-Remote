@@ -20,7 +20,7 @@ struct DelugeError: Decodable {
 }
 
 struct TorrentMetadata: Decodable {
-    let active_time: Double
+    let active_time: Double?
     let all_time_download: Int
     let compact: Bool?
     let distributed_copies: Double
