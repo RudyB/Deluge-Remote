@@ -148,6 +148,9 @@ class MainTableViewController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector:
             #selector(self.handleAddTorrentNotification(notification:)),
                                                name: Notification.Name("AddTorrentNotification"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleOrientationChange), name: UIDevice.orientationDidChangeNotification, object: nil)
+        
         NewTorrentNotifier.shared.didMainTableVCCreateObserver = true
 
         // Setup the Search Controller
@@ -168,19 +171,16 @@ class MainTableViewController: UITableViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         allowDelayedExecutionOfNextStep = true
         executeNextStep()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        print(self.splitViewController!.isCollapsed)
         
-        if let selectionIndexPath = self.tableView.indexPathForSelectedRow {
-            if splitViewController!.isCollapsed {
+        if splitViewController!.isCollapsed {
+            if let selectionIndexPath = self.tableView.indexPathForSelectedRow {
                 self.tableView.deselectRow(at: selectionIndexPath, animated: false)
+                
             }
-            
+            self.initUploadDownloadLabels()
         }
     }
 
@@ -388,6 +388,14 @@ class MainTableViewController: UITableViewController {
 
         executeNextStep()
     }
+    
+    @objc func handleOrientationChange()
+      {
+          if UIDevice.current.orientation.isPortrait && splitViewController?.isCollapsed ?? false
+          {
+               self.initUploadDownloadLabels()
+          }
+      }
 
     // MARK: - Deluge UI Wrapper Methods
 
