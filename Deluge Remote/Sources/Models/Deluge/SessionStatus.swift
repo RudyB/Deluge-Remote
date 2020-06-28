@@ -30,7 +30,7 @@ struct SessionStatus: Decodable {
     let upload_rate: Double
 
     /// payload_upload_rate is the rate of the payload down- and upload only.
-    let payload_upload_rate: Int
+    let payload_upload_rate: Double
 
     /// num_peers is the total number of peer connections this session has.
     /// This includes incoming connections that still hasn't sent their handshake or
@@ -89,7 +89,7 @@ struct SessionStatus: Decodable {
     let allowed_upload_slots: Int
 
     /// payload_download_rate is the rate of the payload down- and upload only.
-    let payload_download_rate: Int
+    let payload_download_rate: Double
 
     let total_download: Int
 
