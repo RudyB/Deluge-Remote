@@ -14,8 +14,8 @@ import IQKeyboardManagerSwift
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 	var window: UIWindow?
-
-    var splitViewDelegate = SplitViewDelegate()
+    
+    let rootController = MainSplitViewController()
 
     // swiftlint:disable:next line_length
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -31,15 +31,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Logger.add(destination: fileDest)
         
         IQKeyboardManager.shared.enable = true
-
-        if let splitViewController = self.window?.rootViewController as? UISplitViewController,
-            let navigationController = splitViewController.viewControllers.last as? UINavigationController {
-            splitViewController.delegate = splitViewDelegate
-            splitViewController.preferredDisplayMode = .allVisible
-            navigationController.topViewController?.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
-            navigationController.topViewController?.navigationItem.leftItemsSupplementBackButton = true
-        }
-        Logger.info("Application Launching")
+        
+        // create a basic UIWindow and activate it
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = rootController
+        window?.makeKeyAndVisible()
+        
+        Logger.debug("Application Launched")
         return true
     }
 
@@ -79,7 +77,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // swiftlint:disable:next line_length
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        Logger.debug(url)
         
         if url.isFileURL
         {
@@ -87,16 +84,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             defer { if secureResource { url.stopAccessingSecurityScopedResource() } }
             
             guard
-                let torrent = try? Data(contentsOf: url)
+                let data = try? Data(contentsOf: url)
             else {
                 Logger.error("Failed to create base64 encoded torrent")
                 return false
             }
-            NewTorrentNotifier.shared.userInfo = ["data": torrent]
+            rootController.addTorrent(from: TorrentData.file(data))
         }
         else
         {
-            NewTorrentNotifier.shared.userInfo = ["url": url]
+            rootController.addTorrent(from: TorrentData.magnet(url))
         }
          
         return true

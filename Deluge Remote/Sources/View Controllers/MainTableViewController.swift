@@ -10,7 +10,14 @@ import Houston
 import PromiseKit
 import UIKit
 
-class MainTableViewController: UITableViewController {
+protocol MainTableViewControllerDelegate: AnyObject {
+    func torrentSelected(torrentHash: String)
+    func showDetailViewPlaceholder()
+    func showAddTorrentView()
+    func showClientsView()
+}
+
+class MainTableViewController: UITableViewController, Storyboarded {
     // swiftlint:disable:previous type_body_length
 
     enum SortKey: String, CaseIterable {
@@ -80,7 +87,16 @@ class MainTableViewController: UITableViewController {
     @IBAction func pauseAllTorrentsAction(_ sender: Any) {
         (isHostOnline == true) ? self.pauseAllTorrents() : ()
     }
-
+    @IBAction func addTorrentAction(_ sender: Any) {
+        guard let delegate = delegate else { return }
+        delegate.showAddTorrentView()
+    }
+    
+    @IBAction func showClientsAction(_ sender: Any) {
+        guard let delegate = delegate else { return }
+        delegate.showClientsView()
+    }
+    
     @IBOutlet weak var organizeMenuBarButton: UIBarButtonItem!
     @IBAction func displayOrganizeMenu(_ sender: UIBarButtonItem) {
 
@@ -95,9 +111,13 @@ class MainTableViewController: UITableViewController {
 
         showAlert(target: self, title: title, message: nil, style: .actionSheet, sender: sender, actionList: [sortBy, orderAs, cancel])
     }
+    
+    
 
     // MARK: - Properties
 
+    weak var delegate: MainTableViewControllerDelegate?
+    
     var collapseDetailViewController: Bool = true
 
     var activeSortKey = SortKey.Name
@@ -144,18 +164,11 @@ class MainTableViewController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleNewActiveClient),
                                                name: Notification.Name(ClientManager.NewActiveClientNotification),
                                                object: nil)
-
-        NotificationCenter.default.addObserver(self, selector:
-            #selector(self.handleAddTorrentNotification(notification:)),
-                                               name: Notification.Name("AddTorrentNotification"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleOrientationChange), name: UIDevice.orientationDidChangeNotification, object: nil)
         
-        NewTorrentNotifier.shared.didMainTableVCCreateObserver = true
-
         // Setup the Search Controller
         searchController.searchResultsUpdater = self
-        searchController.dimsBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = true
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Filter Torrents"
@@ -288,27 +301,7 @@ class MainTableViewController: UITableViewController {
                   style: .actionSheet, sender: organizeMenuBarButton, actionList: actions)
     }
 
-    func displayBlankDetailView() {
-        performSegue(withIdentifier: "detailedTorrentViewSegue", sender: nil)
-    }
-
     // MARK: - Helper Functions
-
-    @objc func handleAddTorrentNotification(notification: NSNotification) {
-        NewTorrentNotifier.shared.userInfo = nil
-        guard
-            let userInfo = notification.userInfo
-        else { return }
-
-        if ClientManager.shared.activeClient != nil {
-            self.performSegue(withIdentifier: "addTorrentSegue", sender: userInfo)
-        } else {
-            DispatchQueue.main.async {
-                showAlert(target: self, title: "Error",
-                          message: "You cannot add a torrent without an active configuration")
-            }
-        }
-    }
 
     func delayedExecuteNextStep() {
         if allowDelayedExecutionOfNextStep {
@@ -624,6 +617,11 @@ class MainTableViewController: UITableViewController {
 
         if let selectedCell = tableView.cellForRow(at: indexPath) as? MainTableViewCell {
             selectedHash = selectedCell.torrentHash
+            if let delegate = delegate
+            {
+                delegate.torrentSelected(torrentHash: selectedCell.torrentHash)
+            }
+            
         }
     }
 
@@ -649,6 +647,7 @@ class MainTableViewController: UITableViewController {
                     ClientManager.shared.activeClient?.removeTorrent(withHash: cell.torrentHash, removeData: false)
                         .done { [weak self] _ in
                             guard let self = self else { return }
+                            self.delegate?.showDetailViewPlaceholder()
                             if self.isFiltering() {
                                 self.tableViewDataSource?.removeAll {
                                     $0 == self.filteredTableViewDataSource[indexPath.row]
@@ -674,6 +673,7 @@ class MainTableViewController: UITableViewController {
                     ClientManager.shared.activeClient?.removeTorrent(withHash: cell.torrentHash, removeData: false)
                         .done { [weak self] _ in
                             guard let self = self else { return }
+                            self.delegate?.showDetailViewPlaceholder()
                             if self.isFiltering() {
                                 self.tableViewDataSource?.removeAll {
                                     $0 == self.filteredTableViewDataSource[indexPath.row]
@@ -701,62 +701,6 @@ class MainTableViewController: UITableViewController {
             }
         }
     }
-
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "detailedTorrentViewSegue" {
-            guard
-                let navigationController = segue.destination as? UINavigationController,
-                let destinationVC = navigationController.topViewController as? DetailedTorrentViewController
-            else {
-                fatalError()
-            }
-
-            destinationVC.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
-            destinationVC.navigationItem.leftItemsSupplementBackButton = true
-            destinationVC.requestBlankDetailView = displayBlankDetailView
-
-            if let cell: MainTableViewCell = sender as? MainTableViewCell {
-                destinationVC.torrentHash = cell.torrentHash
-            }
-            if let torrentHash = sender as? String {
-                destinationVC.torrentHash = torrentHash
-                self.selectedHash = torrentHash
-                self.animateToSelectedHash = true
-            } else {
-                self.selectedHash = nil
-            }
-
-        } else if segue.identifier == "addTorrentSegue" {
-            if let destination = segue.destination as? AddTorrentViewController {
-                
-                
-                
-                if let userInfo = sender as? [AnyHashable: Any]
-                {
-                    if let url = userInfo["url"] as? URL {
-                        destination.torrentData = .magnet(url)
-                        destination.torrentType = .magnet
-                    }
-                    
-                    if let data = userInfo["data"] as? Data {
-                        destination.torrentData = .file(data)
-                        destination.torrentType = .file
-                    }
-                }
-
-                destination.onTorrentAdded = { [weak self] torrentHash in
-                    DispatchQueue.main.async {
-                        self?.navigationController?.popViewController(animated: true)
-                        self?.performSegue(withIdentifier: "detailedTorrentViewSegue", sender: torrentHash)
-                    }
-                }
-            }
-        }
-    }
-
 }
 
 // MARK: - UISearchResultsUpdating Extension

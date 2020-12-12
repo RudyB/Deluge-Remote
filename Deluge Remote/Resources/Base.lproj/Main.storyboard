@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="lvj-fe-bwZ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Deluge-->
         <scene sceneID="CEI-dR-GUu">
             <objects>
-                <tableViewController title="Deluge" id="jI0-br-phc" customClass="MainTableViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="MainTableViewController" title="Deluge" id="jI0-br-phc" customClass="MainTableViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="50" sectionHeaderHeight="28" sectionFooterHeight="28" id="NDs-Iw-5TJ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -33,22 +34,22 @@
                                             <rect key="frame" x="32" y="39" width="350" height="12"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Downloading" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="e3i-bo-kHN" userLabel="Current Status">
-                                                    <rect key="frame" x="0.0" y="0.0" width="81.333333333333329" height="12"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="80.666666666666671" height="12"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="zyz-2k-IKb">
-                                                    <rect key="frame" x="102.99999999999999" y="0.0" width="152.66666666666663" height="12"/>
+                                                    <rect key="frame" x="103.33333333333334" y="0.0" width="152" height="12"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="248" verticalHuggingPriority="251" text="↑ 1024.9 KiB/s" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="UP3-sF-XlC" userLabel="Upload Speed">
-                                                            <rect key="frame" x="0.0" y="0.0" width="71.333333333333329" height="12"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="71" height="12"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1024.9 KiB/s ↓" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="NQx-NG-Agm" userLabel="Download Speed">
-                                                            <rect key="frame" x="81.333333333333343" y="0.0" width="71.333333333333343" height="12"/>
+                                                            <rect key="frame" x="81" y="0.0" width="71" height="12"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
@@ -57,7 +58,7 @@
                                                     <variation key="heightClass=regular-widthClass=compact" spacing="10"/>
                                                 </stackView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ETA: 52m56s" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="hLb-rE-Efm" userLabel="ETA">
-                                                    <rect key="frame" x="285.66666666666669" y="0.0" width="64.333333333333314" height="12"/>
+                                                    <rect key="frame" x="286" y="0.0" width="64" height="12"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -103,10 +104,6 @@
                                     <outlet property="nameLabel" destination="A5X-yh-Ba3" id="0lD-Z3-6ih"/>
                                     <outlet property="progressBar" destination="p6h-H6-bH5" id="gqu-IA-8Gv"/>
                                     <outlet property="uploadSpeedLabel" destination="UP3-sF-XlC" id="Zrz-Za-Cgi"/>
-                                    <segue destination="au5-kj-ui8" kind="showDetail" identifier="detailedTorrentViewSegue" id="luI-Nu-Yhy">
-                                        <segue key="commit" inheritsFrom="parent" id="ad6-26-9O2"/>
-                                        <segue key="preview" inheritsFrom="commit" id="cv5-Qw-8B0"/>
-                                    </segue>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -137,14 +134,14 @@
                         <barButtonItem image="settings" id="VHH-eo-0EJ">
                             <inset key="imageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-10"/>
                             <connections>
-                                <segue destination="Bco-nU-grr" kind="show" identifier="" id="Wf3-XV-dPM"/>
+                                <action selector="showClientsAction:" destination="jI0-br-phc" id="rOc-Q2-dRI"/>
                             </connections>
                         </barButtonItem>
                     </toolbarItems>
                     <navigationItem key="navigationItem" id="HJ8-A1-s0D">
                         <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="add" id="Wxq-PV-h4z">
                             <connections>
-                                <segue destination="UWE-Tj-nSN" kind="show" identifier="addTorrentSegue" id="a8J-91-cog"/>
+                                <action selector="addTorrentAction:" destination="jI0-br-phc" id="R0I-PR-9Pq"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -157,12 +154,12 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Whl-wn-ral" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1645" y="-346"/>
+            <point key="canvasLocation" x="1280" y="-52"/>
         </scene>
         <!--Add Torrent View Controller-->
         <scene sceneID="zw9-WK-ng4">
             <objects>
-                <viewController id="UWE-Tj-nSN" customClass="AddTorrentViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AddTorrentViewController" id="UWE-Tj-nSN" customClass="AddTorrentViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="VX8-Lm-WNU"/>
                         <viewControllerLayoutGuide type="bottom" id="4hE-gf-SW7"/>
@@ -175,12 +172,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9TC-S1-Ez5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3334" y="-709"/>
+            <point key="canvasLocation" x="2658" y="-52"/>
         </scene>
         <!--Clients-->
         <scene sceneID="vCG-6Q-XFI">
             <objects>
-                <tableViewController title="Clients" id="Bco-nU-grr" customClass="ClientsTableViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="ClientsTableViewController" title="Clients" id="Bco-nU-grr" customClass="ClientsTableViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Clients" id="AvL-f8-mgB">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="xHB-6Y-ujc">
@@ -198,11 +195,11 @@
         <!--Add Client-->
         <scene sceneID="sp0-1E-TYr">
             <objects>
-                <tableViewController storyboardIdentifier="AddClientVC" title="Add Client" id="JQf-ll-XtU" customClass="AddClientViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="AddClientViewController" title="Add Client" id="JQf-ll-XtU" customClass="AddClientViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="ecA-vn-YBB">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="groupTableViewBackgroundColor"/>
                         <sections>
                             <tableViewSection id="qmx-9s-OfQ">
                                 <cells>
@@ -398,7 +395,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6qF-HF-I9n">
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6qF-HF-I9n">
                                                     <rect key="frame" x="151" y="7" width="112" height="30"/>
                                                     <state key="normal" title="Test Connection"/>
                                                     <connections>
@@ -443,10 +440,40 @@
             </objects>
             <point key="canvasLocation" x="4039" y="-52"/>
         </scene>
+        <!--Placeholder View Controller-->
+        <scene sceneID="iYe-st-re8">
+            <objects>
+                <viewController storyboardIdentifier="PlaceholderViewController" id="dCY-CK-wqR" customClass="PlaceholderViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="g5h-27-mZo"/>
+                        <viewControllerLayoutGuide type="bottom" id="K8g-9t-fRM"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="YWv-FB-ng0">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please select a torrent" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="37S-Wl-oAl">
+                                <rect key="frame" x="122" y="437.66666666666669" width="170" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="37S-Wl-oAl" firstAttribute="centerY" secondItem="YWv-FB-ng0" secondAttribute="centerY" id="C5S-07-yfu"/>
+                            <constraint firstItem="37S-Wl-oAl" firstAttribute="centerX" secondItem="YWv-FB-ng0" secondAttribute="centerX" id="P9X-K8-r7b"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OFt-8f-1PO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4806" y="-58"/>
+        </scene>
         <!--Detailed Torrent View Controller-->
         <scene sceneID="9SV-I8-991">
             <objects>
-                <viewController id="Bu2-j1-wRG" customClass="DetailedTorrentViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DetailedTorrentViewController" id="Bu2-j1-wRG" customClass="DetailedTorrentViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="CuL-cS-KFe"/>
                         <viewControllerLayoutGuide type="bottom" id="kZm-ke-upb"/>
@@ -454,7 +481,7 @@
                     <view key="view" contentMode="scaleToFill" id="tqy-RN-URG">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <toolbarItems>
                         <barButtonItem image="icons8-pause" style="plain" id="R55-Ff-3Cp">
@@ -479,70 +506,19 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XTd-mw-xL6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1658" y="386"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="Bkr-7T-LG5">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" toolbarHidden="NO" id="MPx-gt-IpJ" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="l8Q-7a-rV1">
-                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="jXr-1S-SXh">
-                        <rect key="frame" x="0.0" y="813" width="414" height="49"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </toolbar>
-                    <connections>
-                        <segue destination="jI0-br-phc" kind="relationship" relationship="rootViewController" id="1tv-v7-OMB"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ble-Ss-0E8" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="861" y="-346"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="SJf-rh-RRf">
-            <objects>
-                <navigationController id="au5-kj-ui8" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="wL9-zW-W6P">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="AWu-hP-URf">
-                        <autoresizingMask key="autoresizingMask"/>
-                    </toolbar>
-                    <connections>
-                        <segue destination="Bu2-j1-wRG" kind="relationship" relationship="rootViewController" id="8B0-ql-GK6"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="9Yc-L5-gcr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="861" y="386"/>
-        </scene>
-        <!--Split View Controller-->
-        <scene sceneID="dkT-Op-OHA">
-            <objects>
-                <splitViewController id="lvj-fe-bwZ" sceneMemberID="viewController">
-                    <connections>
-                        <segue destination="MPx-gt-IpJ" kind="relationship" relationship="masterViewController" id="p9y-V9-ZRu"/>
-                        <segue destination="au5-kj-ui8" kind="relationship" relationship="detailViewController" id="muN-Mv-g2w"/>
-                    </connections>
-                </splitViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="0cu-bv-VOP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="13" y="23"/>
+            <point key="canvasLocation" x="1961" y="-52"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="luI-Nu-Yhy"/>
-    </inferredMetricsTieBreakers>
     <resources>
         <image name="filter" width="25" height="25"/>
         <image name="icons8-delete" width="25" height="25"/>
         <image name="icons8-pause" width="25" height="25"/>
         <image name="settings" width="33.333332061767578" height="33.333332061767578"/>
+        <systemColor name="groupTableViewBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

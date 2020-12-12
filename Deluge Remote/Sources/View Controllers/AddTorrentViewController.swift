@@ -12,32 +12,15 @@ import MBProgressHUD
 import PromiseKit
 import UIKit
 
+protocol AddTorrentViewControllerDelegate: AnyObject {
+    func torrentAdded(_ torrentHash: String)
+}
+
 // swiftlint:disable:next type_body_length
-class AddTorrentViewController: FormViewController {
-
-    enum TorrentType: String {
-        case magnet = "Magnet Link"
-        case file = "Torrent File"
-    }
-    
-    enum TorrentData
-    {
-        case magnet(URL)
-        case file(Data)
-        
-        var type: TorrentType {
-            switch self {
-            case .magnet(_):
-                return TorrentType.magnet
-            case .file(_):
-                return TorrentType.file
-            }
-        }
-    }
-
+class AddTorrentViewController: FormViewController, Storyboarded {
     
     var defaultConfig: TorrentConfig?
-    var onTorrentAdded: ((_ hash: String) -> Void)?
+    weak var delegate: AddTorrentViewControllerDelegate?
 
     var torrentName: String?
     var torrentHash: String?
@@ -508,8 +491,8 @@ class AddTorrentViewController: FormViewController {
             .done { [weak self] _ in
                 guard let self = self else { return }
                 self.view.showHUD(title: "Torrent Successfully Added") {
-                    if let onTorrentAdded = self.onTorrentAdded {
-                        onTorrentAdded(hash)
+                    if let delegate = self.delegate {
+                        delegate.torrentAdded(hash)
                     }
                 }
             }.catch { [weak self] _ in
@@ -529,8 +512,8 @@ class AddTorrentViewController: FormViewController {
             .done { [weak self] _ in
                 guard let self = self else { return }
                 self.view.showHUD(title: "Torrent Successfully Added") {
-                    if let onTorrentAdded = self.onTorrentAdded {
-                        onTorrentAdded(hash)
+                    if let delegate = self.delegate {
+                        delegate.torrentAdded(hash)
                     }
                 }
             }.catch { [weak self] _ in

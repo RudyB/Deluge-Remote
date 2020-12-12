@@ -10,7 +10,7 @@ import Houston
 import MBProgressHUD
 import UIKit
 
-class AddClientViewController: UITableViewController {
+class AddClientViewController: UITableViewController, Storyboarded {
 
     @IBOutlet weak var nicknameTextField: UITextField!
     @IBOutlet weak var hostnameTextField: UITextField!

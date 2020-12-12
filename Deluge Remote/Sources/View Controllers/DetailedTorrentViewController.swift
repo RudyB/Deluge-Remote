@@ -10,8 +10,13 @@ import Eureka
 import Houston
 import UIKit
 
+protocol DetailedTorrentViewDelegate: AnyObject
+{
+    func removeDetailView()
+}
+
 // swiftlint:disable:next type_body_length
-class DetailedTorrentViewController: FormViewController {
+class DetailedTorrentViewController: FormViewController, Storyboarded {
 
     enum TorrentOptionsCodingKeys: String {
         case maxDownloadSpeed = "max_download_speed"
@@ -138,7 +143,7 @@ class DetailedTorrentViewController: FormViewController {
 
     // MARK: - Properties
 
-    var requestBlankDetailView: (() -> Void)?
+    weak var delegate: DetailedTorrentViewDelegate?
 
     var torrentData: TorrentMetadata?
     var torrentHash: String?
@@ -150,11 +155,6 @@ class DetailedTorrentViewController: FormViewController {
     deinit {
           Logger.debug("Destroyed")
       }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -788,16 +788,10 @@ class DetailedTorrentViewController: FormViewController {
         torrentData = nil
         torrentHash = nil
 
-        if let svc = splitViewController {
-            if svc.isCollapsed {
-                navigationController?.navigationController?.popViewController(animated: true)
-
-            } else {
-                if let requestBlankDetailView = requestBlankDetailView {
-                    requestBlankDetailView()
-                }
-            }
+        if let delegate = delegate {
+            delegate.removeDetailView()
         }
+        
     }
 
      // MARK: - Action Handler Methods
