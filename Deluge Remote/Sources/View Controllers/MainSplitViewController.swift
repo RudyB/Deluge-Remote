@@ -103,7 +103,7 @@ extension MainSplitViewController: AddTorrentViewControllerDelegate
             
             // Now tell the MainTableaViewController to animated to the newly selected hash
             if let mainViewController = self.master.viewControllers.first as? MainTableViewController {
-                // If the detail View controller is already being shown with the desired hash
+                // TODO: Tell mainViewController to download fresh data immediately
                 mainViewController.selectedHash = torrentHash
                 mainViewController.animateToSelectedHash = true
             }

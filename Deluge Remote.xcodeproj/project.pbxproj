@@ -41,6 +41,7 @@
 		47ED996625842A93002EB8DA /* MainSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47ED996525842A93002EB8DA /* MainSplitViewController.swift */; };
 		47ED996F25848F8C002EB8DA /* PlaceholderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47ED996E25848F8C002EB8DA /* PlaceholderViewController.swift */; };
 		47ED997325856380002EB8DA /* TorrentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47ED997225856380002EB8DA /* TorrentHandler.swift */; };
+		47ED997925858440002EB8DA /* RepeatingTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47ED997825858440002EB8DA /* RepeatingTimer.swift */; };
 		47F9C73321DC66790017281C /* TorrentConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F9C73221DC66790017281C /* TorrentConfig.swift */; };
 		47F9C73621DC6EB80017281C /* AddTorrentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */; };
 		7FD0633023848DC00087768F /* ColorCompatibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD0632F23848DC00087768F /* ColorCompatibility.swift */; };
@@ -86,6 +87,7 @@
 		47ED996525842A93002EB8DA /* MainSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSplitViewController.swift; sourceTree = "<group>"; };
 		47ED996E25848F8C002EB8DA /* PlaceholderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderViewController.swift; sourceTree = "<group>"; };
 		47ED997225856380002EB8DA /* TorrentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentHandler.swift; sourceTree = "<group>"; };
+		47ED997825858440002EB8DA /* RepeatingTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepeatingTimer.swift; sourceTree = "<group>"; };
 		47F9C73221DC66790017281C /* TorrentConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentConfig.swift; sourceTree = "<group>"; };
 		47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTorrentViewController.swift; sourceTree = "<group>"; };
 		7FD0632F23848DC00087768F /* ColorCompatibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorCompatibility.swift; sourceTree = "<group>"; };
@@ -256,6 +258,7 @@
 				47A3018C24954EF100AC5EED /* FileManagerHelper.swift */,
 				47ED995D2584282C002EB8DA /* Storyboarded.swift */,
 				47ED997225856380002EB8DA /* TorrentHandler.swift */,
+				47ED997825858440002EB8DA /* RepeatingTimer.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -458,6 +461,7 @@
 				47ED996F25848F8C002EB8DA /* PlaceholderViewController.swift in Sources */,
 				47F9C73621DC6EB80017281C /* AddTorrentViewController.swift in Sources */,
 				47B0E3D721E07C0A00E3056A /* CustomAlert.swift in Sources */,
+				47ED997925858440002EB8DA /* RepeatingTimer.swift in Sources */,
 				47ED995E2584282C002EB8DA /* Storyboarded.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

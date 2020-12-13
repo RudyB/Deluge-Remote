@@ -112,8 +112,6 @@ class MainTableViewController: UITableViewController, Storyboarded {
         showAlert(target: self, title: title, message: nil, style: .actionSheet, sender: sender, actionList: [sortBy, orderAs, cancel])
     }
     
-    
-
     // MARK: - Properties
 
     weak var delegate: MainTableViewControllerDelegate?
@@ -131,15 +129,19 @@ class MainTableViewController: UITableViewController, Storyboarded {
     var animateToSelectedHash = false
 
     var isHostOnline: Bool = false
-
-    var executeNextStepTimer: Timer?
-
     var shouldRefreshTableView = true
-    var allowDelayedExecutionOfNextStep = true
+
+    
+    var pollingTimer: RepeatingTimer? // FYI: Need to set to nil to avoid a memory leak
+    var pollingQueue: DispatchQueue?
 
     // MARK: - UI Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        pollingQueue = DispatchQueue(label: "io.rudybermudez.DelugeRemote.MainTableView.PollingQueue", qos: .userInteractive)
+        pollingTimer = RepeatingTimer(timeInterval: .seconds(5), leeway: .seconds(1), queue: pollingQueue)
+        pollingTimer?.eventHandler = dataPollingEvent
 
         // Load the user's last sort key and order Key
         if let sortKeyString = UserDefaults.standard.string(forKey: "SortKey"),
@@ -180,13 +182,13 @@ class MainTableViewController: UITableViewController, Storyboarded {
         searchController.searchBar.delegate = self
 
         self.tableView.rowHeight = 60
-
+        
+        pollingQueue?.async { [weak self] in self?.dataPollingEvent() }
+        pollingTimer?.resume()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        allowDelayedExecutionOfNextStep = true
-        executeNextStep()
         
         if splitViewController!.isCollapsed {
             if let selectionIndexPath = self.tableView.indexPathForSelectedRow {
@@ -195,10 +197,6 @@ class MainTableViewController: UITableViewController, Storyboarded {
             }
             self.initUploadDownloadLabels()
         }
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
 
     func initUploadDownloadLabels() {
@@ -260,7 +258,6 @@ class MainTableViewController: UITableViewController, Storyboarded {
                 self.restoreSelectedRow()
             }
         }
-
     }
 
     func displaySortByMenu() {
@@ -301,42 +298,28 @@ class MainTableViewController: UITableViewController, Storyboarded {
                   style: .actionSheet, sender: organizeMenuBarButton, actionList: actions)
     }
 
-    // MARK: - Helper Functions
-
-    func delayedExecuteNextStep() {
-        if allowDelayedExecutionOfNextStep {
-            if !(executeNextStepTimer?.isValid ?? false) {
-                executeNextStepTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
-                    self?.executeNextStep()
-                }
-            } else {
-                Logger.debug("Prevented Redundant Delayed Next Step")
-            }
-        } else {
-            Logger.debug("Prevented Request for Delayed Next Step")
-        }
-    }
-
-    func cancelDelayedExecuteNextStep() {
-        Logger.debug("Cancelling Delayed Execute of Next Step")
-        executeNextStepTimer?.invalidate()
-    }
-
-    func executeNextStep() {
-        if ClientManager.shared.activeClient == nil { return } // This will keep the timer from restarting
-
+    // MARK: - Data Polling
+    
+    /// Event Handler for RepeatingTimer
+    func dataPollingEvent()
+    {
+        guard (ClientManager.shared.activeClient != nil) else { return }
+        
         if !IsConnectedToNetwork() {
-            updateHeader(with: "No Active Internet Connection", isError: true, color: UIColor.red)
-            delayedExecuteNextStep()
+            DispatchQueue.main.async {
+                self.updateHeader(with: "No Active Internet Connection", isError: true, color: UIColor.red)
+            }
             return
         }
-
+        
         if isHostOnline {
             downloadNewData()
         } else {
             refreshAuthentication()
         }
     }
+    
+    // MARK: - Helper Functions
 
     func restoreSelectedRow() {
         if isFiltering() {
@@ -378,8 +361,6 @@ class MainTableViewController: UITableViewController, Storyboarded {
         tableViewDataSource?.removeAll()
         reloadTableView()
         updateHeader()
-
-        executeNextStep()
     }
     
     @objc func handleOrientationChange()
@@ -398,8 +379,10 @@ class MainTableViewController: UITableViewController, Storyboarded {
         guard let client = ClientManager.shared.activeClient else { return }
         Logger.debug("Began Auth Refresh")
 
-        updateHeader(with: "Attempting Connection",
-                     color: UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0))
+        DispatchQueue.main.async { [weak self] in
+            self?.updateHeader(with: "Attempting Connection",
+                         color: UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0))
+        }
 
         firstly {
             client.authenticateAndConnect()
@@ -411,9 +394,8 @@ class MainTableViewController: UITableViewController, Storyboarded {
             self?.navigationItem.rightBarButtonItem?.isEnabled = true
             self?.pauseAllTorrentsBarButton.isEnabled = true
             self?.resumeAllTorrentsBarButton.isEnabled = true
-
             self?.updateHeader()
-            self?.executeNextStep()
+            self?.pollingQueue?.async { [weak self] in self?.dataPollingEvent() }
         }.catch { [weak self] error in
             self?.isHostOnline = false
 
@@ -428,14 +410,11 @@ class MainTableViewController: UITableViewController, Storyboarded {
             self?.tableViewDataSource?.removeAll()
             self?.reloadTableView()
 
-            self?.delayedExecuteNextStep() // Queue delayed exec. of next step
-
             var errorMsg = ""
             if let error = error as? ClientError {
                 switch error {
                 case .incorrectPassword:
                     errorMsg = "Incorrect Password"
-                    self?.cancelDelayedExecuteNextStep() // No Point for the next step to process
                 case .noHostsExist:
                     errorMsg = "No Hosts Configured for WebUI"
                 case .hostNotOnline:
@@ -473,7 +452,6 @@ class MainTableViewController: UITableViewController, Storyboarded {
             self?.currentUploadSpeedLabel.text = "↑ \(upload)"
         }.done { [weak self] _ in
             self?.updateHeader()
-            self?.delayedExecuteNextStep()
         }.catch { [weak self] error in
             guard let self = self else { return }
 
@@ -499,8 +477,6 @@ class MainTableViewController: UITableViewController, Storyboarded {
                 Logger.error(error)
                 showAlert(target: self, title: "Error", message: error.localizedDescription)
             }
-
-            self.executeNextStep() // Immediately execute the next step
         }
     }
 
