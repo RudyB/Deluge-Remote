@@ -8,20 +8,9 @@
 
 import Foundation
 
-struct DelugeResponse<T: Decodable>: Decodable {
-    let id: Int
-    let result: T
-    let error: DelugeError?
-}
-
-struct DelugeError: Decodable {
-    let message: String
-    let code: Int
-}
-
 struct TorrentMetadata: Decodable {
     let active_time: Double?
-    let all_time_download: Int
+    let all_time_download: Int?
     let compact: Bool?
     let distributed_copies: Double
     let download_payload_rate: Int

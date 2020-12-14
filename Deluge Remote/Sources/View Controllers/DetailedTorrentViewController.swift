@@ -13,7 +13,7 @@ import PromiseKit
 
 protocol DetailedTorrentViewDelegate: AnyObject
 {
-    func removeDetailView()
+    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: APIResult<Void>, _ onClientComplete: @escaping ()->())->())?)
 }
 
 // swiftlint:disable:next type_body_length
@@ -44,12 +44,12 @@ class DetailedTorrentViewController: FormViewController, Storyboarded {
 
         let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .destructive) { [weak self] _ in
             guard let self = self, let torrentHash = self.torrentHash else { return }
-            self.deleteTorrentAction(torrent: torrentHash, removeData: false)
+            self.delegate?.removeTorrent(with: torrentHash, removeData: false, onCompletion: self.deleteTorrentCallback(result:onGuiUpdatesComplete:))
         }
 
         let deleteTorrentWithData = UIAlertAction( title: "Delete Torrent with Data", style: .destructive) { [weak self] _ in
             guard let self = self, let torrentHash = self.torrentHash else { return }
-            self.deleteTorrentAction(torrent: torrentHash, removeData: false)
+            self.delegate?.removeTorrent(with: torrentHash, removeData: true, onCompletion: self.deleteTorrentCallback(result:onGuiUpdatesComplete:))
         }
 
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
@@ -180,26 +180,24 @@ class DetailedTorrentViewController: FormViewController, Storyboarded {
     }
     
     // MARK: - Helpers
-    fileprivate func deleteTorrentAction(torrent hash: String, removeData: Bool)
+    fileprivate func deleteTorrentCallback(result: APIResult<Void>, onGuiUpdatesComplete: @escaping ()->())
     {
-        guard let client = ClientManager.shared.activeClient else { return }
-        hapticEngine.prepare()
-        firstly {
-            client.removeTorrent(withHash: hash, removeData: removeData)
-        }.done{ [weak self] _ in
-            guard let self = self else { return }
-            self.dataPollingTimer?.suspend()
-            self.hapticEngine.notificationOccurred(.success)
-            self.view.showHUD(title: "Torrent Successfully Deleted") { [weak self] in
-                self?.resetView()
+        switch result {
+        case .success():
+            hapticEngine.notificationOccurred(.success)
+            
+            view.showHUD(title: "Torrent Successfully Deleted") {
+                onGuiUpdatesComplete()
             }
-        }.catch {  error in
+
+        case .failure(let error):
             self.hapticEngine.notificationOccurred(.error)
             if let error = error as? ClientError {
                 showAlert(target: self, title: "Error", message: error.domain())
             } else {
                 showAlert(target: self, title: "Error", message: error.localizedDescription)
             }
+            onGuiUpdatesComplete()
         }
     }
     
@@ -301,12 +299,12 @@ class DetailedTorrentViewController: FormViewController, Storyboarded {
             <<< LabelRow {
                 $0.title = "Downloaded"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                $0.cell.detailTextLabel?.text = torrentData?.all_time_download.sizeString()
+                $0.cell.detailTextLabel?.text = torrentData?.all_time_download?.sizeString()
 
                 }.cellUpdate { [weak self] cell, _ in
                     cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
-                        cell.detailTextLabel?.text = torrentData.all_time_download.sizeString()
+                        cell.detailTextLabel?.text = torrentData.all_time_download?.sizeString()
                         cell.height = self?.computeCellHeight(for: cell)
                     }
             }
@@ -771,17 +769,7 @@ class DetailedTorrentViewController: FormViewController, Storyboarded {
                     self?.applyChanges()
         }
     }
-
-    func resetView() {
-        torrentData = nil
-        torrentHash = nil
-
-        if let delegate = delegate {
-            delegate.removeDetailView()
-        }
-        
-    }
-
+    
      // MARK: - Action Handler Methods
     func applyChanges() {
 

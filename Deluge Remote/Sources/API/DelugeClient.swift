@@ -540,7 +540,7 @@ class DelugeClient {
         }
     }
 
-    func getTorrentInfo(torrent: Data) -> Promise<TorrentInfo> {
+    func getTorrentInfo(torrent: Data) -> Promise<UploadedTorrentInfo> {
         return Promise { seal in
             firstly { upload(torrentData: torrent) }
                 .done { fileName in
@@ -557,25 +557,14 @@ class DelugeClient {
                                 guard
                                     let dict = json as? JSON,
                                     let result = dict["result"] as? JSON,
-                                    let torrentName = result["name"] as? String,
-                                    let torrentHash = result["info_hash"] as? String,
-                                    let fileTree = result["files_tree"] as? JSON,
-                                    let fileTreeContents = fileTree["contents"] as? JSON,
-                                    let rootKey = fileTreeContents.keys.first,
-                                    let rootJSON = fileTreeContents[rootKey] as? JSON
-                                    else {
-                                        seal.reject(ClientError.unexpectedResponse)
-                                        return
+                                    let info = UploadedTorrentInfo(json: result)
+                                else {
+                                    seal.reject(ClientError.unexpectedResponse)
+                                    return
                                 }
-
-                                let type = fileTree["type"] as? String
-                                let files = FileNode(fileName: rootKey, json: rootJSON)
-
-                                let info = TorrentInfo(name: torrentName, hash: torrentHash,
-                                                       isDirectory: type == "dir", files: files)
                                 seal.fulfill(info)
-                            case .failure(let error): seal.reject(
-                                ClientError.unexpectedError(error.localizedDescription))
+                            case .failure(let error):
+                                seal.reject(ClientError.unexpectedError(error.localizedDescription))
                             }
                     }
 

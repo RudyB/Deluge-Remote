@@ -8,23 +8,37 @@
 
 import Foundation
 
-struct TorrentInfo {
+struct UploadedTorrentInfo {
     let name: String
     let hash: String
-    let isDirectory: Bool
-    let files: FileNode
+    let files: UploadedTorrentFileNode
+    
+    init?(json: JSON) {
+        guard let name = json["name"] as? String,
+              let info_hash = json["info_hash"] as? String,
+              let fileTree = json["files_tree"] as? JSON,
+              let fileTreeContents = fileTree["contents"] as? JSON,
+              let fileTreeRootKey = fileTreeContents.keys.first,
+              let fileTreeRootJSON = fileTreeContents[fileTreeRootKey] as? JSON,
+              let files = UploadedTorrentFileNode(fileName: name, json: fileTreeRootJSON)
+        else { return nil }
+        
+        self.name = name
+        self.hash = info_hash
+        self.files = files
+    }
 }
 
-struct FileNode {
+struct UploadedTorrentFileNode {
     let download: Bool?
     let fileName: String
     let path: String?
     let length: Int?
     let isDirectory: Bool
     let index: Int?
-    var children: [FileNode] = []
+    var children: [UploadedTorrentFileNode] = []
 
-    init(fileName: String, json: [String: Any]) {
+    init?(fileName: String, json: [String: Any]) {
         self.fileName = fileName
         self.download = json["download"] as? Bool
         self.path = json["path"] as? String
@@ -34,15 +48,16 @@ struct FileNode {
 
         if let children  = json["contents"] as? [String: Any] {
             for key in children.keys {
-                if let innerContent = children[key] as? [String: Any] {
-                    self.children.append(FileNode(fileName: key, json: innerContent))
+                if let innerContent = children[key] as? [String: Any],
+                   let child = UploadedTorrentFileNode(fileName: key, json: innerContent) {
+                    self.children.append(child)
                 }
             }
         }
     }
 }
 
-extension FileNode {
+extension UploadedTorrentFileNode {
 
     func prettyPrint() {
         print(self.fileName)
@@ -55,7 +70,7 @@ extension FileNode {
         }
     }
 
-    private func printChildrenHelper(node: FileNode) {
+    private func printChildrenHelper(node: UploadedTorrentFileNode) {
 
         if !node.isDirectory {
             print("\t\t\(node.fileName) - \(node.length?.sizeString() ?? "") ")

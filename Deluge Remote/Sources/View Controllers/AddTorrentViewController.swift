@@ -114,7 +114,6 @@ class AddTorrentViewController: FormViewController, Storyboarded {
                         MBProgressHUD.hide(for: self.view, animated: true)
                     }
                 }
-
             }
             .done { [weak self] torrentInfo in
                 DispatchQueue.main.async {

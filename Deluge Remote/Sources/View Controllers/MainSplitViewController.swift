@@ -47,12 +47,32 @@ class MainSplitViewController: UISplitViewController {
         vc.navigationItem.leftItemsSupplementBackButton = true
         showDetailViewController(vc, sender: nil)
     }
-
+    
+    
 }
 
 // MARK: - MainTableViewControllerDelegate
 extension MainSplitViewController: MainTableViewControllerDelegate
 {
+    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((APIResult<Void>, @escaping () -> ()) -> ())?) {
+        suspendDetailViewDataPolling()
+        ClientManager.shared.activeClient?.removeTorrent(withHash: hash, removeData: removeData)
+            .done {
+                if let onCompletion = onCompletion {
+                    onCompletion(.success(())) { [weak self] in
+                        self?.updateDetailViewAfterDeletion()
+                    }
+                }
+            }.catch() { [weak self] error in
+                self?.resumeDetailViewDataPolling()
+                if let onCompletion = onCompletion {
+                    onCompletion(.failure(error)) { [weak self] in
+                        self?.updateDetailViewAfterDeletion()
+                    }
+                }
+            }
+    }
+
     func torrentSelected(torrentHash: String) {
         showTorrentDetailView(torrentHash)
     }
@@ -70,23 +90,43 @@ extension MainSplitViewController: MainTableViewControllerDelegate
         vc.delegate = self
         master.pushViewController(vc, animated: true)
     }
-    
-    func showDetailViewPlaceholder() {
-        if !isCollapsed {
-            showDetailViewController(PlaceholderViewController.instantiate(), sender: nil)
-        }
-    }
 }
 
 // MARK: - DetailedTorrentViewDelegate
 extension MainSplitViewController: DetailedTorrentViewDelegate
 {
-    func removeDetailView()
+    func updateDetailViewAfterDeletion()
     {
         if isCollapsed {
-            master.popViewController(animated: true)
+            if master.topViewController is DetailedTorrentViewController {
+                master.popViewController(animated: true)
+            }
         } else {
-            showDetailViewPlaceholder()
+            showDetailViewController(PlaceholderViewController.instantiate(), sender: nil)
+        }
+    }
+    
+    func suspendDetailViewDataPolling() {
+        if isCollapsed {
+            if let detailVC = master.topViewController as? DetailedTorrentViewController {
+                detailVC.dataPollingTimer?.suspend()
+            }
+        } else {
+            if let detailVC = detail.topViewController as? DetailedTorrentViewController {
+                detailVC.dataPollingTimer?.suspend()
+            }
+        }
+    }
+    
+    func resumeDetailViewDataPolling() {
+        if isCollapsed {
+            if let detailVC = master.topViewController as? DetailedTorrentViewController {
+                detailVC.dataPollingTimer?.resume()
+            }
+        } else {
+            if let detailVC = detail.topViewController as? DetailedTorrentViewController {
+                detailVC.dataPollingTimer?.resume()
+            }
         }
     }
 }
@@ -103,7 +143,6 @@ extension MainSplitViewController: AddTorrentViewControllerDelegate
             
             // Now tell the MainTableaViewController to animated to the newly selected hash
             if let mainViewController = self.master.viewControllers.first as? MainTableViewController {
-                // TODO: Tell mainViewController to download fresh data immediately
                 mainViewController.selectedHash = torrentHash
                 mainViewController.animateToSelectedHash = true
             }

@@ -12,7 +12,7 @@ import UIKit
 
 protocol MainTableViewControllerDelegate: AnyObject {
     func torrentSelected(torrentHash: String)
-    func showDetailViewPlaceholder()
+    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: APIResult<Void>, _ onClientComplete: @escaping ()->())->())?)
     func showAddTorrentView()
     func showClientsView()
 }
@@ -183,19 +183,23 @@ class MainTableViewController: UITableViewController, Storyboarded {
 
         self.tableView.rowHeight = 60
         
-        pollingQueue?.async { [weak self] in self?.dataPollingEvent() }
+        forceDataPollingUpdate()
         pollingTimer?.resume()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if splitViewController!.isCollapsed {
-            if let selectionIndexPath = self.tableView.indexPathForSelectedRow {
-                self.tableView.deselectRow(at: selectionIndexPath, animated: false)
-                
+        if let svc = splitViewController {
+            if svc.isCollapsed {
+                if let selectionIndexPath = tableView.indexPathForSelectedRow {
+                    tableView.deselectRow(at: selectionIndexPath, animated: false)
+                }
+                initUploadDownloadLabels()
+            } else{
+                forceDataPollingUpdate()
+                restoreSelectedRow()
             }
-            self.initUploadDownloadLabels()
         }
     }
 
@@ -319,9 +323,35 @@ class MainTableViewController: UITableViewController, Storyboarded {
         }
     }
     
+    func forceDataPollingUpdate() {
+        pollingQueue?.async { [weak self] in self?.dataPollingEvent() }
+    }
+    
     // MARK: - Helper Functions
+    
+    fileprivate func deletedTorrentCallbackHandler(indexPath: IndexPath, result: APIResult<Void>, onGuiUpdatesComplete: ()->())
+    {
+        switch result {
+        case .success():
+            if isFiltering() {
+                tableViewDataSource?.removeAll { $0 == self.filteredTableViewDataSource[indexPath.row] }
+                self.filteredTableViewDataSource.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            } else {
+                tableViewDataSource?.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            }
+            tableView.setEditing(false, animated: true)
+            view.showHUD(title: "Torrent Successfully Deleted")
+            onGuiUpdatesComplete()
+        case .failure(_):
+            view.showHUD(title: "Failed to Delete Torrent", type: .failure)
+            onGuiUpdatesComplete()
+        }
+    }
 
-    func restoreSelectedRow() {
+    public func restoreSelectedRow() {
+        guard let selectedHash = selectedHash else { return }
         if isFiltering() {
             filteredTableViewDataSource.enumerated().forEach {
                 if $1.hash == selectedHash && !splitViewController!.isCollapsed {
@@ -614,67 +644,29 @@ class MainTableViewController: UITableViewController, Storyboarded {
 
     // swiftlint:disable:next line_length
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        guard let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell else { return }
+        
         if editingStyle == UITableViewCell.EditingStyle.delete {
             // handle delete (by removing the data from your array and updating the tableview)
-            if let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell {
-
-                let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { [weak self] _ in
-
-                    ClientManager.shared.activeClient?.removeTorrent(withHash: cell.torrentHash, removeData: false)
-                        .done { [weak self] _ in
-                            guard let self = self else { return }
-                            self.delegate?.showDetailViewPlaceholder()
-                            if self.isFiltering() {
-                                self.tableViewDataSource?.removeAll {
-                                    $0 == self.filteredTableViewDataSource[indexPath.row]
-                                }
-                                self.filteredTableViewDataSource.remove(at: indexPath.row)
-                                tableView.deleteRows(at: [indexPath], with: .fade)
-                            } else {
-                                self.tableViewDataSource?.remove(at: indexPath.row)
-                                tableView.deleteRows(at: [indexPath], with: .fade)
-                            }
-                            self.tableView.setEditing(false, animated: true)
-                            self.view.showHUD(title: "Torrent Successfully Deleted")
-                        }
-                        .catch { [weak self] _ in
-                            self?.view.showHUD(title: "Failed to Delete Torrent", type: .failure)
-                        }
-
-                    }
-
-                let deleteTorrentWithData = UIAlertAction(
-                    title: "Delete Torrent with Data", style: .default) { [weak self] _ in
-
-                    ClientManager.shared.activeClient?.removeTorrent(withHash: cell.torrentHash, removeData: false)
-                        .done { [weak self] _ in
-                            guard let self = self else { return }
-                            self.delegate?.showDetailViewPlaceholder()
-                            if self.isFiltering() {
-                                self.tableViewDataSource?.removeAll {
-                                    $0 == self.filteredTableViewDataSource[indexPath.row]
-                                }
-                                self.filteredTableViewDataSource.remove(at: indexPath.row)
-                                tableView.deleteRows(at: [indexPath], with: .fade)
-                            } else {
-                                self.tableViewDataSource?.remove(at: indexPath.row)
-                                tableView.deleteRows(at: [indexPath], with: .fade)
-                            }
-                            self.tableView.setEditing(false, animated: true)
-                            self.view.showHUD(title: "Torrent Successfully Deleted")
-                        }
-                        .catch { [weak self] _ in
-                            self?.view.showHUD(title: "Failed to Delete Torrent", type: .failure)
-                    }
+            
+            let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { [weak self] _ in
+                self?.delegate?.removeTorrent(with: cell.torrentHash, removeData: false) { [weak self] result, onClientComplete  in
+                    self?.deletedTorrentCallbackHandler(indexPath: indexPath, result: result, onGuiUpdatesComplete: onClientComplete)
                 }
-
-                let cancel = UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
-                    self?.tableView.setEditing(false, animated: true)
-                }
-
-                showAlert(target: self, title: "Remove the selected Torrent?",
-                          style: .alert, actionList: [deleteTorrent, deleteTorrentWithData, cancel])
             }
+            
+            let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { [weak self] _ in
+                self?.delegate?.removeTorrent(with: cell.torrentHash, removeData: true) { [weak self] result, onClientComplete in
+                    self?.deletedTorrentCallbackHandler(indexPath: indexPath, result: result, onGuiUpdatesComplete: onClientComplete)
+                }
+            }
+            
+            let cancel = UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
+                self?.tableView.setEditing(false, animated: true)
+            }
+
+            showAlert(target: self, title: "Remove the selected Torrent?",
+                      style: .alert, actionList: [deleteTorrent, deleteTorrentWithData, cancel])
         }
     }
 }
