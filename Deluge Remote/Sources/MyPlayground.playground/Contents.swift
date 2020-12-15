@@ -300,3 +300,152 @@ func testParseNewTorrentInfo()
 
 
 testParseNewTorrentInfo()
+
+
+"""
+{
+"077cd5bdbd381bfd7892bfcf85c0ffda02407d16": {
+  "comment": "",
+  "active_time": 1136741,
+  "is_seed": true,
+  "hash": "077cd5bdbd381bfd7892bfcf85c0ffda02407d16",
+  "upload_payload_rate": 0,
+  "move_completed_path": "/home/plexserver/files/Plex Media/TV/Plebs",
+  "private": true,
+  "total_payload_upload": 0,
+  "paused": false,
+  "seed_rank": 805306369,
+  "seeding_time": 1150478,
+  "max_upload_slots": -1,
+  "prioritize_first_last": false,
+  "distributed_copies": 0.0,
+  "download_payload_rate": 0,
+  "message": "OK",
+  "num_peers": 0,
+  "max_download_speed": -1.0,
+  "max_connections": -1,
+  "compact": false,
+  "ratio": 1.5574924945831299,
+  "total_peers": -1,
+  "total_size": 7359464191,
+  "total_wanted": 7359464191,
+  "state": "Seeding",
+  "file_priorities": [
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "label": "tv",
+  "max_upload_speed": -1.0,
+  "remove_at_ratio": false,
+  "tracker": "",
+  "save_path": "/home/plexserver/files/TV/Plebs",
+  "progress": 100.0,
+  "time_added": 1484852992.0,
+  "tracker_host": "freshon.tv",
+  "total_uploaded": 11462310375,
+  "files": [
+    {
+      "index": 0,
+      "path": "Plebs.S03.1080p.WEB-DL.AAC2.0.H.264-SFT/Plebs S03E01 The Beasts 1080p WEB-DL AAC2.0 H.264-SFT.mkv",
+      "offset": 0,
+      "size": 917373391
+    },
+    {
+      "index": 1,
+      "path": "Plebs.S03.1080p.WEB-DL.AAC2.0.H.264-SFT/Plebs S03E02 Justin Junior 1080p WEB-DL AAC2.0 H.264-SFT.mkv",
+      "offset": 917373391,
+      "size": 929784171
+    },
+    {
+      "index": 2,
+      "path": "Plebs.S03.1080p.WEB-DL.AAC2.0.H.264-SFT/Plebs S03E03 The Vestal 1080p WEB-DL AAC2.0 H.264-SFT.mkv",
+      "offset": 1847157562,
+      "size": 935827566
+    },
+    {
+      "index": 3,
+      "path": "Plebs.S03.1080p.WEB-DL.AAC2.0.H.264-SFT/Plebs S03E04 The Cupid 1080p WEB-DL AAC2.0 H.264-SFT.mkv",
+      "offset": 2782985128,
+      "size": 921236173
+    },
+    {
+      "index": 4,
+      "path": "Plebs.S03.1080p.WEB-DL.AAC2.0.H.264-SFT/Plebs S03E05 The Crimewave 1080p WEB-DL AAC2.0 H.264-SFT.mkv",
+      "offset": 3704221301,
+      "size": 906376347
+    },
+    {
+      "index": 5,
+      "path": "Plebs.S03.1080p.WEB-DL.AAC2.0.H.264-SFT/Plebs S03E06 Jugball 1080p WEB-DL AAC2.0 H.264-SFT.mkv",
+      "offset": 4610597648,
+      "size": 906451890
+    },
+    {
+      "index": 6,
+      "path": "Plebs.S03.1080p.WEB-DL.AAC2.0.H.264-SFT/Plebs S03E07 The New Master 1080p WEB-DL AAC2.0 H.264-SFT.mkv",
+      "offset": 5517049538,
+      "size": 907247083
+    },
+    {
+      "index": 7,
+      "path": "Plebs.S03.1080p.WEB-DL.AAC2.0.H.264-SFT/Plebs S03E08 The Weatherist 1080p WEB-DL AAC2.0 H.264-SFT.mkv",
+      "offset": 6424296621,
+      "size": 935167570
+    }
+  ],
+  "total_done": 7359464191,
+  "num_pieces": 1755,
+  "tracker_status": "freshon.tv: Error: expected value (list, dict, int or string) in bencoded string",
+  "total_seeds": -1,
+  "move_on_completed": false,
+  "next_announce": 1746,
+  "stop_at_ratio": false,
+  "file_progress": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "move_completed": false,
+  "piece_length": 4194304,
+  "all_time_download": 7359869058,
+  "move_on_completed_path": "/home/plexserver/files/Plex Media/TV/Plebs",
+  "num_seeds": 0,
+  "peers": [],
+  "name": "Plebs.S03.1080p.WEB-DL.AAC2.0.H.264-SFT",
+  "trackers": [
+    {
+      "send_stats": true,
+      "fails": 0,
+      "verified": false,
+      "min_announce": null,
+      "url": "http://tracker.freshon.tv/b267e50ac34cad655a80c21bf7d95d39/announce",
+      "fail_limit": 0,
+      "next_announce": null,
+      "complete_sent": false,
+      "source": 1,
+      "start_sent": false,
+      "tier": 0,
+      "updating": false
+    }
+  ],
+  "total_payload_download": 0,
+  "is_auto_managed": true,
+  "seeds_peers_ratio": 1.0,
+  "queue": -1,
+  "num_files": 8,
+  "eta": 0,
+  "stop_ratio": 2.0,
+  "is_finished": true
+}
+""".data(using: .utf8)

@@ -35,13 +35,13 @@ class MainSplitViewController: UISplitViewController {
     
     func showTorrentDetailView(_ torrentHash: String? = nil)
     {
-        if let detailViewController = detail.viewControllers.first as? DetailedTorrentViewController {
+        if let detailViewController = detail.viewControllers.first as? TorrentDetailViewTabController {
             // If the detail View controller is already being shown with the desired hash
             if detailViewController.torrentHash == torrentHash { return }
         }
         
-        let vc = DetailedTorrentViewController.instantiate()
-        vc.delegate = self
+        let vc = TorrentDetailViewTabController.instantiate()
+        //vc.delegate = self
         vc.torrentHash = torrentHash
         vc.navigationItem.leftBarButtonItem = displayModeButtonItem
         vc.navigationItem.leftItemsSupplementBackButton = true
@@ -93,12 +93,12 @@ extension MainSplitViewController: MainTableViewControllerDelegate
 }
 
 // MARK: - DetailedTorrentViewDelegate
-extension MainSplitViewController: DetailedTorrentViewDelegate
+extension MainSplitViewController: TorrentDetailViewDelegate
 {
     func updateDetailViewAfterDeletion()
     {
         if isCollapsed {
-            if master.topViewController is DetailedTorrentViewController {
+            if master.topViewController is TorrentDetailViewTabController {
                 master.popViewController(animated: true)
             }
         } else {
@@ -108,11 +108,11 @@ extension MainSplitViewController: DetailedTorrentViewDelegate
     
     func suspendDetailViewDataPolling() {
         if isCollapsed {
-            if let detailVC = master.topViewController as? DetailedTorrentViewController {
+            if let detailVC = master.topViewController as? TorrentDetailViewTabController {
                 detailVC.dataPollingTimer?.suspend()
             }
         } else {
-            if let detailVC = detail.topViewController as? DetailedTorrentViewController {
+            if let detailVC = detail.topViewController as? TorrentDetailViewTabController {
                 detailVC.dataPollingTimer?.suspend()
             }
         }
@@ -120,11 +120,11 @@ extension MainSplitViewController: DetailedTorrentViewDelegate
     
     func resumeDetailViewDataPolling() {
         if isCollapsed {
-            if let detailVC = master.topViewController as? DetailedTorrentViewController {
+            if let detailVC = master.topViewController as? TorrentDetailViewTabController {
                 detailVC.dataPollingTimer?.resume()
             }
         } else {
-            if let detailVC = detail.topViewController as? DetailedTorrentViewController {
+            if let detailVC = detail.topViewController as? TorrentDetailViewTabController {
                 detailVC.dataPollingTimer?.resume()
             }
         }
@@ -198,7 +198,7 @@ extension MainSplitViewController: UISplitViewControllerDelegate
         guard
             let masterNavigationController = primaryViewController as? UINavigationController,
             let detailNavigationController = secondaryViewController as? UINavigationController,
-            let detailViewController = detailNavigationController.viewControllers.first as? DetailedTorrentViewController
+            let detailViewController = detailNavigationController.viewControllers.first as? TorrentDetailViewTabController
         else {
             return true
         }
@@ -223,7 +223,7 @@ extension MainSplitViewController: UISplitViewControllerDelegate
         var newDetailViewControllers = [UIViewController]()
 
         for vc in masterNavigationViewController?.viewControllers ?? [] {
-            if vc is DetailedTorrentViewController {
+            if vc is TorrentDetailViewTabController {
                 newDetailViewControllers.append(vc)
             } else {
                 newMasterViewControllers.append(vc)

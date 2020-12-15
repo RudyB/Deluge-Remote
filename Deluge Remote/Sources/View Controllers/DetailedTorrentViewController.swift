@@ -83,7 +83,6 @@ class DetailedTorrentViewController: FormViewController, Storyboarded {
     weak var delegate: DetailedTorrentViewDelegate?
     let hapticEngine = UINotificationFeedbackGenerator()
     
-
     var torrentData: TorrentMetadata?
     var torrentHash: String?
 

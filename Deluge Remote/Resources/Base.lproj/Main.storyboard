@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -154,7 +155,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Whl-wn-ral" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1280" y="-52"/>
+            <point key="canvasLocation" x="599" y="-52"/>
         </scene>
         <!--Add Torrent View Controller-->
         <scene sceneID="zw9-WK-ng4">
@@ -173,6 +174,20 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9TC-S1-Ez5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2658" y="-52"/>
+        </scene>
+        <!--Torrent Detail View Tab Controller-->
+        <scene sceneID="iet-KU-ZJp">
+            <objects>
+                <tabBarController storyboardIdentifier="TorrentDetailViewTabController" id="0eq-vj-H3l" customClass="TorrentDetailViewTabController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="dYo-Hz-TeD">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wIt-T6-UsJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="599" y="639"/>
         </scene>
         <!--Clients-->
         <scene sceneID="vCG-6Q-XFI">
@@ -468,7 +483,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OFt-8f-1PO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4806" y="-58"/>
+            <point key="canvasLocation" x="1278" y="-52"/>
         </scene>
         <!--Detailed Torrent View Controller-->
         <scene sceneID="9SV-I8-991">
@@ -508,6 +523,85 @@
             </objects>
             <point key="canvasLocation" x="1961" y="-52"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="2C7-RB-hbC">
+            <objects>
+                <viewController id="2Dc-jc-xbc" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Sqi-yy-nXH"/>
+                        <viewControllerLayoutGuide type="bottom" id="GYS-Sk-Gjg"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="uJ1-o7-9H6">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iHl-la-uGA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="755" y="-725"/>
+        </scene>
+        <!--Torrent Info Tab Table View Controller-->
+        <scene sceneID="D3w-SB-zsL">
+            <objects>
+                <tableViewController storyboardIdentifier="TorrentInfoTabTableViewController" id="MEb-hP-HQK" customClass="TorrentInfoTabTableViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="insetGrouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="Ata-OT-13b">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="default" id="GwR-nl-DEO" customClass="DefaultTableViewCell" customModule="Deluge_Remote" customModuleProvider="target">
+                                <rect key="frame" x="20" y="55.333332061767578" width="374" height="42.666667938232422"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="GwR-nl-DEO" id="iLg-vO-CXs">
+                                    <rect key="frame" x="0.0" y="0.0" width="374" height="42.666667938232422"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="1Cz-6Z-akb">
+                                            <rect key="frame" x="20" y="11.000000000000002" width="334" height="20.666666666666671"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FwW-0d-ykg">
+                                                    <rect key="frame" x="0.0" y="0.33333333333333393" width="41.333333333333336" height="20.333333333333329"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="7gt-Oq-kSk">
+                                                    <rect key="frame" x="49.333333333333343" y="0.33333333333333393" width="284.66666666666663" height="20.333333333333329"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" systemColor="secondaryLabelColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </stackView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailingMargin" secondItem="1Cz-6Z-akb" secondAttribute="trailing" id="4l1-NE-yG7"/>
+                                        <constraint firstItem="1Cz-6Z-akb" firstAttribute="top" secondItem="iLg-vO-CXs" secondAttribute="topMargin" id="Ghk-iU-7Fa"/>
+                                        <constraint firstItem="1Cz-6Z-akb" firstAttribute="leading" secondItem="iLg-vO-CXs" secondAttribute="leadingMargin" id="e1H-YD-dNR"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="1Cz-6Z-akb" secondAttribute="bottom" id="qxC-Ac-xMe"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="detail" destination="7gt-Oq-kSk" id="LrU-vd-DgE"/>
+                                    <outlet property="label" destination="FwW-0d-ykg" id="p1P-uB-Ksi"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <sections/>
+                        <connections>
+                            <outlet property="dataSource" destination="MEb-hP-HQK" id="eoS-pF-HKn"/>
+                            <outlet property="delegate" destination="MEb-hP-HQK" id="J6I-PZ-2M8"/>
+                        </connections>
+                    </tableView>
+                    <toolbarItems>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="DIh-xV-2v4"/>
+                    </toolbarItems>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iLQ-N1-TON" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1391" y="639"/>
+        </scene>
     </scenes>
     <resources>
         <image name="filter" width="25" height="25"/>
@@ -516,6 +610,9 @@
         <image name="settings" width="33.333332061767578" height="33.333332061767578"/>
         <systemColor name="groupTableViewBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
