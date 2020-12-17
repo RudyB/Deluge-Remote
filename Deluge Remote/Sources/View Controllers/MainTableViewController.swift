@@ -190,12 +190,12 @@ class MainTableViewController: UITableViewController, Storyboarded {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        self.initUploadDownloadLabels()
         if let svc = splitViewController {
             if svc.isCollapsed {
                 if let selectionIndexPath = tableView.indexPathForSelectedRow {
                     tableView.deselectRow(at: selectionIndexPath, animated: false)
                 }
-                initUploadDownloadLabels()
             } else{
                 forceDataPollingUpdate()
                 restoreSelectedRow()
@@ -395,10 +395,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
     
     @objc func handleOrientationChange()
       {
-          if UIDevice.current.orientation.isPortrait && splitViewController?.isCollapsed ?? false
-          {
-               self.initUploadDownloadLabels()
-          }
+        self.initUploadDownloadLabels()
       }
 
     // MARK: - Deluge UI Wrapper Methods

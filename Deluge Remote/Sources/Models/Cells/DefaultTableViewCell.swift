@@ -8,6 +8,23 @@
 
 import UIKit
 
+class DefaultCell: TVCellBuilder {
+    var label: String?
+    var detail: String?
+    
+    init(label: String?, detail: String?) {
+        self.label = label
+        self.detail = detail
+    }
+    
+    func cell(for tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "default", for: indexPath) as! DefaultTableViewCell
+        cell.label.text = label
+        cell.detail.text = detail
+        return cell
+    }
+}
+
 class DefaultTableViewCell: UITableViewCell {
 
     @IBOutlet weak var label: UILabel!

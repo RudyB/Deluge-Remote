@@ -52,7 +52,7 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
         }
     }
     var torrentHash: String?
-    
+    weak var dataDelegate: TorrentDetailViewDelegate?
     var dataPollingQueue: DispatchQueue?
     var dataPollingTimer: RepeatingTimer?
     
@@ -68,7 +68,7 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
         delegate = self
         
         dataPollingQueue =  DispatchQueue(label: "io.rudybermudez.DelugeRemote.DetailDataView.PollingQueue", qos: .userInteractive)
-        dataPollingTimer = RepeatingTimer(timeInterval: .seconds(2), leeway: .seconds(1), queue: dataPollingQueue)
+        dataPollingTimer = RepeatingTimer(timeInterval: .seconds(3), leeway: .seconds(1), queue: dataPollingQueue)
         dataPollingTimer?.eventHandler = dataPollingEvent
         
         dataPollingQueue?.async { [weak self] in self?.dataPollingEvent() }

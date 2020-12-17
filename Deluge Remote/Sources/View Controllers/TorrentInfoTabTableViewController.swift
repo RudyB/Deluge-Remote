@@ -12,7 +12,9 @@ class TorrentInfoTabTableViewController: UITableViewController, Storyboarded {
 
     // MARK: - Properties
     let hapticEngine = UINotificationFeedbackGenerator()
-    var model = TorrentInfoModel()
+    
+    let model = TorrentInfoModel()
+    
     var torrentData: TorrentMetadata? {
         didSet {
             model.torrent = torrentData
@@ -20,12 +22,21 @@ class TorrentInfoTabTableViewController: UITableViewController, Storyboarded {
         }
     }
     
-    
-    
     // MARK: UIViewController Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        model.onRowsAdded = { [weak self] indexPaths in
+            self?.tableView.beginUpdates()
+            self?.tableView.insertRows(at: indexPaths, with: .automatic)
+            self?.tableView.endUpdates()
+        }
+        
+        model.onRowsRemoved = { [weak self] indexPaths in
+            self?.tableView.beginUpdates()
+            self?.tableView.deleteRows(at: indexPaths, with: .automatic)
+            self?.tableView.endUpdates()
+        }
     }
 
     // MARK: - Table view data source

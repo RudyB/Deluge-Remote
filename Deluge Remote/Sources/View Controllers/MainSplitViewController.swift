@@ -41,7 +41,7 @@ class MainSplitViewController: UISplitViewController {
         }
         
         let vc = TorrentDetailViewTabController.instantiate()
-        //vc.delegate = self
+        vc.dataDelegate = self
         vc.torrentHash = torrentHash
         vc.navigationItem.leftBarButtonItem = displayModeButtonItem
         vc.navigationItem.leftItemsSupplementBackButton = true
