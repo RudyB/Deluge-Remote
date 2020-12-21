@@ -33,7 +33,7 @@ class ClientsTableViewController: UITableViewController, Storyboarded {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let configData = keychain.object(forKey: "ClientConfigs") {
+        if let configData = try? keychain.object(forKey: "ClientConfigs") {
             let decoder = JSONDecoder()
             if let configs = try? decoder.decode([ClientConfig].self, from: configData) {
                 self.configs = configs
@@ -52,11 +52,11 @@ class ClientsTableViewController: UITableViewController, Storyboarded {
 
     override func viewWillDisappear(_ animated: Bool) {
         if configs.isEmpty {
-            keychain.removeObject(forKey: "ClientConfigs")
+            try? keychain.removeObject(forKey: "ClientConfigs")
         } else {
             let encoder = JSONEncoder()
             if let encoded = try? encoder.encode(configs) {
-                keychain.set(object: encoded, forKey: "ClientConfigs")
+                try? keychain.setObject(encoded, forKey: "ClientConfigs")
             }
         }
     }

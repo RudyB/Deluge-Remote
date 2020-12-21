@@ -1,0 +1,70 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Alamofire",
+        "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
+        "state": {
+          "branch": null,
+          "revision": "747c8db8d57b68d5e35275f10c92d55f982adbd4",
+          "version": "4.9.1"
+        }
+      },
+      {
+        "package": "Eureka",
+        "repositoryURL": "https://github.com/xmartlabs/Eureka.git",
+        "state": {
+          "branch": null,
+          "revision": "81f3ea3d69dc99f8684b8bce1224908e101c679f",
+          "version": "5.3.2"
+        }
+      },
+      {
+        "package": "Houston",
+        "repositoryURL": "https://github.com/RudyB/Houston.git",
+        "state": {
+          "branch": null,
+          "revision": "6a97179322d7b2017aed2e194f43a3cfbdf5d5f0",
+          "version": "0.2.3"
+        }
+      },
+      {
+        "package": "IQKeyboardManagerSwift",
+        "repositoryURL": "https://github.com/hackiftekhar/IQKeyboardManager.git",
+        "state": {
+          "branch": null,
+          "revision": "4dc6bc7d1c9747bd0c261c8c055903f9fdef91f7",
+          "version": "6.5.6"
+        }
+      },
+      {
+        "package": "MBProgressHUD",
+        "repositoryURL": "https://github.com/jdg/MBProgressHUD.git",
+        "state": {
+          "branch": null,
+          "revision": "bca42b801100b2b3a4eda0ba8dd33d858c780b0d",
+          "version": "1.2.0"
+        }
+      },
+      {
+        "package": "PromiseKit",
+        "repositoryURL": "https://github.com/mxcl/PromiseKit.git",
+        "state": {
+          "branch": null,
+          "revision": "aea48ea1855f5d82e2dffa6027afce3aab8f3dd7",
+          "version": "6.13.3"
+        }
+      },
+      {
+        "package": "Valet",
+        "repositoryURL": "https://github.com/Square/Valet",
+        "state": {
+          "branch": null,
+          "revision": "c9e7a1e5e0cb73f07cafb403c53c4922e22e5357",
+          "version": "4.1.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

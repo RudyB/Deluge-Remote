@@ -31,9 +31,9 @@ final class ClientManager {
                 self._activeClient = newValue
             }
             if let newValue = newValue, let data = try? JSONEncoder().encode(newValue.clientConfig) {
-                keychain.set(object: data, forKey: "ActiveClient")
+                try? keychain.setObject(data, forKey: "ActiveClient")
             } else {
-                keychain.removeObject(forKey: "ActiveClient")
+                try? keychain.removeObject(forKey: "ActiveClient")
             }
 
             NotificationCenter.default
@@ -44,7 +44,7 @@ final class ClientManager {
     // MARK: Methods
     private init() {
         guard
-            let data = keychain.object(forKey: "ActiveClient"),
+            let data = try? keychain.object(forKey: "ActiveClient"),
             let config = try? JSONDecoder().decode(ClientConfig.self, from: data)
         else { return }
         self.activeClient = DelugeClient(config: config)
