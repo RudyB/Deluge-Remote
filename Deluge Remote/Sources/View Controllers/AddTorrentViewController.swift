@@ -160,7 +160,7 @@ class AddTorrentViewController: FormViewController, Storyboarded {
 
     // swiftlint:disable:next function_body_length
     func populateTorrentTypeSelection() {
-        form +++ Section {
+        form +++ Eureka.Section {
             $0.tag = CodingKeys.selectionSection.rawValue
             $0.header?.title = "Select Torrent Source"
             }
@@ -245,7 +245,7 @@ class AddTorrentViewController: FormViewController, Storyboarded {
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         self.setToolbarItems([spacer, done, spacer], animated: true)
 
-        form +++ Section("Torrent Info")
+        form +++ Eureka.Section("Torrent Info")
             <<< LabelRow {
                 $0.title = name
                 $0.cell.textLabel?.numberOfLines = 0
@@ -256,7 +256,7 @@ class AddTorrentViewController: FormViewController, Storyboarded {
                 $0.cell.textLabel?.adjustsFontSizeToFitWidth = true
         }
 
-        form +++ Section("Bandwidth Config") {
+        form +++ Eureka.Section("Bandwidth Config") {
             $0.tag = CodingKeys.bandwidthConfig.rawValue
             }
 
@@ -344,7 +344,7 @@ class AddTorrentViewController: FormViewController, Storyboarded {
 
         }
 
-        form +++ Section("Queue Configuration") {
+        form +++ Eureka.Section("Queue Configuration") {
             $0.tag = CodingKeys.queueConfig.rawValue
             }
             <<< TextRow {

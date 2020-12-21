@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "ExpandableCollectionViewKit",
+        "repositoryURL": "https://github.com/RudyB/expandable-collection-view-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "fedeebf7f866324d2fbafc91c1f1ed5b5c88e480",
+          "version": "1.1.1"
+        }
+      },
+      {
         "package": "Houston",
         "repositoryURL": "https://github.com/RudyB/Houston.git",
         "state": {

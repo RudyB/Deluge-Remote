@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TorrentInfoTabTableViewController: UITableViewController, Storyboarded {
+class TorrentInfoTableViewController: UITableViewController, Storyboarded {
 
     // MARK: - Properties
     let hapticEngine = UINotificationFeedbackGenerator()

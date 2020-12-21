@@ -541,10 +541,10 @@
             </objects>
             <point key="canvasLocation" x="755" y="-725"/>
         </scene>
-        <!--Torrent Info Tab Table View Controller-->
+        <!--Torrent Info Table View Controller-->
         <scene sceneID="D3w-SB-zsL">
             <objects>
-                <tableViewController storyboardIdentifier="TorrentInfoTabTableViewController" id="MEb-hP-HQK" customClass="TorrentInfoTabTableViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="TorrentInfoTableViewController" id="MEb-hP-HQK" customClass="TorrentInfoTableViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="insetGrouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="Ata-OT-13b">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -725,6 +725,42 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iLQ-N1-TON" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1391" y="639"/>
+        </scene>
+        <!--Torrent Files View Controller-->
+        <scene sceneID="o9a-GU-5Cf">
+            <objects>
+                <viewController storyboardIdentifier="TorrentFilesViewController" id="Ji8-Yt-HlQ" customClass="TorrentFilesViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="gUn-ps-o1f"/>
+                        <viewControllerLayoutGuide type="bottom" id="30R-nI-avC"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="wJm-EL-lMb">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fxN-p5-GGW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2144" y="653"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="RTz-cf-qcJ">
+            <objects>
+                <viewController id="gTo-3y-qme" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="D8R-rB-bBf"/>
+                        <viewControllerLayoutGuide type="bottom" id="6Jn-Vb-xl4"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ueO-2R-bnU">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="k9D-jp-lM1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1712" y="-725"/>
         </scene>
     </scenes>
     <resources>

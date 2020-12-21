@@ -9,9 +9,9 @@ import Foundation
 
 typealias DirectoryName = String
 
-struct TorrentFileList: Decodable {
+fileprivate struct TorrentFiles: Decodable {
 
-    let files: [TorrentFileStructureNode]
+    let files: [TorrentFile]
 
     enum CodingKeys: String, CodingKey {
         case files = "contents"
@@ -20,20 +20,20 @@ struct TorrentFileList: Decodable {
     init(from decoder: Decoder) throws {
         let values = try decoder.singleValueContainer()
         let data = try values.decode([DirectoryName:RawTorrentFileStructureNode].self)
-        files  = data.map { TorrentFileStructureNode(name: $0, data: $1) }
+        files  = data.map { TorrentFile(name: $0, data: $1) }
     }
 }
 
 struct TorrentFileStructure: Decodable {
     let type: String
-    private let contents: TorrentFileList
+    private let contents: TorrentFiles
     var isDirectory: Bool { return type == "dir" }
     
-    var files: [TorrentFileStructureNode] { return contents.files }
+    var files: [TorrentFile] { return contents.files }
 }
 
 
-struct RawTorrentFileStructureNode: Decodable
+fileprivate struct RawTorrentFileStructureNode: Decodable
 {
     let priority: Int
     let index: Int? // Only when it is a file
@@ -42,13 +42,13 @@ struct RawTorrentFileStructureNode: Decodable
     let path: String
     let type: String
     let size: Int
-    let contents: TorrentFileList?
+    let contents: TorrentFiles?
     let progresses: [Double]? // Only when it is a dir
 }
 
-struct TorrentFileStructureNode: Identifiable, Hashable {
+struct TorrentFile: Identifiable, Hashable {
 
-    init(name: String, data: RawTorrentFileStructureNode) {
+    fileprivate init(name: String, data: RawTorrentFileStructureNode) {
         self.name = name
         self.priority = data.priority
         self.index = data.index
@@ -72,6 +72,35 @@ struct TorrentFileStructureNode: Identifiable, Hashable {
     let path: String
     let type: String
     let size: Int
-    let contents: [TorrentFileStructureNode]?
+    let contents: [TorrentFile]?
     let progresses: [Double]? // Only when it is a dir
+}
+
+extension TorrentFile {
+
+    func prettyPrint() {
+        print(self.name)
+
+        guard let children = contents else { return }
+        for child in children where !child.isDirectory {
+            print("\t\(child.name) - \(child.size.sizeString())")
+        }
+        for child in children where child.isDirectory {
+            printChildrenHelper(node: child)
+        }
+    }
+
+    private func printChildrenHelper(node: TorrentFile) {
+
+        if !node.isDirectory {
+            print("\t\t\(node.name) - \(node.size.sizeString()) ")
+        } else {
+            print("\t/\(node.name)")
+            guard let children = node.contents else { return }
+            for child in children {
+                printChildrenHelper(node: child)
+            }
+        }
+
+    }
 }

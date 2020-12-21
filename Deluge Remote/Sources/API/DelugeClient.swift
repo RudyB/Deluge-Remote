@@ -25,6 +25,7 @@ enum ClientError: Error {
     case unableToAddTorrent
     case uploadFailed
     case unableToParseTorrentInfo
+    case unableToParseTorrentFiles
     case failedToConvertTorrentToData
     case noHostsExist
     case hostNotOnline
@@ -54,6 +55,8 @@ enum ClientError: Error {
             return "The Torrent could not be added"
         case .unableToParseTorrentInfo:
             return "The Torrent Info could not be parsed"
+        case .unableToParseTorrentFiles:
+            return "The Torrent Files could not be parsed"
         case .failedToConvertTorrentToData:
             return "Conversion from URL to Data failed"
         case .hostNotOnline:
@@ -232,6 +235,44 @@ class DelugeClient {
                     case .failure(let error): seal.reject(ClientError.unexpectedError(error.localizedDescription))
                     }
             }
+        }
+    }
+    
+    /**
+     Retrieves the torrent file structure for a given torrent
+     
+     - precondition: `DelugeClient.authenticate()` must have been called or
+     else `Promise` will be rejected with an error
+     
+     - Parameter hash: A `String` representation of a hash for a specific torrent the user would like query
+     
+     - Returns: A `Promise` embedded with an instance of `TorrentFileStructure`
+     */
+    func getTorrentFiles(withHash hash: String) -> Promise<TorrentFileStructure> {
+        let parameters: Parameters = [
+            "id": arc4random(),
+            "method": "web.get_torrent_files",
+            "params": [hash]
+        ]
+        
+        return Promise { seal in
+            Manager.request(clientConfig.url, method: .post, parameters: parameters,
+                            encoding: JSONEncoding.default)
+                .validate().responseData(queue: utilityQueue) { response in
+                    
+                    switch response.result {
+                        case .success(let data):
+                            do {
+                                let delugeResponse = try JSONDecoder().decode(DelugeResponse<TorrentFileStructure>.self, from: data)
+                                seal.fulfill(delugeResponse.result)
+                            } catch let error {
+                                Logger.error(error)
+                                seal.reject(ClientError.unableToParseTorrentFiles)
+                            }
+                        case .failure(let error):
+                            seal.reject(ClientError.unexpectedError(error.localizedDescription))
+                    }
+                }
         }
     }
     /**

@@ -11,7 +11,7 @@
 		4714775B25869F810019A278 /* DelugeTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4714775A25869F810019A278 /* DelugeTypes.swift */; };
 		471477622586A1270019A278 /* TorrentUploadInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471477612586A1270019A278 /* TorrentUploadInfo.swift */; };
 		471477672586F37B0019A278 /* TorrentDetailViewTabController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471477662586F37B0019A278 /* TorrentDetailViewTabController.swift */; };
-		4714776A258701FD0019A278 /* TorrentInfoTabTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47147769258701FD0019A278 /* TorrentInfoTabTableViewController.swift */; };
+		4714776A258701FD0019A278 /* TorrentInfoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47147769258701FD0019A278 /* TorrentInfoTableViewController.swift */; };
 		4714776D258707410019A278 /* DefaultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4714776C258707410019A278 /* DefaultTableViewCell.swift */; };
 		471602321DD4305800727CBD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471602311DD4305800727CBD /* AppDelegate.swift */; };
 		471602371DD4305800727CBD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 471602351DD4305800727CBD /* Main.storyboard */; };
@@ -42,6 +42,8 @@
 		47BE37441DDD1FAF002A6042 /* AddClientViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */; };
 		47C20BC222268B4C0069A9B0 /* NetworkReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C20BC122268B4B0069A9B0 /* NetworkReachability.swift */; };
 		47C22F42235643AB00E85A30 /* PromiseKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C22F41235643AB00E85A30 /* PromiseKit.swift */; };
+		47C800F52590962600A01831 /* ExpandableCollectionViewKit in Frameworks */ = {isa = PBXBuildFile; productRef = 47C800F42590962600A01831 /* ExpandableCollectionViewKit */; };
+		47C800F9259096A500A01831 /* TorrentFilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C800F8259096A500A01831 /* TorrentFilesViewController.swift */; };
 		47D035631DD81B34003BB2A0 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035621DD81B34003BB2A0 /* MainTableViewController.swift */; };
 		47E685CF25907874008C2969 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 47E685CE25907874008C2969 /* Alamofire */; };
 		47E685DB259078F2008C2969 /* Eureka in Frameworks */ = {isa = PBXBuildFile; productRef = 47E685DA259078F2008C2969 /* Eureka */; };
@@ -65,7 +67,7 @@
 		4714775A25869F810019A278 /* DelugeTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelugeTypes.swift; sourceTree = "<group>"; };
 		471477612586A1270019A278 /* TorrentUploadInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorrentUploadInfo.swift; sourceTree = "<group>"; };
 		471477662586F37B0019A278 /* TorrentDetailViewTabController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentDetailViewTabController.swift; sourceTree = "<group>"; };
-		47147769258701FD0019A278 /* TorrentInfoTabTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentInfoTabTableViewController.swift; sourceTree = "<group>"; };
+		47147769258701FD0019A278 /* TorrentInfoTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentInfoTableViewController.swift; sourceTree = "<group>"; };
 		4714776C258707410019A278 /* DefaultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTableViewCell.swift; sourceTree = "<group>"; };
 		4716022E1DD4305800727CBD /* Deluge Remote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Deluge Remote.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		471602311DD4305800727CBD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -87,7 +89,6 @@
 		477D7ADA21D3299300F78CE1 /* ClientConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfig.swift; sourceTree = "<group>"; };
 		477D7B3121D3EFE000F78CE1 /* ClientManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientManager.swift; sourceTree = "<group>"; };
 		477D7B3521D605C200F78CE1 /* SessionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStatus.swift; sourceTree = "<group>"; };
-		478D81BF21DDD30D0062A647 /* Deluge Remote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Deluge Remote.entitlements"; sourceTree = "<group>"; };
 		47A3018C24954EF100AC5EED /* FileManagerHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerHelper.swift; sourceTree = "<group>"; };
 		47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientsTableViewController.swift; sourceTree = "<group>"; };
 		47A716B121DEB7E200C7650C /* TorrentFile@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "TorrentFile@3x.png"; sourceTree = "<group>"; };
@@ -100,6 +101,7 @@
 		47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddClientViewController.swift; sourceTree = "<group>"; };
 		47C20BC122268B4B0069A9B0 /* NetworkReachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkReachability.swift; sourceTree = "<group>"; };
 		47C22F41235643AB00E85A30 /* PromiseKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseKit.swift; sourceTree = "<group>"; };
+		47C800F8259096A500A01831 /* TorrentFilesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentFilesViewController.swift; sourceTree = "<group>"; };
 		47D035621DD81B34003BB2A0 /* MainTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
 		47ED995D2584282C002EB8DA /* Storyboarded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboarded.swift; sourceTree = "<group>"; };
 		47ED996525842A93002EB8DA /* MainSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSplitViewController.swift; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 				47E685CF25907874008C2969 /* Alamofire in Frameworks */,
 				47E685E7259079B5008C2969 /* MBProgressHUD in Frameworks */,
 				47E685E325907953008C2969 /* Valet in Frameworks */,
+				47C800F52590962600A01831 /* ExpandableCollectionViewKit in Frameworks */,
 				47E685DB259078F2008C2969 /* Eureka in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -157,7 +160,6 @@
 		471602301DD4305800727CBD /* Deluge Remote */ = {
 			isa = PBXGroup;
 			children = (
-				478D81BF21DDD30D0062A647 /* Deluge Remote.entitlements */,
 				4716027F1DD433F400727CBD /* Resources */,
 				4716027C1DD433B000727CBD /* Sources */,
 			);
@@ -182,14 +184,13 @@
 		4716027E1DD433D800727CBD /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				47C800F72590966200A01831 /* Detail View Controllers */,
 				47ED996525842A93002EB8DA /* MainSplitViewController.swift */,
 				47D035621DD81B34003BB2A0 /* MainTableViewController.swift */,
 				47BE37431DDD1FAF002A6042 /* AddClientViewController.swift */,
 				47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */,
 				47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */,
 				47ED996E25848F8C002EB8DA /* PlaceholderViewController.swift */,
-				471477662586F37B0019A278 /* TorrentDetailViewTabController.swift */,
-				47147769258701FD0019A278 /* TorrentInfoTabTableViewController.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -287,6 +288,16 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
+		47C800F72590966200A01831 /* Detail View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				471477662586F37B0019A278 /* TorrentDetailViewTabController.swift */,
+				47147769258701FD0019A278 /* TorrentInfoTableViewController.swift */,
+				47C800F8259096A500A01831 /* TorrentFilesViewController.swift */,
+			);
+			name = "Detail View Controllers";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -312,6 +323,7 @@
 				47E685E6259079B5008C2969 /* MBProgressHUD */,
 				47E685EA259079D0008C2969 /* IQKeyboardManagerSwift */,
 				47E68796259088AA008C2969 /* Houston */,
+				47C800F42590962600A01831 /* ExpandableCollectionViewKit */,
 			);
 			productName = "Deluge Remote";
 			productReference = 4716022E1DD4305800727CBD /* Deluge Remote.app */;
@@ -360,6 +372,7 @@
 				47E685E5259079B5008C2969 /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 				47E685E9259079D0008C2969 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 				47E68795259088AA008C2969 /* XCRemoteSwiftPackageReference "Houston" */,
+				47C800F32590962600A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */,
 			);
 			productRefGroup = 4716022F1DD4305800727CBD /* Products */;
 			projectDirPath = "";
@@ -416,6 +429,7 @@
 				47B0E3D221E07B4200E3056A /* Int.swift in Sources */,
 				473D1F79258B1C6E00045DB0 /* PlainCircularProgressBar.swift in Sources */,
 				477BFAF121E4748B008E80CF /* String.swift in Sources */,
+				47C800F9259096A500A01831 /* TorrentFilesViewController.swift in Sources */,
 				477D7B3221D3EFE000F78CE1 /* ClientManager.swift in Sources */,
 				477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */,
 				47A3018D24954EF100AC5EED /* FileManagerHelper.swift in Sources */,
@@ -424,7 +438,7 @@
 				47C20BC222268B4C0069A9B0 /* NetworkReachability.swift in Sources */,
 				47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */,
 				4716027A1DD433A700727CBD /* TorrentMetadata.swift in Sources */,
-				4714776A258701FD0019A278 /* TorrentInfoTabTableViewController.swift in Sources */,
+				4714776A258701FD0019A278 /* TorrentInfoTableViewController.swift in Sources */,
 				477D7B3621D605C200F78CE1 /* SessionStatus.swift in Sources */,
 				47ED996625842A93002EB8DA /* MainSplitViewController.swift in Sources */,
 				47599CAD21E30BB3001CD9C7 /* HUDAlert.swift in Sources */,
@@ -672,6 +686,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		47C800F32590962600A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RudyB/expandable-collection-view-kit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.1;
+			};
+		};
 		47E685CD25907874008C2969 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -731,6 +753,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		47C800F42590962600A01831 /* ExpandableCollectionViewKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 47C800F32590962600A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */;
+			productName = ExpandableCollectionViewKit;
+		};
 		47E685CE25907874008C2969 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 47E685CD25907874008C2969 /* XCRemoteSwiftPackageReference "Alamofire" */;

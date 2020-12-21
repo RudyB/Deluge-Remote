@@ -17,8 +17,8 @@ protocol TorrentDetailViewDelegate: AnyObject
 class TorrentDetailViewTabController: UITabBarController, Storyboarded {
     
     // MARK: - Lazy Computed Properties
-    lazy fileprivate var infoVC: TorrentInfoTabTableViewController = {
-        let vc = TorrentInfoTabTableViewController.instantiate()
+    lazy fileprivate var infoVC: TorrentInfoTableViewController = {
+        let vc = TorrentInfoTableViewController.instantiate()
         vc.tabBarItem = UITabBarItem(
             title: "Info",
             image: UIImage(systemName: "doc.plaintext"),
@@ -26,8 +26,8 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
         return vc
     }()
     
-    lazy fileprivate var filesVC: UIViewController = {
-        let vc = UIViewController()
+    lazy fileprivate var filesVC: TorrentFilesViewController = {
+        let vc = TorrentFilesViewController.instantiate()
         vc.tabBarItem = UITabBarItem(
             title: "Files",
             image: UIImage(systemName: "folder"),
@@ -49,6 +49,12 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
     var torrentData: TorrentMetadata? {
         didSet {
             infoVC.torrentData = torrentData
+        }
+    }
+    
+    var torrentFileStructure: TorrentFileStructure? {
+        didSet {
+            filesVC.torrentFileStructure = torrentFileStructure
         }
     }
     var torrentHash: String?
@@ -89,6 +95,8 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
     func dataPollingEvent() {
         guard let torrentHash = torrentHash else { return }
         getTorrentData(withHash: torrentHash)
+        getTorrentFiles(withHash: torrentHash)
+        
     }
     
     func getTorrentData(withHash hash: String) {
@@ -102,7 +110,20 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
                 if let self = self, let error = error as? ClientError {
                     showAlert(target: self, title: "Error", message: error.domain(),
                               style: .alert)
-                    
+                }
+            }
+    }
+        
+    func getTorrentFiles(withHash hash: String) {
+        ClientManager.shared.activeClient?.getTorrentFiles(withHash: hash)
+            .done { [weak self] fileStructure in
+                self?.torrentFileStructure = fileStructure
+                fileStructure.files.forEach { $0.prettyPrint() }
+            }.catch { [weak self] error in
+                Logger.error(error)
+                if let self = self, let error = error as? ClientError {
+                    showAlert(target: self, title: "Error", message: error.domain(),
+                              style: .alert)
                 }
             }
     }
