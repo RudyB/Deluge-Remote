@@ -14,13 +14,14 @@ struct UploadedTorrentInfo {
     let files: UploadedTorrentFileNode
     
     init?(json: JSON) {
-        guard let name = json["name"] as? String,
-              let info_hash = json["info_hash"] as? String,
-              let fileTree = json["files_tree"] as? JSON,
-              let fileTreeContents = fileTree["contents"] as? JSON,
-              let fileTreeRootKey = fileTreeContents.keys.first,
-              let fileTreeRootJSON = fileTreeContents[fileTreeRootKey] as? JSON,
-              let files = UploadedTorrentFileNode(fileName: name, json: fileTreeRootJSON)
+        guard
+            let name = json["name"] as? String,
+            let info_hash = json["info_hash"] as? String,
+            let fileTree = json["files_tree"] as? JSON,
+            let fileTreeContents = fileTree["contents"] as? JSON,
+            let fileTreeRootKey = fileTreeContents.keys.first,
+            let fileTreeRootJSON = fileTreeContents[fileTreeRootKey] as? JSON,
+            let files = UploadedTorrentFileNode(fileName: name, json: fileTreeRootJSON)
         else { return nil }
         
         self.name = name
@@ -80,6 +81,5 @@ extension UploadedTorrentFileNode {
                 printChildrenHelper(node: child)
             }
         }
-
     }
 }

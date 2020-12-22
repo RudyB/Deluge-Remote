@@ -13,16 +13,27 @@ class TorrentFilesViewController: UIViewController, Storyboarded {
 
     
     // MARK: - Properties
-    var torrentFileStructure: TorrentFileStructure?
+    var torrentFileStructure: TorrentFileStructure? {
+        didSet {
+            displayTorrentFiles()
+        }
+    }
+    var filesLoaded = false;
+    
+    
     lazy var expVCManager: ExpandableCollectionViewManager = {
         return ExpandableCollectionViewManager(parentViewController: self)
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        for file in torrentFileStructure?.files {
-            
+    }
+    
+    func displayTorrentFiles() {
+        guard let files = torrentFileStructure else { return }
+        if !filesLoaded {
+            expVCManager.appendItem(files.files.toExpandableItems())
+            filesLoaded = true
         }
         
     }

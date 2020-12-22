@@ -28,13 +28,13 @@ class TorrentInfoTableViewController: UITableViewController, Storyboarded {
         
         model.onRowsAdded = { [weak self] indexPaths in
             self?.tableView.beginUpdates()
-            self?.tableView.insertRows(at: indexPaths, with: .automatic)
+            self?.tableView.insertRows(at: indexPaths, with: .fade)
             self?.tableView.endUpdates()
         }
         
         model.onRowsRemoved = { [weak self] indexPaths in
             self?.tableView.beginUpdates()
-            self?.tableView.deleteRows(at: indexPaths, with: .automatic)
+            self?.tableView.deleteRows(at: indexPaths, with: .fade)
             self?.tableView.endUpdates()
         }
     }

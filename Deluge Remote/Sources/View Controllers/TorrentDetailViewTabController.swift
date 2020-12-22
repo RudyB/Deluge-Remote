@@ -118,7 +118,6 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
         ClientManager.shared.activeClient?.getTorrentFiles(withHash: hash)
             .done { [weak self] fileStructure in
                 self?.torrentFileStructure = fileStructure
-                fileStructure.files.forEach { $0.prettyPrint() }
             }.catch { [weak self] error in
                 Logger.error(error)
                 if let self = self, let error = error as? ClientError {

@@ -6,101 +6,113 @@
 //
 
 import Foundation
+import ExpandableCollectionViewKit
 
 typealias DirectoryName = String
 
-fileprivate struct TorrentFiles: Decodable {
 
-    let files: [TorrentFile]
-
-    enum CodingKeys: String, CodingKey {
-        case files = "contents"
-    }
-
-    init(from decoder: Decoder) throws {
-        let values = try decoder.singleValueContainer()
-        let data = try values.decode([DirectoryName:RawTorrentFileStructureNode].self)
-        files  = data.map { TorrentFile(name: $0, data: $1) }
-    }
-}
-
-struct TorrentFileStructure: Decodable {
-    let type: String
-    private let contents: TorrentFiles
-    var isDirectory: Bool { return type == "dir" }
+struct TorrentFileStructure {
     
-    var files: [TorrentFile] { return contents.files }
-}
-
-
-fileprivate struct RawTorrentFileStructureNode: Decodable
-{
-    let priority: Int
-    let index: Int? // Only when it is a file
-    let offset: Int? // Only when it is a file
-    let progress: Double
-    let path: String
-    let type: String
-    let size: Int
-    let contents: TorrentFiles?
-    let progresses: [Double]? // Only when it is a dir
-}
-
-struct TorrentFile: Identifiable, Hashable {
-
-    fileprivate init(name: String, data: RawTorrentFileStructureNode) {
-        self.name = name
-        self.priority = data.priority
-        self.index = data.index
-        self.offset = data.offset
-        self.progress = data.progress
-        self.path = data.path
-        self.type = data.type
-        self.size = data.size
-        self.contents = data.contents?.files
-        self.progresses = data.progresses
+    let files: DownloadedTorrentFileNode
+    let isDir: Bool
+    
+    init?(json: JSON) {
+        guard
+            let type = json["type"] as? String,
+            let contents = json["contents"] as? JSON,
+            let rootKey = contents.keys.first,
+            let rootKeyJSON = contents[rootKey] as? JSON,
+            let files = DownloadedTorrentFileNode(fileName: rootKey, json: rootKeyJSON)
+        else { return nil }
+        
+        self.isDir = type == "dir"
+        self.files = files
+            
     }
+}
 
-    let name: String
-    var isDirectory: Bool { return type == "dir" }
-    let id = UUID()
 
+struct DownloadedTorrentFileNode
+{
+    let fileName: String
     let priority: Int
     let index: Int? // Only when it is a file
     let offset: Int? // Only when it is a file
     let progress: Double
     let path: String
-    let type: String
+    let isDir: Bool
     let size: Int
-    let contents: [TorrentFile]?
+    var children: [DownloadedTorrentFileNode] = []
     let progresses: [Double]? // Only when it is a dir
+    
+    init?(fileName: String, json: JSON) {
+        guard
+            let priority = json["priority"] as? Int,
+            let progress = json["progress"] as? Double,
+            let path = json["path"] as? String,
+            let type = json["type"] as? String,
+            let size = json["size"] as? Int
+        else { return nil }
+        
+        self.fileName = fileName
+        self.priority = priority
+        self.progress = progress
+        self.path = path
+        self.isDir = type == "dir"
+        self.size = size
+        self.index = json["index"] as? Int
+        self.offset = json["offset"] as? Int
+        self.progresses = json["progresses"] as? [Double]
+        
+        if let children = json["contents"] as? JSON {
+            self.children = children.keys.compactMap { (key) -> DownloadedTorrentFileNode? in
+                guard let innerContent = children[key] as? JSON else { return nil }
+                return DownloadedTorrentFileNode(fileName: key, json: innerContent)
+            }
+        }
+    }
 }
 
-extension TorrentFile {
+extension DownloadedTorrentFileNode {
 
     func prettyPrint() {
-        print(self.name)
+        print(self.fileName)
 
-        guard let children = contents else { return }
-        for child in children where !child.isDirectory {
-            print("\t\(child.name) - \(child.size.sizeString())")
+        for child in children where !child.isDir {
+            print("\t\(child.fileName) - \(child.size.sizeString())")
         }
-        for child in children where child.isDirectory {
+        for child in children where child.isDir {
             printChildrenHelper(node: child)
         }
     }
 
-    private func printChildrenHelper(node: TorrentFile) {
+    private func printChildrenHelper(node: DownloadedTorrentFileNode) {
 
-        if !node.isDirectory {
-            print("\t\t\(node.name) - \(node.size.sizeString()) ")
+        if !node.isDir {
+            print("\t\t\(node.fileName) - \(node.size.sizeString()) ")
         } else {
-            print("\t/\(node.name)")
-            guard let children = node.contents else { return }
-            for child in children {
+            print("\t/\(node.fileName)")
+            for child in node.children {
                 printChildrenHelper(node: child)
             }
         }
 
+    }
+    
+    func toExpandableItems() -> ExpandableItem {
+        if isDir {
+            let folder = Folder(title: fileName)
+            folder.isExpanded(true)
+            folder.isItemsCountVisible(true)
+            children.forEach { (file) in
+                folder.addItems(file.toExpandableItems())
+            }
+            return folder
+        } else {
+            let item = Item(title: fileName)
+            item.setImage(systemName: "doc.fill")
+            item.setTintColor(.systemGray)
+            return item
+        }
     }
 }

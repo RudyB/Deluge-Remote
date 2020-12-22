@@ -256,23 +256,24 @@ class DelugeClient {
         ]
         
         return Promise { seal in
-            Manager.request(clientConfig.url, method: .post, parameters: parameters,
-                            encoding: JSONEncoding.default)
-                .validate().responseData(queue: utilityQueue) { response in
-                    
+            self.Manager.request(self.clientConfig.url, method: .post,
+                                 parameters: parameters, encoding: JSONEncoding.default)
+                .validate().responseJSON(queue: self.utilityQueue) { response in
                     switch response.result {
-                        case .success(let data):
-                            do {
-                                let delugeResponse = try JSONDecoder().decode(DelugeResponse<TorrentFileStructure>.self, from: data)
-                                seal.fulfill(delugeResponse.result)
-                            } catch let error {
-                                Logger.error(error)
-                                seal.reject(ClientError.unableToParseTorrentFiles)
-                            }
-                        case .failure(let error):
-                            seal.reject(ClientError.unexpectedError(error.localizedDescription))
+                    case .success(let json):
+                        guard
+                            let dict = json as? JSON,
+                            let result = dict["result"] as? JSON,
+                            let info = TorrentFileStructure(json: result)
+                        else {
+                            seal.reject(ClientError.unexpectedResponse)
+                            return
+                        }
+                        seal.fulfill(info)
+                    case .failure(let error):
+                        seal.reject(ClientError.unexpectedError(error.localizedDescription))
                     }
-                }
+            }
         }
     }
     /**
