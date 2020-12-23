@@ -10,7 +10,14 @@ import Houston
 import PromiseKit
 import UIKit
 
-class MainTableViewController: UITableViewController {
+protocol MainTableViewControllerDelegate: AnyObject {
+    func torrentSelected(torrentHash: String)
+    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: APIResult<Void>, _ onClientComplete: @escaping ()->())->())?)
+    func showAddTorrentView()
+    func showClientsView()
+}
+
+class MainTableViewController: UITableViewController, Storyboarded {
     // swiftlint:disable:previous type_body_length
 
     enum SortKey: String, CaseIterable {
@@ -80,7 +87,16 @@ class MainTableViewController: UITableViewController {
     @IBAction func pauseAllTorrentsAction(_ sender: Any) {
         (isHostOnline == true) ? self.pauseAllTorrents() : ()
     }
-
+    @IBAction func addTorrentAction(_ sender: Any) {
+        guard let delegate = delegate else { return }
+        delegate.showAddTorrentView()
+    }
+    
+    @IBAction func showClientsAction(_ sender: Any) {
+        guard let delegate = delegate else { return }
+        delegate.showClientsView()
+    }
+    
     @IBOutlet weak var organizeMenuBarButton: UIBarButtonItem!
     @IBAction func displayOrganizeMenu(_ sender: UIBarButtonItem) {
 
@@ -95,9 +111,11 @@ class MainTableViewController: UITableViewController {
 
         showAlert(target: self, title: title, message: nil, style: .actionSheet, sender: sender, actionList: [sortBy, orderAs, cancel])
     }
-
+    
     // MARK: - Properties
 
+    weak var delegate: MainTableViewControllerDelegate?
+    
     var collapseDetailViewController: Bool = true
 
     var activeSortKey = SortKey.Name
@@ -111,15 +129,19 @@ class MainTableViewController: UITableViewController {
     var animateToSelectedHash = false
 
     var isHostOnline: Bool = false
-
-    var executeNextStepTimer: Timer?
-
     var shouldRefreshTableView = true
-    var allowDelayedExecutionOfNextStep = true
+
+    
+    var pollingTimer: RepeatingTimer? // FYI: Need to set to nil to avoid a memory leak
+    var pollingQueue: DispatchQueue?
 
     // MARK: - UI Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        pollingQueue = DispatchQueue(label: "io.rudybermudez.DelugeRemote.MainTableView.PollingQueue", qos: .userInteractive)
+        pollingTimer = RepeatingTimer(timeInterval: .seconds(5), leeway: .seconds(1), queue: pollingQueue)
+        pollingTimer?.eventHandler = dataPollingEvent
 
         // Load the user's last sort key and order Key
         if let sortKeyString = UserDefaults.standard.string(forKey: "SortKey"),
@@ -144,18 +166,11 @@ class MainTableViewController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleNewActiveClient),
                                                name: Notification.Name(ClientManager.NewActiveClientNotification),
                                                object: nil)
-
-        NotificationCenter.default.addObserver(self, selector:
-            #selector(self.handleAddTorrentNotification(notification:)),
-                                               name: Notification.Name("AddTorrentNotification"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleOrientationChange), name: UIDevice.orientationDidChangeNotification, object: nil)
         
-        NewTorrentNotifier.shared.didMainTableVCCreateObserver = true
-
         // Setup the Search Controller
         searchController.searchResultsUpdater = self
-        searchController.dimsBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = true
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Filter Torrents"
@@ -167,25 +182,25 @@ class MainTableViewController: UITableViewController {
         searchController.searchBar.delegate = self
 
         self.tableView.rowHeight = 60
-
+        
+        forceDataPollingUpdate()
+        pollingTimer?.resume()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        allowDelayedExecutionOfNextStep = true
-        executeNextStep()
         
-        if splitViewController!.isCollapsed {
-            if let selectionIndexPath = self.tableView.indexPathForSelectedRow {
-                self.tableView.deselectRow(at: selectionIndexPath, animated: false)
-                
+        self.initUploadDownloadLabels()
+        if let svc = splitViewController {
+            if svc.isCollapsed {
+                if let selectionIndexPath = tableView.indexPathForSelectedRow {
+                    tableView.deselectRow(at: selectionIndexPath, animated: false)
+                }
+            } else{
+                forceDataPollingUpdate()
+                restoreSelectedRow()
             }
-            self.initUploadDownloadLabels()
         }
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
 
     func initUploadDownloadLabels() {
@@ -247,7 +262,6 @@ class MainTableViewController: UITableViewController {
                 self.restoreSelectedRow()
             }
         }
-
     }
 
     func displaySortByMenu() {
@@ -288,64 +302,56 @@ class MainTableViewController: UITableViewController {
                   style: .actionSheet, sender: organizeMenuBarButton, actionList: actions)
     }
 
-    func displayBlankDetailView() {
-        performSegue(withIdentifier: "detailedTorrentViewSegue", sender: nil)
-    }
-
-    // MARK: - Helper Functions
-
-    @objc func handleAddTorrentNotification(notification: NSNotification) {
-        NewTorrentNotifier.shared.userInfo = nil
-        guard
-            let userInfo = notification.userInfo
-        else { return }
-
-        if ClientManager.shared.activeClient != nil {
-            self.performSegue(withIdentifier: "addTorrentSegue", sender: userInfo)
-        } else {
-            DispatchQueue.main.async {
-                showAlert(target: self, title: "Error",
-                          message: "You cannot add a torrent without an active configuration")
-            }
-        }
-    }
-
-    func delayedExecuteNextStep() {
-        if allowDelayedExecutionOfNextStep {
-            if !(executeNextStepTimer?.isValid ?? false) {
-                executeNextStepTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
-                    self?.executeNextStep()
-                }
-            } else {
-                Logger.debug("Prevented Redundant Delayed Next Step")
-            }
-        } else {
-            Logger.debug("Prevented Request for Delayed Next Step")
-        }
-    }
-
-    func cancelDelayedExecuteNextStep() {
-        Logger.debug("Cancelling Delayed Execute of Next Step")
-        executeNextStepTimer?.invalidate()
-    }
-
-    func executeNextStep() {
-        if ClientManager.shared.activeClient == nil { return } // This will keep the timer from restarting
-
+    // MARK: - Data Polling
+    
+    /// Event Handler for RepeatingTimer
+    func dataPollingEvent()
+    {
+        guard (ClientManager.shared.activeClient != nil) else { return }
+        
         if !IsConnectedToNetwork() {
-            updateHeader(with: "No Active Internet Connection", isError: true, color: UIColor.red)
-            delayedExecuteNextStep()
+            DispatchQueue.main.async {
+                self.updateHeader(with: "No Active Internet Connection", isError: true, color: UIColor.red)
+            }
             return
         }
-
+        
         if isHostOnline {
             downloadNewData()
         } else {
             refreshAuthentication()
         }
     }
+    
+    func forceDataPollingUpdate() {
+        pollingQueue?.async { [weak self] in self?.dataPollingEvent() }
+    }
+    
+    // MARK: - Helper Functions
+    
+    fileprivate func deletedTorrentCallbackHandler(indexPath: IndexPath, result: APIResult<Void>, onGuiUpdatesComplete: ()->())
+    {
+        switch result {
+        case .success():
+            if isFiltering() {
+                tableViewDataSource?.removeAll { $0 == self.filteredTableViewDataSource[indexPath.row] }
+                self.filteredTableViewDataSource.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            } else {
+                tableViewDataSource?.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            }
+            tableView.setEditing(false, animated: true)
+            view.showHUD(title: "Torrent Successfully Deleted")
+            onGuiUpdatesComplete()
+        case .failure(_):
+            view.showHUD(title: "Failed to Delete Torrent", type: .failure)
+            onGuiUpdatesComplete()
+        }
+    }
 
-    func restoreSelectedRow() {
+    public func restoreSelectedRow() {
+        guard let selectedHash = selectedHash else { return }
         if isFiltering() {
             filteredTableViewDataSource.enumerated().forEach {
                 if $1.hash == selectedHash && !splitViewController!.isCollapsed {
@@ -385,16 +391,11 @@ class MainTableViewController: UITableViewController {
         tableViewDataSource?.removeAll()
         reloadTableView()
         updateHeader()
-
-        executeNextStep()
     }
     
     @objc func handleOrientationChange()
       {
-          if UIDevice.current.orientation.isPortrait && splitViewController?.isCollapsed ?? false
-          {
-               self.initUploadDownloadLabels()
-          }
+        self.initUploadDownloadLabels()
       }
 
     // MARK: - Deluge UI Wrapper Methods
@@ -405,8 +406,10 @@ class MainTableViewController: UITableViewController {
         guard let client = ClientManager.shared.activeClient else { return }
         Logger.debug("Began Auth Refresh")
 
-        updateHeader(with: "Attempting Connection",
-                     color: UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0))
+        DispatchQueue.main.async { [weak self] in
+            self?.updateHeader(with: "Attempting Connection",
+                         color: UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0))
+        }
 
         firstly {
             client.authenticateAndConnect()
@@ -418,9 +421,8 @@ class MainTableViewController: UITableViewController {
             self?.navigationItem.rightBarButtonItem?.isEnabled = true
             self?.pauseAllTorrentsBarButton.isEnabled = true
             self?.resumeAllTorrentsBarButton.isEnabled = true
-
             self?.updateHeader()
-            self?.executeNextStep()
+            self?.pollingQueue?.async { [weak self] in self?.dataPollingEvent() }
         }.catch { [weak self] error in
             self?.isHostOnline = false
 
@@ -435,14 +437,11 @@ class MainTableViewController: UITableViewController {
             self?.tableViewDataSource?.removeAll()
             self?.reloadTableView()
 
-            self?.delayedExecuteNextStep() // Queue delayed exec. of next step
-
             var errorMsg = ""
             if let error = error as? ClientError {
                 switch error {
                 case .incorrectPassword:
                     errorMsg = "Incorrect Password"
-                    self?.cancelDelayedExecuteNextStep() // No Point for the next step to process
                 case .noHostsExist:
                     errorMsg = "No Hosts Configured for WebUI"
                 case .hostNotOnline:
@@ -480,7 +479,6 @@ class MainTableViewController: UITableViewController {
             self?.currentUploadSpeedLabel.text = "↑ \(upload)"
         }.done { [weak self] _ in
             self?.updateHeader()
-            self?.delayedExecuteNextStep()
         }.catch { [weak self] error in
             guard let self = self else { return }
 
@@ -506,8 +504,6 @@ class MainTableViewController: UITableViewController {
                 Logger.error(error)
                 showAlert(target: self, title: "Error", message: error.localizedDescription)
             }
-
-            self.executeNextStep() // Immediately execute the next step
         }
     }
 
@@ -624,6 +620,11 @@ class MainTableViewController: UITableViewController {
 
         if let selectedCell = tableView.cellForRow(at: indexPath) as? MainTableViewCell {
             selectedHash = selectedCell.torrentHash
+            if let delegate = delegate
+            {
+                delegate.torrentSelected(torrentHash: selectedCell.torrentHash)
+            }
+            
         }
     }
 
@@ -640,123 +641,31 @@ class MainTableViewController: UITableViewController {
 
     // swiftlint:disable:next line_length
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        guard let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell else { return }
+        
         if editingStyle == UITableViewCell.EditingStyle.delete {
             // handle delete (by removing the data from your array and updating the tableview)
-            if let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell {
-
-                let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { [weak self] _ in
-
-                    ClientManager.shared.activeClient?.removeTorrent(withHash: cell.torrentHash, removeData: false)
-                        .done { [weak self] _ in
-                            guard let self = self else { return }
-                            if self.isFiltering() {
-                                self.tableViewDataSource?.removeAll {
-                                    $0 == self.filteredTableViewDataSource[indexPath.row]
-                                }
-                                self.filteredTableViewDataSource.remove(at: indexPath.row)
-                                tableView.deleteRows(at: [indexPath], with: .fade)
-                            } else {
-                                self.tableViewDataSource?.remove(at: indexPath.row)
-                                tableView.deleteRows(at: [indexPath], with: .fade)
-                            }
-                            self.tableView.setEditing(false, animated: true)
-                            self.view.showHUD(title: "Torrent Successfully Deleted")
-                        }
-                        .catch { [weak self] _ in
-                            self?.view.showHUD(title: "Failed to Delete Torrent", type: .failure)
-                        }
-
-                    }
-
-                let deleteTorrentWithData = UIAlertAction(
-                    title: "Delete Torrent with Data", style: .default) { [weak self] _ in
-
-                    ClientManager.shared.activeClient?.removeTorrent(withHash: cell.torrentHash, removeData: false)
-                        .done { [weak self] _ in
-                            guard let self = self else { return }
-                            if self.isFiltering() {
-                                self.tableViewDataSource?.removeAll {
-                                    $0 == self.filteredTableViewDataSource[indexPath.row]
-                                }
-                                self.filteredTableViewDataSource.remove(at: indexPath.row)
-                                tableView.deleteRows(at: [indexPath], with: .fade)
-                            } else {
-                                self.tableViewDataSource?.remove(at: indexPath.row)
-                                tableView.deleteRows(at: [indexPath], with: .fade)
-                            }
-                            self.tableView.setEditing(false, animated: true)
-                            self.view.showHUD(title: "Torrent Successfully Deleted")
-                        }
-                        .catch { [weak self] _ in
-                            self?.view.showHUD(title: "Failed to Delete Torrent", type: .failure)
-                    }
+            
+            let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .default) { [weak self] _ in
+                self?.delegate?.removeTorrent(with: cell.torrentHash, removeData: false) { [weak self] result, onClientComplete  in
+                    self?.deletedTorrentCallbackHandler(indexPath: indexPath, result: result, onGuiUpdatesComplete: onClientComplete)
                 }
-
-                let cancel = UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
-                    self?.tableView.setEditing(false, animated: true)
-                }
-
-                showAlert(target: self, title: "Remove the selected Torrent?",
-                          style: .alert, actionList: [deleteTorrent, deleteTorrentWithData, cancel])
             }
+            
+            let deleteTorrentWithData = UIAlertAction(title: "Delete Torrent with Data", style: .default) { [weak self] _ in
+                self?.delegate?.removeTorrent(with: cell.torrentHash, removeData: true) { [weak self] result, onClientComplete in
+                    self?.deletedTorrentCallbackHandler(indexPath: indexPath, result: result, onGuiUpdatesComplete: onClientComplete)
+                }
+            }
+            
+            let cancel = UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
+                self?.tableView.setEditing(false, animated: true)
+            }
+
+            showAlert(target: self, title: "Remove the selected Torrent?",
+                      style: .alert, actionList: [deleteTorrent, deleteTorrentWithData, cancel])
         }
     }
-
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "detailedTorrentViewSegue" {
-            guard
-                let navigationController = segue.destination as? UINavigationController,
-                let destinationVC = navigationController.topViewController as? DetailedTorrentViewController
-            else {
-                fatalError()
-            }
-
-            destinationVC.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
-            destinationVC.navigationItem.leftItemsSupplementBackButton = true
-            destinationVC.requestBlankDetailView = displayBlankDetailView
-
-            if let cell: MainTableViewCell = sender as? MainTableViewCell {
-                destinationVC.torrentHash = cell.torrentHash
-            }
-            if let torrentHash = sender as? String {
-                destinationVC.torrentHash = torrentHash
-                self.selectedHash = torrentHash
-                self.animateToSelectedHash = true
-            } else {
-                self.selectedHash = nil
-            }
-
-        } else if segue.identifier == "addTorrentSegue" {
-            if let destination = segue.destination as? AddTorrentViewController {
-                
-                
-                
-                if let userInfo = sender as? [AnyHashable: Any]
-                {
-                    if let url = userInfo["url"] as? URL {
-                        destination.torrentData = .magnet(url)
-                        destination.torrentType = .magnet
-                    }
-                    
-                    if let data = userInfo["data"] as? Data {
-                        destination.torrentData = .file(data)
-                        destination.torrentType = .file
-                    }
-                }
-
-                destination.onTorrentAdded = { [weak self] torrentHash in
-                    DispatchQueue.main.async {
-                        self?.navigationController?.popViewController(animated: true)
-                        self?.performSegue(withIdentifier: "detailedTorrentViewSegue", sender: torrentHash)
-                    }
-                }
-            }
-        }
-    }
-
 }
 
 // MARK: - UISearchResultsUpdating Extension

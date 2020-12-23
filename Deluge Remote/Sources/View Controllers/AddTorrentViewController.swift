@@ -12,32 +12,15 @@ import MBProgressHUD
 import PromiseKit
 import UIKit
 
+protocol AddTorrentViewControllerDelegate: AnyObject {
+    func torrentAdded(_ torrentHash: String)
+}
+
 // swiftlint:disable:next type_body_length
-class AddTorrentViewController: FormViewController {
-
-    enum TorrentType: String {
-        case magnet = "Magnet Link"
-        case file = "Torrent File"
-    }
-    
-    enum TorrentData
-    {
-        case magnet(URL)
-        case file(Data)
-        
-        var type: TorrentType {
-            switch self {
-            case .magnet(_):
-                return TorrentType.magnet
-            case .file(_):
-                return TorrentType.file
-            }
-        }
-    }
-
+class AddTorrentViewController: FormViewController, Storyboarded {
     
     var defaultConfig: TorrentConfig?
-    var onTorrentAdded: ((_ hash: String) -> Void)?
+    weak var delegate: AddTorrentViewControllerDelegate?
 
     var torrentName: String?
     var torrentHash: String?
@@ -66,6 +49,11 @@ class AddTorrentViewController: FormViewController {
 
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        hidesBottomBarWhenPushed = false
+        navigationController?.setToolbarHidden(false, animated: true)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -131,7 +119,6 @@ class AddTorrentViewController: FormViewController {
                         MBProgressHUD.hide(for: self.view, animated: true)
                     }
                 }
-
             }
             .done { [weak self] torrentInfo in
                 DispatchQueue.main.async {
@@ -178,7 +165,7 @@ class AddTorrentViewController: FormViewController {
 
     // swiftlint:disable:next function_body_length
     func populateTorrentTypeSelection() {
-        form +++ Section {
+        form +++ Eureka.Section {
             $0.tag = CodingKeys.selectionSection.rawValue
             $0.header?.title = "Select Torrent Source"
             }
@@ -263,7 +250,7 @@ class AddTorrentViewController: FormViewController {
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         self.setToolbarItems([spacer, done, spacer], animated: true)
 
-        form +++ Section("Torrent Info")
+        form +++ Eureka.Section("Torrent Info")
             <<< LabelRow {
                 $0.title = name
                 $0.cell.textLabel?.numberOfLines = 0
@@ -274,7 +261,7 @@ class AddTorrentViewController: FormViewController {
                 $0.cell.textLabel?.adjustsFontSizeToFitWidth = true
         }
 
-        form +++ Section("Bandwidth Config") {
+        form +++ Eureka.Section("Bandwidth Config") {
             $0.tag = CodingKeys.bandwidthConfig.rawValue
             }
 
@@ -362,7 +349,7 @@ class AddTorrentViewController: FormViewController {
 
         }
 
-        form +++ Section("Queue Configuration") {
+        form +++ Eureka.Section("Queue Configuration") {
             $0.tag = CodingKeys.queueConfig.rawValue
             }
             <<< TextRow {
@@ -508,8 +495,8 @@ class AddTorrentViewController: FormViewController {
             .done { [weak self] _ in
                 guard let self = self else { return }
                 self.view.showHUD(title: "Torrent Successfully Added") {
-                    if let onTorrentAdded = self.onTorrentAdded {
-                        onTorrentAdded(hash)
+                    if let delegate = self.delegate {
+                        delegate.torrentAdded(hash)
                     }
                 }
             }.catch { [weak self] _ in
@@ -529,8 +516,8 @@ class AddTorrentViewController: FormViewController {
             .done { [weak self] _ in
                 guard let self = self else { return }
                 self.view.showHUD(title: "Torrent Successfully Added") {
-                    if let onTorrentAdded = self.onTorrentAdded {
-                        onTorrentAdded(hash)
+                    if let delegate = self.delegate {
+                        delegate.torrentAdded(hash)
                     }
                 }
             }.catch { [weak self] _ in

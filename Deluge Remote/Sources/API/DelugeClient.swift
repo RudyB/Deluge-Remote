@@ -25,41 +25,47 @@ enum ClientError: Error {
     case unableToAddTorrent
     case uploadFailed
     case unableToParseTorrentInfo
+    case unableToParseTorrentFiles
     case failedToConvertTorrentToData
     case noHostsExist
     case hostNotOnline
+    case torrentHasNoFiles
 
     // swiftlint:disable:next cyclomatic_complexity
     func domain() -> String {
         switch self {
-        case .uploadFailed:
-            return "Unable to Upload Torrent"
-        case .incorrectPassword:
-            return "Incorrect Password, Unable to Authenticate"
-        case .torrentCouldNotBeParsed:
-            return "Error Parsing Torrent Data Points"
-        case .unexpectedResponse:
-            return "Unexpected Response from Server"
-        case .unexpectedError(let errorMessage):
-            return errorMessage
-        case .unableToPauseTorrent(let errorMessage):
-            return "Unable to Pause Torrent. \(errorMessage.localizedDescription)"
-        case .unableToResumeTorrent(let errorMessage):
-            return "Unable to Resume Torrent. \(errorMessage.localizedDescription)"
-        case .unableToParseTableViewTorrent:
-            return "The Data for Table View Torrent was unable to be parsed"
-        case .unableToDeleteTorrent:
-            return "The Torrent could not be deleted"
-        case .unableToAddTorrent:
-            return "The Torrent could not be added"
-        case .unableToParseTorrentInfo:
-            return "The Torrent Info could not be parsed"
-        case .failedToConvertTorrentToData:
-            return "Conversion from URL to Data failed"
-        case .hostNotOnline:
-            return "Unable to Connect to Host because Daemon is offline."
-        case .noHostsExist:
-            return "No Deluge Daemons are configured in the webUI."
+            case .uploadFailed:
+                return "Unable to Upload Torrent"
+            case .incorrectPassword:
+                return "Incorrect Password, Unable to Authenticate"
+            case .torrentCouldNotBeParsed:
+                return "Error Parsing Torrent Data Points"
+            case .unexpectedResponse:
+                return "Unexpected Response from Server"
+            case .unexpectedError(let errorMessage):
+                return errorMessage
+            case .unableToPauseTorrent(let errorMessage):
+                return "Unable to Pause Torrent. \(errorMessage.localizedDescription)"
+            case .unableToResumeTorrent(let errorMessage):
+                return "Unable to Resume Torrent. \(errorMessage.localizedDescription)"
+            case .unableToParseTableViewTorrent:
+                return "The Data for Table View Torrent was unable to be parsed"
+            case .unableToDeleteTorrent:
+                return "The Torrent could not be deleted"
+            case .unableToAddTorrent:
+                return "The Torrent could not be added"
+            case .unableToParseTorrentInfo:
+                return "The Torrent Info could not be parsed"
+            case .unableToParseTorrentFiles:
+                return "The Torrent Files could not be parsed"
+            case .failedToConvertTorrentToData:
+                return "Conversion from URL to Data failed"
+            case .hostNotOnline:
+                return "Unable to Connect to Host because Daemon is offline."
+            case .noHostsExist:
+                return "No Deluge Daemons are configured in the webUI."
+            case .torrentHasNoFiles:
+                return "Torrent does not contain any files"
         }
     }
 }
@@ -230,6 +236,49 @@ class DelugeClient {
                         }
 
                     case .failure(let error): seal.reject(ClientError.unexpectedError(error.localizedDescription))
+                    }
+            }
+        }
+    }
+    
+    /**
+     Retrieves the torrent file structure for a given torrent
+     
+     - precondition: `DelugeClient.authenticate()` must have been called or
+     else `Promise` will be rejected with an error
+     
+     - Parameter hash: A `String` representation of a hash for a specific torrent the user would like query
+     
+     - Returns: A `Promise` embedded with an instance of `TorrentFileStructure`
+     */
+    func getTorrentFiles(withHash hash: String) -> Promise<TorrentFileStructure> {
+        let parameters: Parameters = [
+            "id": arc4random(),
+            "method": "web.get_torrent_files",
+            "params": [hash]
+        ]
+        
+        return Promise { seal in
+            self.Manager.request(self.clientConfig.url, method: .post,
+                                 parameters: parameters, encoding: JSONEncoding.default)
+                .validate().responseJSON(queue: self.utilityQueue) { response in
+                    switch response.result {
+                    case .success(let json):
+                        guard
+                            let dict = json as? JSON,
+                            let result = dict["result"] as? JSON
+                        else {
+                            seal.reject(ClientError.unexpectedResponse)
+                            return
+                        }
+                        if let files = TorrentFileStructure(json: result) {
+                            seal.fulfill(files)
+                        } else {
+                            seal.reject(ClientError.torrentHasNoFiles)
+                            return
+                        }
+                    case .failure(let error):
+                        seal.reject(ClientError.unexpectedError(error.localizedDescription))
                     }
             }
         }
@@ -540,7 +589,7 @@ class DelugeClient {
         }
     }
 
-    func getTorrentInfo(torrent: Data) -> Promise<TorrentInfo> {
+    func getTorrentInfo(torrent: Data) -> Promise<UploadedTorrentInfo> {
         return Promise { seal in
             firstly { upload(torrentData: torrent) }
                 .done { fileName in
@@ -557,25 +606,14 @@ class DelugeClient {
                                 guard
                                     let dict = json as? JSON,
                                     let result = dict["result"] as? JSON,
-                                    let torrentName = result["name"] as? String,
-                                    let torrentHash = result["info_hash"] as? String,
-                                    let fileTree = result["files_tree"] as? JSON,
-                                    let fileTreeContents = fileTree["contents"] as? JSON,
-                                    let rootKey = fileTreeContents.keys.first,
-                                    let rootJSON = fileTreeContents[rootKey] as? JSON
-                                    else {
-                                        seal.reject(ClientError.unexpectedResponse)
-                                        return
+                                    let info = UploadedTorrentInfo(json: result)
+                                else {
+                                    seal.reject(ClientError.unexpectedResponse)
+                                    return
                                 }
-
-                                let type = fileTree["type"] as? String
-                                let files = FileNode(fileName: rootKey, json: rootJSON)
-
-                                let info = TorrentInfo(name: torrentName, hash: torrentHash,
-                                                       isDirectory: type == "dir", files: files)
                                 seal.fulfill(info)
-                            case .failure(let error): seal.reject(
-                                ClientError.unexpectedError(error.localizedDescription))
+                            case .failure(let error):
+                                seal.reject(ClientError.unexpectedError(error.localizedDescription))
                             }
                     }
 

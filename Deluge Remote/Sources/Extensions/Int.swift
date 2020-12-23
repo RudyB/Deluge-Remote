@@ -17,3 +17,14 @@ extension Int {
         return ByteCountFormatter.string(fromByteCount: Int64(self), countStyle: ByteCountFormatter.CountStyle.memory)
     }
 }
+
+extension Double
+{
+    func transferRateString() -> String {
+        return sizeString() + "/s"
+    }
+
+    func sizeString() -> String {
+        return ByteCountFormatter.string(fromByteCount: Int64(self), countStyle: ByteCountFormatter.CountStyle.memory)
+    }
+}

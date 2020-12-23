@@ -10,21 +10,30 @@ import Houston
 import UIKit
 import Valet
 
-class ClientsTableViewController: UITableViewController {
+protocol ClientsTableViewControllerDelegate: AnyObject {
+    func showAddClientVC(with config: ClientConfig?, onConfigAdded: @escaping (ClientConfig)->())
+}
 
-    var configs = [ClientConfig]()
+class ClientsTableViewController: UITableViewController, Storyboarded {
 
-    private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.deluge")!,
-                                       accessibility: .whenUnlocked)
-
+    // MARK: - IBActions & Outlets
     @IBAction func AddClientAction(_ sender: UIBarButtonItem) {
         showAddClientVC()
     }
     
+    // MARK: - Properties
+    weak var delegate: ClientsTableViewControllerDelegate?
+    
+    var configs = [ClientConfig]()
+
+    private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.deluge")!,
+                                       accessibility: .whenUnlocked)
+    
+    // MARK: - View Related Methods
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let configData = keychain.object(forKey: "ClientConfigs") {
+        if let configData = try? keychain.object(forKey: "ClientConfigs") {
             let decoder = JSONDecoder()
             if let configs = try? decoder.decode([ClientConfig].self, from: configData) {
                 self.configs = configs
@@ -34,7 +43,6 @@ class ClientsTableViewController: UITableViewController {
 
         if configs.isEmpty {
            showAddClientVC()
-
         }
     }
 
@@ -44,25 +52,20 @@ class ClientsTableViewController: UITableViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         if configs.isEmpty {
-            keychain.removeObject(forKey: "ClientConfigs")
+            try? keychain.removeObject(forKey: "ClientConfigs")
         } else {
             let encoder = JSONEncoder()
             if let encoded = try? encoder.encode(configs) {
-                keychain.set(object: encoded, forKey: "ClientConfigs")
+                try? keychain.setObject(encoded, forKey: "ClientConfigs")
             }
         }
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
     func showAddClientVC() {
-        let vc = storyboard?.instantiateViewController(withIdentifier: AddClientViewController.storyboardIdentifier)
-            as! AddClientViewController // swiftlint:disable:this force_cast
-
-        vc.onConfigAdded = { [weak self] config in
+ 
+        guard let delegate = delegate else { return }
+        
+        delegate.showAddClientVC(with: nil) { [weak self] config in
             if self?.configs.isEmpty ?? false {
                 self?.tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.accessoryType = .checkmark
                 ClientManager.shared.activeClient = DelugeClient(config: config)
@@ -70,19 +73,15 @@ class ClientsTableViewController: UITableViewController {
             self?.configs.append(config)
             self?.navigationController?.popViewController(animated: true)
             self?.tableView.reloadData()
-
         }
-        navigationController?.pushViewController(vc, animated: true)
     }
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return configs.count
     }
 
@@ -116,28 +115,23 @@ class ClientsTableViewController: UITableViewController {
 
     // swiftlint:disable:next line_length
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let edit = UITableViewRowAction(style: .normal, title: "Edit") { _, index in
-            let vc = self.storyboard?.instantiateViewController(withIdentifier:
-                AddClientViewController.storyboardIdentifier)
-                as! AddClientViewController // swiftlint:disable:this force_cast
-            vc.config = self.configs[index.row]
-
-            if vc.config == ClientManager.shared.activeClient?.clientConfig {
-                vc.onConfigAdded = { [weak self] config in
-                    self?.configs[index.row] = config
+        let edit = UITableViewRowAction(style: .normal, title: "Edit") { [weak self] _, index in
+            guard let self = self else { return }
+            
+            self.delegate?.showAddClientVC(with: self.configs[index.row]) { [weak self] config in
+                guard let self = self else { return }
+                if config == ClientManager.shared.activeClient?.clientConfig {
+                    self.configs[index.row] = config
                     ClientManager.shared.activeClient = DelugeClient(config: config)
-                    self?.navigationController?.popViewController(animated: true)
-                    self?.tableView.reloadData()
-                }
-            } else {
-                vc.onConfigAdded = { [weak self] config in
-                    self?.configs[index.row] = config
-                    self?.navigationController?.popViewController(animated: true)
-                    self?.tableView.reloadData()
+                    self.navigationController?.popViewController(animated: true)
+                    self.tableView.reloadData()
+                } else
+                {
+                    self.configs[index.row] = config
+                    self.navigationController?.popViewController(animated: true)
+                    self.tableView.reloadData()
                 }
             }
-            self.navigationController?.pushViewController(vc, animated: true)
-            print("Edit button tapped")
         }
         edit.backgroundColor = .orange
 

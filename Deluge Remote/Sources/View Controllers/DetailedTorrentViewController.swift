@@ -9,9 +9,15 @@
 import Eureka
 import Houston
 import UIKit
+import PromiseKit
+
+protocol DetailedTorrentViewDelegate: AnyObject
+{
+    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: APIResult<Void>, _ onClientComplete: @escaping ()->())->())?)
+}
 
 // swiftlint:disable:next type_body_length
-class DetailedTorrentViewController: FormViewController {
+class DetailedTorrentViewController: FormViewController, Storyboarded {
 
     enum TorrentOptionsCodingKeys: String {
         case maxDownloadSpeed = "max_download_speed"
@@ -30,57 +36,20 @@ class DetailedTorrentViewController: FormViewController {
     }
 
     // MARK: - IBOutlets
+    
     @IBOutlet weak var deleteItem: UIBarButtonItem!
     @IBOutlet weak var playPauseItem: UIBarButtonItem!
 
     @IBAction func deleteAction(_ sender: UIBarButtonItem) {
 
         let deleteTorrent = UIAlertAction(title: "Delete Torrent", style: .destructive) { [weak self] _ in
-            self?.stopAutoUpdater()
             guard let self = self, let torrentHash = self.torrentHash else { return }
-            let haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
-            haptic?.prepare()
-            ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: false)
-                .done {_ in
-                    DispatchQueue.main.async {
-                         haptic?.notificationOccurred(.success)
-                    }
-                    self.view.showHUD(title: "Torrent Successfully Deleted") {
-                        self.resetView()
-                    }
-                }.catch { error in
-                    haptic?.notificationOccurred(.error)
-                    if let error = error as? ClientError {
-                        showAlert(target: self, title: "Error", message: error.domain())
-                    } else {
-                        showAlert(target: self, title: "Error", message: error.localizedDescription)
-                    }
-                }
+            self.delegate?.removeTorrent(with: torrentHash, removeData: false, onCompletion: self.deleteTorrentCallback(result:onGuiUpdatesComplete:))
         }
 
-        let deleteTorrentWithData = UIAlertAction(
-            title: "Delete Torrent with Data", style: .destructive) { [weak self] _ in
-            self?.stopAutoUpdater()
+        let deleteTorrentWithData = UIAlertAction( title: "Delete Torrent with Data", style: .destructive) { [weak self] _ in
             guard let self = self, let torrentHash = self.torrentHash else { return }
-            let haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
-            haptic?.prepare()
-            ClientManager.shared.activeClient?.removeTorrent(withHash: torrentHash, removeData: true)
-                .done {_ in
-                    DispatchQueue.main.async {
-                        haptic?.notificationOccurred(.success)
-                    }
-                    self.view.showHUD(title: "Torrent Successfully Deleted") {
-                        self.resetView()
-                    }
-                }.catch { error in
-                    haptic?.notificationOccurred(.error)
-                    if let error = error as? ClientError {
-                        showAlert(target: self, title: "Error", message: error.domain())
-                    } else {
-                        showAlert(target: self, title: "Error", message: error.localizedDescription)
-                    }
-                }
-
+            self.delegate?.removeTorrent(with: torrentHash, removeData: true, onCompletion: self.deleteTorrentCallback(result:onGuiUpdatesComplete:))
         }
 
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
@@ -91,45 +60,18 @@ class DetailedTorrentViewController: FormViewController {
 
     @IBAction func playPauseAction(_ sender: UIBarButtonItem) {
         guard let torrentData = torrentData else { return }
-
-        let haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
-        haptic?.prepare()
+        
+        hapticEngine.prepare()
         if torrentData.paused {
             ClientManager.shared.activeClient?.resumeTorrent(withHash: torrentData.hash) { [weak self] result in
-
-                guard let self = self else {return}
                 DispatchQueue.main.async {
-                    switch result {
-                    case .success:
-                        haptic?.notificationOccurred(.success)
-                        self.view.showHUD(title: "Successfully Resumed Torrent")
-                        UIView.animate(withDuration: 1.0) {
-                            self.playPauseItem.image = #imageLiteral(resourceName: "icons8-pause")
-                        }
-
-                    case .failure:
-                        haptic?.notificationOccurred(.error)
-                        self.view.showHUD(title: "Failed To Resume Torrent", type: .failure)
-                    }
+                    self?.playpauseActionHandler(torrent: torrentData, result: result)
                 }
-
             }
         } else {
             ClientManager.shared.activeClient?.pauseTorrent(withHash: torrentData.hash) { [weak self] result in
-                guard let self = self else {return}
                 DispatchQueue.main.async {
-                    switch result {
-                    case .success:
-                        haptic?.notificationOccurred(.success)
-                        self.view.showHUD(title: "Successfully Paused Torrent")
-                        UIView.animate(withDuration: 1.0) {
-                            self.playPauseItem.image = #imageLiteral(resourceName: "play_filled")
-                        }
-
-                    case .failure:
-                        haptic?.notificationOccurred(.error)
-                        self.view.showHUD(title: "Failed to Pause Torrent", type: .failure)
-                    }
+                    self?.playpauseActionHandler(torrent: torrentData, result: result)
                 }
             }
         }
@@ -138,12 +80,14 @@ class DetailedTorrentViewController: FormViewController {
 
     // MARK: - Properties
 
-    var requestBlankDetailView: (() -> Void)?
-
+    weak var delegate: DetailedTorrentViewDelegate?
+    let hapticEngine = UINotificationFeedbackGenerator()
+    
     var torrentData: TorrentMetadata?
     var torrentHash: String?
 
-    var refreshTimer: Timer?
+    var dataPollingQueue: DispatchQueue?
+    var dataPollingTimer: RepeatingTimer?
 
     // MARK: - View Related Methods
 
@@ -151,20 +95,20 @@ class DetailedTorrentViewController: FormViewController {
           Logger.debug("Destroyed")
       }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Details"
-        // Do any additional setup after loading the view.
+        
+        
+        dataPollingQueue =  DispatchQueue(label: "io.rudybermudez.DelugeRemote.DetailDataView.PollingQueue", qos: .userInteractive)
+        dataPollingTimer = RepeatingTimer(timeInterval: .seconds(2), leeway: .seconds(1), queue: dataPollingQueue)
+        dataPollingTimer?.eventHandler = dataPollingEvent
 
         if let torrentHash = torrentHash {
             getTorrentData(withHash: torrentHash)
             // Begin Data Download
-            startAutoUpdater()
+            dataPollingQueue?.async { [weak self] in self?.dataPollingEvent() }
+            dataPollingTimer?.resume()
         } else {
             playPauseItem.isEnabled = false
             deleteItem.isEnabled = false
@@ -186,7 +130,8 @@ class DetailedTorrentViewController: FormViewController {
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        stopAutoUpdater()
+        dataPollingTimer?.suspend()
+        dataPollingTimer = nil
     }
 
     func computeCellHeight(for cell: LabelCell)  -> () -> CGFloat {
@@ -198,6 +143,11 @@ class DetailedTorrentViewController: FormViewController {
     }
 
     // MARK: - Data Updating Methods
+    
+    func dataPollingEvent() {
+        guard let torrentHash = torrentHash else { return }
+        getTorrentData(withHash: torrentHash)
+    }
 
     func getTorrentData(withHash hash: String) {
         ClientManager.shared.activeClient?.getTorrentDetails(withHash: hash)
@@ -221,28 +171,63 @@ class DetailedTorrentViewController: FormViewController {
             }.catch { [weak self] error in
                 Logger.error(error)
                 if let self = self, let error = error as? ClientError {
-                    let okButton = UIAlertAction(title: "Bummer", style: .default) { _ in
-                        self.navigationController?.popViewController(animated: true)
-                    }
                     showAlert(target: self, title: "Error", message: error.domain(),
-                              style: .alert, actionList: [okButton])
+                              style: .alert)
 
                 }
         }
     }
+    
+    // MARK: - Helpers
+    fileprivate func deleteTorrentCallback(result: APIResult<Void>, onGuiUpdatesComplete: @escaping ()->())
+    {
+        switch result {
+        case .success():
+            hapticEngine.notificationOccurred(.success)
+            
+            view.showHUD(title: "Torrent Successfully Deleted") {
+                onGuiUpdatesComplete()
+            }
 
-    func startAutoUpdater() {
-        refreshTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) {[weak self] _ in
-            guard let torrentHash = self?.torrentHash else { return }
-            self?.getTorrentData(withHash: torrentHash)
+        case .failure(let error):
+            self.hapticEngine.notificationOccurred(.error)
+            if let error = error as? ClientError {
+                showAlert(target: self, title: "Error", message: error.domain())
+            } else {
+                showAlert(target: self, title: "Error", message: error.localizedDescription)
+            }
+            onGuiUpdatesComplete()
         }
-        Logger.debug("Create New Data Timer")
     }
+    
+    fileprivate func playpauseActionHandler(torrent: TorrentMetadata, result: APIResult<Void>)
+    {
+        switch result {
+        case .success:
+            self.hapticEngine.notificationOccurred(.success)
+            
+            if torrent.paused {
+                self.view.showHUD(title: "Successfully Resumed Torrent")
+                UIView.animate(withDuration: 1.0) {
+                    self.playPauseItem.image = #imageLiteral(resourceName: "icons8-pause")
+                }
+            } else {
+                self.view.showHUD(title: "Successfully Paused Torrent")
+                UIView.animate(withDuration: 1.0) {
+                    self.playPauseItem.image = #imageLiteral(resourceName: "play_filled")
+                }
+            }
 
-    func stopAutoUpdater() {
-           refreshTimer?.invalidate()
-           Logger.debug("Invalidated Data Timer")
-       }
+        case .failure:
+            self.hapticEngine.notificationOccurred(.error)
+            
+            if torrent.paused {
+                self.view.showHUD(title: "Failed To Resume Torrent", type: .failure)
+            } else {
+                self.view.showHUD(title: "Failed to Pause Torrent", type: .failure)
+            }
+        }
+    }
 
      // MARK: - Eureka Form Generation Methods
 
@@ -313,12 +298,12 @@ class DetailedTorrentViewController: FormViewController {
             <<< LabelRow {
                 $0.title = "Downloaded"
                 $0.cell.detailTextLabel?.numberOfLines = 0
-                $0.cell.detailTextLabel?.text = torrentData?.all_time_download.sizeString()
+                $0.cell.detailTextLabel?.text = torrentData?.all_time_download?.sizeString()
 
                 }.cellUpdate { [weak self] cell, _ in
                     cell.textLabel?.textColor = ColorCompatibility.label
                     if let torrentData = self?.torrentData {
-                        cell.detailTextLabel?.text = torrentData.all_time_download.sizeString()
+                        cell.detailTextLabel?.text = torrentData.all_time_download?.sizeString()
                         cell.height = self?.computeCellHeight(for: cell)
                     }
             }
@@ -783,23 +768,7 @@ class DetailedTorrentViewController: FormViewController {
                     self?.applyChanges()
         }
     }
-
-    func resetView() {
-        torrentData = nil
-        torrentHash = nil
-
-        if let svc = splitViewController {
-            if svc.isCollapsed {
-                navigationController?.navigationController?.popViewController(animated: true)
-
-            } else {
-                if let requestBlankDetailView = requestBlankDetailView {
-                    requestBlankDetailView()
-                }
-            }
-        }
-    }
-
+    
      // MARK: - Action Handler Methods
     func applyChanges() {
 
@@ -880,7 +849,7 @@ class DetailedTorrentViewController: FormViewController {
         alert.addAction(moveAction)
         alert.addAction(cancelAction)
 
-        self.present(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
 
 } // swiftlint:disable:this file_length

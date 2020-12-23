@@ -8,20 +8,9 @@
 
 import Foundation
 
-struct DelugeResponse<T: Decodable>: Decodable {
-    let id: Int
-    let result: T
-    let error: DelugeError?
-}
-
-struct DelugeError: Decodable {
-    let message: String
-    let code: Int
-}
-
 struct TorrentMetadata: Decodable {
     let active_time: Double?
-    let all_time_download: Int
+    let all_time_download: Int?
     let compact: Bool?
     let distributed_copies: Double
     let download_payload_rate: Int
@@ -50,6 +39,7 @@ struct TorrentMetadata: Decodable {
     let seeding_time: Double
     let seeds_peers_ratio: Double
     let seed_rank: Int
+    /// Torrent state e.g. Paused, Downloading, etc.
     let state: String // Turn this into enum
     let stop_at_ratio: DelugeBool
     let stop_ratio: Double
@@ -100,7 +90,7 @@ struct PeerMetadata: Decodable {
 }
 
 struct TrackerMetadata: Decodable {
-    let send_stats: Bool
+    let send_stats: Bool?
     let fails: Int
     let verified: Bool
     let scrape_incomplete: Int?
