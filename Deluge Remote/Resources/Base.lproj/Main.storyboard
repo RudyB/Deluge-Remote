@@ -724,7 +724,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iLQ-N1-TON" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1391" y="639"/>
+            <point key="canvasLocation" x="1277" y="639"/>
         </scene>
         <!--Torrent Files View Controller-->
         <scene sceneID="o9a-GU-5Cf">
@@ -742,7 +742,25 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fxN-p5-GGW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2144" y="653"/>
+            <point key="canvasLocation" x="1961" y="639"/>
+        </scene>
+        <!--Torrent Options View Controller-->
+        <scene sceneID="R83-BN-SB9">
+            <objects>
+                <viewController storyboardIdentifier="TorrentOptionsViewController" id="awC-CO-cQW" customClass="TorrentOptionsViewController" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ZeA-lH-wnZ"/>
+                        <viewControllerLayoutGuide type="bottom" id="kli-FK-tq8"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="d39-my-ffX">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aRf-tI-yaq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2657.971014492754" y="638.83928571428567"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="RTz-cf-qcJ">

@@ -36,10 +36,11 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
         return vc
     }()
     
-    lazy fileprivate var settingsVC: UIViewController = {
-        let vc = UIViewController()
+    lazy fileprivate var optionsVC: TorrentOptionsViewController = {
+        let vc = TorrentOptionsViewController()
+        vc.delegate = dataDelegate
         vc.tabBarItem = UITabBarItem(
-            title: "Settings",
+            title: "Options",
             image: UIImage(systemName: "gearshape.2"),
             selectedImage: UIImage(systemName: "gearshape.2.filled"))
         return vc
@@ -49,6 +50,7 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
     var torrentData: TorrentMetadata? {
         didSet {
             infoVC.torrentData = torrentData
+            optionsVC.torrentData = torrentData
         }
     }
     
@@ -64,7 +66,6 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
     
     
     // MARK: - UIViewController Methods
-    
     deinit {
         Logger.debug("Destroyed")
     }
@@ -82,7 +83,8 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        viewControllers = [infoVC, filesVC, settingsVC]
+        viewControllers = [infoVC, filesVC, optionsVC]
+        navigationController?.setToolbarHidden(true, animated: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -95,7 +97,10 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
     func dataPollingEvent() {
         guard let torrentHash = torrentHash else { return }
         getTorrentData(withHash: torrentHash)
-        getTorrentFiles(withHash: torrentHash)
+        
+        if torrentFileStructure == nil {
+            getTorrentFiles(withHash: torrentHash)
+        }
         
     }
     
@@ -118,9 +123,16 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
         ClientManager.shared.activeClient?.getTorrentFiles(withHash: hash)
             .done { [weak self] fileStructure in
                 self?.torrentFileStructure = fileStructure
+                self?.filesVC.tabBarItem.isEnabled = true
             }.catch { [weak self] error in
                 Logger.error(error)
-                if let self = self, let error = error as? ClientError {
+                guard
+                    let self = self,
+                    let error = error as? ClientError
+                else { return }
+                if case .torrentHasNoFiles = error {
+                    self.filesVC.tabBarItem.isEnabled = false
+                } else {
                     showAlert(target: self, title: "Error", message: error.domain(),
                               style: .alert)
                 }

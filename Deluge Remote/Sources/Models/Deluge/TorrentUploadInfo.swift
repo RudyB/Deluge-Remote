@@ -39,7 +39,7 @@ struct UploadedTorrentFileNode {
     let index: Int?
     var children: [UploadedTorrentFileNode] = []
 
-    init?(fileName: String, json: [String: Any]) {
+    init?(fileName: String, json: JSON) {
         self.fileName = fileName
         self.download = json["download"] as? Bool
         self.path = json["path"] as? String
@@ -47,12 +47,10 @@ struct UploadedTorrentFileNode {
         self.isDirectory = json["type"] as? String == "dir" ? true : false
         self.index = json["index"] as? Int
 
-        if let children  = json["contents"] as? [String: Any] {
-            for key in children.keys {
-                if let innerContent = children[key] as? [String: Any],
-                   let child = UploadedTorrentFileNode(fileName: key, json: innerContent) {
-                    self.children.append(child)
-                }
+        if let children  = json["contents"] as? JSON {
+            self.children = children.keys.compactMap { (key) -> UploadedTorrentFileNode? in
+                guard let innerContent = children[key] as? JSON else { return nil }
+                return UploadedTorrentFileNode(fileName: key, json: innerContent)
             }
         }
     }

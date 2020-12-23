@@ -49,6 +49,11 @@ class AddTorrentViewController: FormViewController, Storyboarded {
 
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        hidesBottomBarWhenPushed = false
+        navigationController?.setToolbarHidden(false, animated: true)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
 
