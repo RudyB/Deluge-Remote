@@ -65,7 +65,6 @@ class TorrentInfoBasicSection: TorrentInfoSection {
         }
         cells.append(DefaultCell(label: "Completed", detail: "\(torrent.progress.description)%"))
         cells.append(DefaultCell(label: "Size", detail: torrent.total_size.sizeString()))
-        cells.append(DefaultCell(label: "Ratio", detail: String(format: "%.3f", torrent.ratio.roundTo(places: 3))))
         cells.append(DefaultCell(label: "Status", detail: torrent.message))
     }
 }
@@ -82,6 +81,7 @@ class TorrentInfoDownloadSection: TorrentInfoSection {
         cells.removeAll()
         cells.append(DefaultCell(label: "Downloaded", detail: torrent.all_time_download?.sizeString()))
         cells.append(DefaultCell(label: "Uploaded", detail: torrent.total_uploaded.sizeString()))
+        cells.append(DefaultCell(label: "Ratio", detail: String(format: "%.3f", torrent.ratio.roundTo(places: 3))))
         cells.append(DefaultCell(label: "Download Speed", detail: torrent.download_payload_rate.transferRateString()))
         cells.append(DefaultCell(label: "Upload Speed", detail: torrent.upload_payload_rate.transferRateString()))
     }
@@ -90,7 +90,7 @@ class TorrentInfoDownloadSection: TorrentInfoSection {
 
 class TorrentInfoTrackerSection: TorrentInfoSection {
     
-    private let tracker = DefaultCell(label: "Peers Connected", detail: nil)
+    private let tracker = DefaultCell(label: "Tracker", detail: nil)
     private let trackerStatus = DefaultCell(label: "Tracker Status", detail: nil)
     private let announce = DefaultCell(label: "Next Announce", detail: nil)
     private let seeds = DefaultCell(label: "Seeds Connected", detail: nil)
@@ -204,6 +204,7 @@ class TorrentInfoAdditionalSection: TorrentInfoSection {
         }
         
         cells.append(DefaultCell(label: "Auto Managed", detail: torrent.is_auto_managed ? "True" : "False"))
+        cells.append(DefaultCell(label: "Path", detail: torrent.save_path))
         cells.append(DefaultCell(label: "Pieces", detail: "\(torrent.num_pieces) (\(Int(torrent.piece_length).sizeString()))"))
         cells.append(DefaultCell(label: "Hash", detail: torrent.hash))
         if !torrent.comment.isEmpty

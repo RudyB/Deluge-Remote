@@ -39,6 +39,7 @@ struct TorrentMetadata: Decodable {
     let seeding_time: Double
     let seeds_peers_ratio: Double
     let seed_rank: Int
+    /// Torrent state e.g. Paused, Downloading, etc.
     let state: String // Turn this into enum
     let stop_at_ratio: DelugeBool
     let stop_ratio: Double
