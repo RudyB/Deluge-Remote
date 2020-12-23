@@ -550,26 +550,31 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="default" id="GwR-nl-DEO" customClass="DefaultTableViewCell" customModule="Deluge_Remote" customModuleProvider="target">
-                                <rect key="frame" x="20" y="55.333332061767578" width="374" height="42.666667938232422"/>
+                                <rect key="frame" x="20" y="55.333332061767578" width="374" height="43.333332061767578"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="GwR-nl-DEO" id="iLg-vO-CXs">
-                                    <rect key="frame" x="0.0" y="0.0" width="374" height="42.666667938232422"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="374" height="43.333332061767578"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="1Cz-6Z-akb">
-                                            <rect key="frame" x="20" y="11.000000000000002" width="334" height="20.666666666666671"/>
+                                            <rect key="frame" x="20" y="10.999999999999998" width="334" height="21.333333333333329"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FwW-0d-ykg">
-                                                    <rect key="frame" x="0.0" y="0.33333333333333393" width="159" height="20.333333333333329"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FwW-0d-ykg">
+                                                    <rect key="frame" x="0.0" y="0.66666666666666607" width="159" height="20.333333333333336"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="7gt-Oq-kSk">
-                                                    <rect key="frame" x="167" y="0.33333333333333393" width="167" height="20.333333333333329"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WGn-5W-4iC" customClass="SelectableActiveLabel" customModule="Deluge_Remote" customModuleProvider="target">
+                                                    <rect key="frame" x="167" y="0.33333333333333393" width="167" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" systemColor="secondaryLabelColor"/>
                                                     <nil key="highlightedColor"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="color" keyPath="URLColor">
+                                                            <color key="value" systemColor="linkColor"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
                                                 </label>
                                             </subviews>
                                         </stackView>
@@ -582,12 +587,12 @@
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <outlet property="detail" destination="7gt-Oq-kSk" id="LrU-vd-DgE"/>
+                                    <outlet property="detail" destination="WGn-5W-4iC" id="0Yd-Lo-sUb"/>
                                     <outlet property="label" destination="FwW-0d-ykg" id="p1P-uB-Ksi"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="chevronRow" id="6zd-bM-ld4" customClass="ChevronTableViewCell" customModule="Deluge_Remote" customModuleProvider="target">
-                                <rect key="frame" x="20" y="98" width="374" height="42.666667938232422"/>
+                                <rect key="frame" x="20" y="98.666664123535156" width="374" height="42.666667938232422"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="6zd-bM-ld4" id="UwX-Hc-q5F">
                                     <rect key="frame" x="0.0" y="0.0" width="374" height="42.666667938232422"/>
@@ -639,7 +644,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="torrentPeerTableViewCell" id="dvJ-4z-Spy" customClass="TorrentPeerTableViewCell" customModule="Deluge_Remote" customModuleProvider="target">
-                                <rect key="frame" x="20" y="140.66666793823242" width="374" height="80"/>
+                                <rect key="frame" x="20" y="141.33333206176758" width="374" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dvJ-4z-Spy" id="Pyd-uZ-CPK">
                                     <rect key="frame" x="0.0" y="0.0" width="374" height="80"/>
@@ -781,6 +786,11 @@
             <point key="canvasLocation" x="1712" y="-725"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="WGn-5W-4iC">
+            <size key="intrinsicContentSize" width="44" height="21"/>
+        </designable>
+    </designables>
     <resources>
         <image name="chevron.down" catalog="system" width="128" height="72"/>
         <image name="chevron.right" catalog="system" width="96" height="128"/>
@@ -791,6 +801,9 @@
         <image name="us" width="16" height="11"/>
         <systemColor name="groupTableViewBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="linkColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondaryLabelColor">
             <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>

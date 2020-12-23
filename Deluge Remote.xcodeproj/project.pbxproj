@@ -45,6 +45,8 @@
 		47C800F9259096A500A01831 /* TorrentFilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C800F8259096A500A01831 /* TorrentFilesViewController.swift */; };
 		47C8011C259280F000A01831 /* ExpandableCollectionViewKit in Frameworks */ = {isa = PBXBuildFile; productRef = 47C8011B259280F000A01831 /* ExpandableCollectionViewKit */; };
 		47C8011F25929DA200A01831 /* TorrentOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C8011E25929DA200A01831 /* TorrentOptionsViewController.swift */; };
+		47C801222592C12500A01831 /* SelectableActiveLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C801212592C12500A01831 /* SelectableActiveLabel.swift */; };
+		47C801272592D09100A01831 /* ActiveLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 47C801262592D09100A01831 /* ActiveLabel */; };
 		47D035631DD81B34003BB2A0 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D035621DD81B34003BB2A0 /* MainTableViewController.swift */; };
 		47E685CF25907874008C2969 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 47E685CE25907874008C2969 /* Alamofire */; };
 		47E685DB259078F2008C2969 /* Eureka in Frameworks */ = {isa = PBXBuildFile; productRef = 47E685DA259078F2008C2969 /* Eureka */; };
@@ -104,6 +106,7 @@
 		47C22F41235643AB00E85A30 /* PromiseKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseKit.swift; sourceTree = "<group>"; };
 		47C800F8259096A500A01831 /* TorrentFilesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentFilesViewController.swift; sourceTree = "<group>"; };
 		47C8011E25929DA200A01831 /* TorrentOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentOptionsViewController.swift; sourceTree = "<group>"; };
+		47C801212592C12500A01831 /* SelectableActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableActiveLabel.swift; sourceTree = "<group>"; };
 		47D035621DD81B34003BB2A0 /* MainTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
 		47ED995D2584282C002EB8DA /* Storyboarded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboarded.swift; sourceTree = "<group>"; };
 		47ED996525842A93002EB8DA /* MainSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSplitViewController.swift; sourceTree = "<group>"; };
@@ -127,6 +130,7 @@
 				47E685E7259079B5008C2969 /* MBProgressHUD in Frameworks */,
 				47E685E325907953008C2969 /* Valet in Frameworks */,
 				47C8011C259280F000A01831 /* ExpandableCollectionViewKit in Frameworks */,
+				47C801272592D09100A01831 /* ActiveLabel in Frameworks */,
 				47E685DB259078F2008C2969 /* Eureka in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -286,6 +290,7 @@
 				47599CAC21E30BB3001CD9C7 /* HUDAlert.swift */,
 				47A3018C24954EF100AC5EED /* FileManagerHelper.swift */,
 				47ED997825858440002EB8DA /* RepeatingTimer.swift */,
+				47C801212592C12500A01831 /* SelectableActiveLabel.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -327,6 +332,7 @@
 				47E685EA259079D0008C2969 /* IQKeyboardManagerSwift */,
 				47E68796259088AA008C2969 /* Houston */,
 				47C8011B259280F000A01831 /* ExpandableCollectionViewKit */,
+				47C801262592D09100A01831 /* ActiveLabel */,
 			);
 			productName = "Deluge Remote";
 			productReference = 4716022E1DD4305800727CBD /* Deluge Remote.app */;
@@ -376,6 +382,7 @@
 				47E685E9259079D0008C2969 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 				47E68795259088AA008C2969 /* XCRemoteSwiftPackageReference "Houston" */,
 				47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */,
+				47C801252592D09100A01831 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */,
 			);
 			productRefGroup = 4716022F1DD4305800727CBD /* Products */;
 			projectDirPath = "";
@@ -454,6 +461,7 @@
 				477BFAEF21E442F8008E80CF /* DelugeRequestRetrier.swift in Sources */,
 				47C22F42235643AB00E85A30 /* PromiseKit.swift in Sources */,
 				471477622586A1270019A278 /* TorrentUploadInfo.swift in Sources */,
+				47C801222592C12500A01831 /* SelectableActiveLabel.swift in Sources */,
 				471602791DD433A700727CBD /* DelugeClient.swift in Sources */,
 				7FD0633023848DC00087768F /* ColorCompatibility.swift in Sources */,
 				4714776D258707410019A278 /* DefaultTableViewCell.swift in Sources */,
@@ -698,6 +706,14 @@
 				minimumVersion = 1.1.2;
 			};
 		};
+		47C801252592D09100A01831 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/optonaut/ActiveLabel.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.5;
+			};
+		};
 		47E685CD25907874008C2969 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -761,6 +777,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */;
 			productName = ExpandableCollectionViewKit;
+		};
+		47C801262592D09100A01831 /* ActiveLabel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 47C801252592D09100A01831 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */;
+			productName = ActiveLabel;
 		};
 		47E685CE25907874008C2969 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;

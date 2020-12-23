@@ -28,7 +28,7 @@ class DefaultCell: TVCellBuilder {
 class DefaultTableViewCell: UITableViewCell {
 
     @IBOutlet weak var label: UILabel!
-    @IBOutlet weak var detail: UILabel!
+    @IBOutlet weak var detail: SelectableActiveLabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
