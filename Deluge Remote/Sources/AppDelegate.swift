@@ -58,6 +58,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // application state information to restore your application to its current state in case it is terminated later
 		// If your application supports background execution,
         // this method is called instead of applicationWillTerminate: when the user quits.
+        
+        updateShortcutItems()
 	}
 
 	func applicationWillEnterForeground(_ application: UIApplication) {
@@ -78,8 +80,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // swiftlint:disable:next line_length
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         
-        if url.isFileURL
-        {
+        if url.isFileURL {
             let secureResource = url.startAccessingSecurityScopedResource()
             defer { if secureResource { url.stopAccessingSecurityScopedResource() } }
             
@@ -90,13 +91,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return false
             }
             rootController.addTorrent(from: TorrentData.file(data))
-        }
-        else
-        {
+        } else {
             rootController.addTorrent(from: TorrentData.magnet(url))
         }
          
         return true
     }
-
+    
+    
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        completionHandler(shouldHandle(shortcutItem: shortcutItem))
+    }
+    
+    func shouldHandle(shortcutItem: UIApplicationShortcutItem) -> Bool {
+        
+        if shortcutItem.type == "io.rudybermudez.DelugeRemote.adduser" {
+            rootController.showAddTorrentView()
+            return true
+        }
+        
+        return false
+    }
+    
+    func updateShortcutItems() {
+        if let client = ClientManager.shared.activeClient {
+            let icon = UIApplicationShortcutIcon(type: .add)
+            let item = UIApplicationShortcutItem(type: "io.rudybermudez.DelugeRemote.adduser", localizedTitle: "Add Torrent", localizedSubtitle: "Upload to \(client.clientConfig.nickname)", icon: icon, userInfo: nil)
+            UIApplication.shared.shortcutItems = [item]
+        } else {
+            UIApplication.shared.shortcutItems = []
+        }
+    }
 }
+

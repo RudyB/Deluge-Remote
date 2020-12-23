@@ -1,9 +1,6 @@
 os: osx
-osx_image: xcode11.2
 language: swift
+osx_image: xcode12.2
 
-before_install:
- - gem install cocoapods --pre --quiet
- - pod install --repo-update
 script:
-  - xcodebuild -workspace 'Deluge Remote.xcworkspace' -scheme 'Deluge Remote' -destination "platform=iOS Simulator,OS=13.2.2,name=iPhone 11 Pro Max" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Debug ONLY_ACTIVE_ARCH=YES build -quiet
+  - xcodebuild -project 'Deluge Remote.xcodeproj' -scheme 'Deluge Remote' -sdk 'iphonesimulator' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Debug ONLY_ACTIVE_ARCH=YES build -quiet

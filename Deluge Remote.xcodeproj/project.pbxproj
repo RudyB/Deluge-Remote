@@ -216,6 +216,7 @@
 		47200D771DD85FB400D61EC0 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				475A45992589D042003B0EF9 /* TorrentInfoTableModel.swift */,
 				47B0E3CB21E07A1900E3056A /* Cells */,
 				47B0E3C821E0732100E3056A /* Deluge */,
 			);
@@ -264,7 +265,6 @@
 				473D1F74258AE16E00045DB0 /* ChevronTableViewCell.swift */,
 				4714776C258707410019A278 /* DefaultTableViewCell.swift */,
 				47B0E3CC21E07A1900E3056A /* MainTableViewCell.swift */,
-				475A45992589D042003B0EF9 /* TorrentInfoTableModel.swift */,
 				473D1F7B258B1F6F00045DB0 /* TorrentConnectedClientCell.swift */,
 			);
 			path = Cells;
@@ -424,7 +424,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\nswiftlint autocorrect\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "
+";
 		};
 /* End PBXShellScriptBuildPhase section */
 

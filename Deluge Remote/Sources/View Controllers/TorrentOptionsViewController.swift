@@ -197,9 +197,11 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
                if torrent.paused {
                     view.showHUD(title: "Successfully Resumed Torrent")
                     row.cell.textLabel?.text = "Pause Torrent"
+                    row.title = "Pause Torrent"
                } else {
                     view.showHUD(title: "Successfully Paused Torrent")
                     row.cell.textLabel?.text = "Resume Torrent"
+                    row.title = "Resume Torrent"
                }
 
            case .failure:
