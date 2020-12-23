@@ -11,7 +11,7 @@ import UIKit
 class TorrentPeerTableViewCellData: TVCellBuilder {
     var clientName: String
     var ipAddress: String
-    var flag: UIImage
+    var flag: UIImage?
     var uploadSpeed: String
     var downloadSpeed: String
     var progress: Double
@@ -28,7 +28,7 @@ class TorrentPeerTableViewCellData: TVCellBuilder {
     init(peer: PeerMetadata) {
         self.clientName = peer.client
         self.ipAddress = peer.ip
-        self.flag = UIImage(named: "\(peer.country.lowercased()).png")!
+        self.flag = UIImage(named: "\(peer.country.lowercased()).png")
         self.uploadSpeed = "↑ \(peer.up_speed.transferRateString())"
         self.downloadSpeed = "\(peer.down_speed.transferRateString()) ↓"
         self.progress = peer.progress
@@ -37,6 +37,7 @@ class TorrentPeerTableViewCellData: TVCellBuilder {
     func cell(for tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "torrentPeerTableViewCell", for: indexPath) as! TorrentPeerTableViewCell
         cell.clientName.text = clientName
+        cell.flag.image = flag
         cell.ipAddress.text = ipAddress
         cell.uploadSpeed.text = uploadSpeed
         cell.downloadSpeed.text = downloadSpeed
