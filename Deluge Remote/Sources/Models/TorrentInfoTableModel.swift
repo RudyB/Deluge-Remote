@@ -63,7 +63,7 @@ class TorrentInfoBasicSection: TorrentInfoSection {
         if torrent.eta != 0, let eta = torrent.eta.timeRemainingString() {
             cells.append(DefaultCell(label: "ETA", detail: eta))
         }
-        cells.append(DefaultCell(label: "Completed", detail: "\(torrent.progress.description)%"))
+        cells.append(DefaultCell(label: "Completed", detail: String(format: "%.1f%%", torrent.progress)))
         cells.append(DefaultCell(label: "Size", detail: torrent.total_size.sizeString()))
         cells.append(DefaultCell(label: "Status", detail: torrent.message))
     }
