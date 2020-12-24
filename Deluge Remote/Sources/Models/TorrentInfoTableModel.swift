@@ -52,7 +52,7 @@ class TorrentInfoSection {
 class TorrentInfoBasicSection: TorrentInfoSection {
     
     override func titleForHeader() -> String? {
-        return "Basic Information"
+        return "Basic Info"
     }
     
     override func updateData() {
@@ -63,7 +63,9 @@ class TorrentInfoBasicSection: TorrentInfoSection {
         if torrent.eta != 0, let eta = torrent.eta.timeRemainingString() {
             cells.append(DefaultCell(label: "ETA", detail: eta))
         }
-        cells.append(DefaultCell(label: "Completed", detail: String(format: "%.1f%%", torrent.progress)))
+        if torrent.progress < 100 {
+            cells.append(DefaultCell(label: "Completed", detail: String(format: "%.1f%%", torrent.progress)))
+        }
         cells.append(DefaultCell(label: "Size", detail: torrent.total_size.sizeString()))
         cells.append(DefaultCell(label: "Status", detail: torrent.message))
     }
@@ -73,7 +75,7 @@ class TorrentInfoDownloadSection: TorrentInfoSection {
     
     
     override func titleForHeader() -> String? {
-        return "Download Information"
+        return "Download Info"
     }
     
     override func updateData() {
@@ -189,7 +191,7 @@ class TorrentInfoTrackerSection: TorrentInfoSection {
 
 class TorrentInfoAdditionalSection: TorrentInfoSection {
     override func titleForHeader() -> String? {
-        return "Additional Information"
+        return "Additional Info"
     }
     
     override func updateData() {
@@ -203,7 +205,6 @@ class TorrentInfoAdditionalSection: TorrentInfoSection {
             cells.append(DefaultCell(label: "Seeding Time", detail: seedTime))
         }
         
-        cells.append(DefaultCell(label: "Auto Managed", detail: torrent.is_auto_managed ? "True" : "False"))
         cells.append(DefaultCell(label: "Path", detail: torrent.save_path))
         cells.append(DefaultCell(label: "Pieces", detail: "\(torrent.num_pieces) (\(Int(torrent.piece_length).sizeString()))"))
         cells.append(DefaultCell(label: "Hash", detail: torrent.hash))

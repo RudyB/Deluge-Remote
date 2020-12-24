@@ -97,19 +97,21 @@ class MainTableViewController: UITableViewController, Storyboarded {
         delegate.showClientsView()
     }
     
+    lazy var slideInTransitioningDelegate = SlideInPresentationManager()
     @IBOutlet weak var organizeMenuBarButton: UIBarButtonItem!
     @IBAction func displayOrganizeMenu(_ sender: UIBarButtonItem) {
 
-        let title = "Sorted by: \(activeSortKey.rawValue) (\(activeOrderKey.rawValue))"
-        let orderAs = UIAlertAction(title: "Order As", style: .default) { [weak self] _ in
-            self?.displayOrderByMenu()
+        let vc: TorrentSortingPopup = TorrentSortingPopup.instantiate()
+        vc.sortKey = activeSortKey
+        vc.orderKey = activeOrderKey
+        vc.onApplied = { [weak self] (sortKey, orderKey) in
+            self?.activeSortKey = sortKey
+            self?.activeOrderKey = orderKey
         }
-        let sortBy = UIAlertAction(title: "Sort By", style: .default) { [weak self] _ in
-            self?.displaySortByMenu()
-        }
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-
-        showAlert(target: self, title: title, message: nil, style: .actionSheet, sender: sender, actionList: [sortBy, orderAs, cancel])
+        vc.transitioningDelegate = slideInTransitioningDelegate
+        vc.modalPresentationStyle = .custom
+        present(vc, animated: true, completion: nil)
+        
     }
     
     // MARK: - Properties
@@ -118,8 +120,20 @@ class MainTableViewController: UITableViewController, Storyboarded {
     
     var collapseDetailViewController: Bool = true
 
-    var activeSortKey = SortKey.Name
-    var activeOrderKey = Order.Ascending
+    var activeSortKey = SortKey.Name {
+        didSet {
+            reloadTableView()
+            UserDefaults.standard.set(activeSortKey.rawValue, forKey: "SortKey")
+        }
+    }
+    
+    var activeOrderKey = Order.Ascending {
+        didSet {
+            reloadTableView()
+            UserDefaults.standard.set(activeOrderKey.rawValue, forKey: "OrderKey")
+        }
+    }
+    
     let byteCountFormatter = ByteCountFormatter()
     let searchController = UISearchController(searchResultsController: nil)
 
@@ -262,44 +276,6 @@ class MainTableViewController: UITableViewController, Storyboarded {
                 self.restoreSelectedRow()
             }
         }
-    }
-
-    func displaySortByMenu() {
-
-        var actions = [UIAlertAction]()
-
-        for item in SortKey.allCases {
-            let action = UIAlertAction(title: item.rawValue, style: .default) { [weak self] _ in
-                self?.activeSortKey = item
-                self?.reloadTableView()
-                UserDefaults.standard.set(item.rawValue, forKey: "SortKey")
-            }
-            actions.append(action)
-        }
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        actions.append(cancel)
-
-        showAlert(target: self, title: "Sort By:", message: nil, style: .actionSheet, sender: organizeMenuBarButton, actionList: actions)
-    }
-
-    func displayOrderByMenu() {
-
-        var actions = [UIAlertAction]()
-
-        for item in Order.allCases {
-            let action = UIAlertAction(title: item.rawValue, style: .default) { [weak self] _ in
-                self?.activeOrderKey = item
-                self?.reloadTableView()
-                UserDefaults.standard.set(item.rawValue, forKey: "OrderKey")
-            }
-            actions.append(action)
-        }
-
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        actions.append(cancel)
-
-        showAlert(target: self, title: "Order By:", message: nil,
-                  style: .actionSheet, sender: organizeMenuBarButton, actionList: actions)
     }
 
     // MARK: - Data Polling

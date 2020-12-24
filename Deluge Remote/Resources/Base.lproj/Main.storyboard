@@ -523,24 +523,6 @@
             </objects>
             <point key="canvasLocation" x="1961" y="-52"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="2C7-RB-hbC">
-            <objects>
-                <viewController id="2Dc-jc-xbc" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Sqi-yy-nXH"/>
-                        <viewControllerLayoutGuide type="bottom" id="GYS-Sk-Gjg"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="uJ1-o7-9H6">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="iHl-la-uGA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="755" y="-725"/>
-        </scene>
         <!--Torrent Info Table View Controller-->
         <scene sceneID="D3w-SB-zsL">
             <objects>
@@ -550,23 +532,23 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="default" id="GwR-nl-DEO" customClass="DefaultTableViewCell" customModule="Deluge_Remote" customModuleProvider="target">
-                                <rect key="frame" x="20" y="55.333332061767578" width="374" height="43.333332061767578"/>
+                                <rect key="frame" x="20" y="55.333332061767578" width="374" height="42.666667938232422"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="GwR-nl-DEO" id="iLg-vO-CXs">
-                                    <rect key="frame" x="0.0" y="0.0" width="374" height="43.333332061767578"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="374" height="42.666667938232422"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="1Cz-6Z-akb">
-                                            <rect key="frame" x="20" y="10.999999999999998" width="334" height="21.333333333333329"/>
+                                            <rect key="frame" x="20" y="11.000000000000002" width="334" height="20.666666666666671"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FwW-0d-ykg">
-                                                    <rect key="frame" x="0.0" y="0.66666666666666607" width="159" height="20.333333333333336"/>
+                                                    <rect key="frame" x="0.0" y="0.33333333333333393" width="159" height="20.333333333333329"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WGn-5W-4iC" customClass="SelectableActiveLabel" customModule="Deluge_Remote" customModuleProvider="target">
-                                                    <rect key="frame" x="167" y="0.33333333333333393" width="167" height="21"/>
+                                                    <rect key="frame" x="167" y="0.33333333333333393" width="167" height="20.333333333333329"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" systemColor="secondaryLabelColor"/>
                                                     <nil key="highlightedColor"/>
@@ -592,7 +574,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="chevronRow" id="6zd-bM-ld4" customClass="ChevronTableViewCell" customModule="Deluge_Remote" customModuleProvider="target">
-                                <rect key="frame" x="20" y="98.666664123535156" width="374" height="42.666667938232422"/>
+                                <rect key="frame" x="20" y="98" width="374" height="42.666667938232422"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="6zd-bM-ld4" id="UwX-Hc-q5F">
                                     <rect key="frame" x="0.0" y="0.0" width="374" height="42.666667938232422"/>
@@ -644,7 +626,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="torrentPeerTableViewCell" id="dvJ-4z-Spy" customClass="TorrentPeerTableViewCell" customModule="Deluge_Remote" customModuleProvider="target">
-                                <rect key="frame" x="20" y="141.33333206176758" width="374" height="80"/>
+                                <rect key="frame" x="20" y="140.66666793823242" width="374" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dvJ-4z-Spy" id="Pyd-uZ-CPK">
                                     <rect key="frame" x="0.0" y="0.0" width="374" height="80"/>
@@ -767,30 +749,79 @@
             </objects>
             <point key="canvasLocation" x="2657.971014492754" y="638.83928571428567"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="RTz-cf-qcJ">
+        <!--Torrent Sorting Popup-->
+        <scene sceneID="tzl-7u-gdz">
             <objects>
-                <viewController id="gTo-3y-qme" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="TorrentSortingPopup" id="vPh-V9-IHt" customClass="TorrentSortingPopup" customModule="Deluge_Remote" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="D8R-rB-bBf"/>
-                        <viewControllerLayoutGuide type="bottom" id="6Jn-Vb-xl4"/>
+                        <viewControllerLayoutGuide type="top" id="uPC-X6-Kp7"/>
+                        <viewControllerLayoutGuide type="bottom" id="7dh-PQ-4iL"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="ueO-2R-bnU">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                    <view key="view" contentMode="scaleToFill" id="6Zu-PF-T4K">
+                        <rect key="frame" x="0.0" y="0.0" width="400" height="500"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zrZ-ZM-cNq">
+                                <rect key="frame" x="0.0" y="44" width="400" height="44"/>
+                                <items>
+                                    <navigationItem title="Sort By" id="6rY-n9-CVB">
+                                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="Tod-qZ-YZY">
+                                            <connections>
+                                                <action selector="onCancel:" destination="vPh-V9-IHt" id="OUT-cB-ZRG"/>
+                                            </connections>
+                                        </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" title="Apply" id="kEP-7u-yHs">
+                                            <connections>
+                                                <action selector="onApply:" destination="vPh-V9-IHt" id="RRX-oB-Xwr"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="qmC-9D-Ri7">
+                                <rect key="frame" x="20" y="88" width="360" height="247"/>
+                                <subviews>
+                                    <pickerView contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ulv-B7-h18">
+                                        <rect key="frame" x="0.0" y="0.0" width="360" height="216"/>
+                                    </pickerView>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" ambiguous="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="3vI-MR-mwe">
+                                        <rect key="frame" x="0.0" y="216" width="360" height="32"/>
+                                        <segments>
+                                            <segment title="Ascending"/>
+                                            <segment title="Descending"/>
+                                        </segments>
+                                        <connections>
+                                            <action selector="orderSelected:" destination="vPh-V9-IHt" eventType="valueChanged" id="WFb-sn-Ycd"/>
+                                        </connections>
+                                    </segmentedControl>
+                                </subviews>
+                            </stackView>
+                        </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="zrZ-ZM-cNq" firstAttribute="leading" secondItem="6Zu-PF-T4K" secondAttribute="leading" id="1w5-2c-DT8"/>
+                            <constraint firstAttribute="trailing" secondItem="zrZ-ZM-cNq" secondAttribute="trailing" id="PgV-Ou-qw0"/>
+                            <constraint firstItem="qmC-9D-Ri7" firstAttribute="leading" secondItem="6Zu-PF-T4K" secondAttribute="leadingMargin" id="Y2N-SI-AWk"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="qmC-9D-Ri7" secondAttribute="trailing" id="aSU-zL-POi"/>
+                            <constraint firstItem="7dh-PQ-4iL" firstAttribute="top" secondItem="qmC-9D-Ri7" secondAttribute="bottom" constant="20" id="e5h-py-Frp"/>
+                            <constraint firstItem="qmC-9D-Ri7" firstAttribute="top" secondItem="zrZ-ZM-cNq" secondAttribute="bottom" id="jtc-CE-gKz"/>
+                            <constraint firstItem="zrZ-ZM-cNq" firstAttribute="top" secondItem="uPC-X6-Kp7" secondAttribute="bottom" id="la7-S6-qwN"/>
+                        </constraints>
                     </view>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="400" height="500"/>
+                    <connections>
+                        <outlet property="picker" destination="ulv-B7-h18" id="JjZ-4d-JuW"/>
+                        <outlet property="segmentedControl" destination="3vI-MR-mwe" id="tzT-DZ-5cH"/>
+                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="k9D-jp-lM1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CKe-GL-q3H" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1712" y="-725"/>
+            <point key="canvasLocation" x="3542" y="658"/>
         </scene>
     </scenes>
-    <designables>
-        <designable name="WGn-5W-4iC">
-            <size key="intrinsicContentSize" width="44" height="21"/>
-        </designable>
-    </designables>
     <resources>
         <image name="chevron.down" catalog="system" width="128" height="72"/>
         <image name="chevron.right" catalog="system" width="96" height="128"/>
