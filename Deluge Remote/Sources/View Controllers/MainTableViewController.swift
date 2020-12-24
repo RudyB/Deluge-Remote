@@ -14,7 +14,7 @@ protocol MainTableViewControllerDelegate: AnyObject {
     func torrentSelected(torrentHash: String)
     func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: APIResult<Void>, _ onClientComplete: @escaping ()->())->())?)
     func showAddTorrentView()
-    func showClientsView()
+    func showSettingsView()
 }
 
 class MainTableViewController: UITableViewController, Storyboarded {
@@ -92,9 +92,9 @@ class MainTableViewController: UITableViewController, Storyboarded {
         delegate.showAddTorrentView()
     }
     
-    @IBAction func showClientsAction(_ sender: Any) {
+    @IBAction func showSettingsAction(_ sender: Any) {
         guard let delegate = delegate else { return }
-        delegate.showClientsView()
+        delegate.showSettingsView()
     }
     
     lazy var slideInTransitioningDelegate = SlideInPresentationManager()
@@ -205,6 +205,9 @@ class MainTableViewController: UITableViewController, Storyboarded {
         super.viewWillAppear(animated)
         
         self.initUploadDownloadLabels()
+        title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
+        navigationController?.title = title
+        splitViewController?.title = title
         if let svc = splitViewController {
             if svc.isCollapsed {
                 if let selectionIndexPath = tableView.indexPathForSelectedRow {
@@ -356,7 +359,9 @@ class MainTableViewController: UITableViewController, Storyboarded {
         Logger.debug("New Client")
 
         isHostOnline = false
-        navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
+        title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
+        navigationController?.title = title
+        splitViewController?.title = title
 
         // Reset UI
         pauseAllTorrentsBarButton.isEnabled = false
@@ -478,7 +483,6 @@ class MainTableViewController: UITableViewController, Storyboarded {
                 showAlert(target: self, title: "Error", message: error.domain())
             } else {
                 Logger.error(error)
-                showAlert(target: self, title: "Error", message: error.localizedDescription)
             }
         }
     }

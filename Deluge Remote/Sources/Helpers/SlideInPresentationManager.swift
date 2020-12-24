@@ -19,6 +19,7 @@ class SlideInPresentationManager: NSObject {
     
     var direction: PresentationDirection = .bottom
     var disableCompactHeight = true
+    var centeredInParentView = false
 }
 
 // MARK: - UIViewControllerTransitioningDelegate
@@ -31,7 +32,8 @@ extension SlideInPresentationManager: UIViewControllerTransitioningDelegate {
         let presentationController = SlideInPresentationController(
             presentedViewController: presented,
             presenting: presenting,
-            direction: direction
+            direction: direction,
+            centeredInParentView: centeredInParentView
         )
         presentationController.delegate = self
         return presentationController

@@ -12,6 +12,7 @@ class SlideInPresentationController: UIPresentationController {
     
     // MARK: - Properties
     private var direction: PresentationDirection
+    private var centeredInParentView: Bool
     
     private var dimmingView: UIView!
     
@@ -25,8 +26,12 @@ class SlideInPresentationController: UIPresentationController {
             case .right:
                 frame.origin.x = containerView!.frame.width*(1.0/3.0)
             case .bottom:
-                frame.origin.x = frame.width - containerView!.frame.midX
-                frame.origin.y = containerView!.frame.midY - frame.midY
+                if centeredInParentView {
+                    frame.origin.x = frame.width - containerView!.frame.midX
+                    frame.origin.y = containerView!.frame.midY - frame.midY
+                } else {
+                    frame.origin.y = containerView!.frame.height*(6.0/10.0)
+                }
             default:
                 frame.origin = .zero
         }
@@ -36,8 +41,10 @@ class SlideInPresentationController: UIPresentationController {
     
     init(presentedViewController: UIViewController,
          presenting presentingViewController: UIViewController?,
-         direction: PresentationDirection) {
+         direction: PresentationDirection,
+         centeredInParentView: Bool) {
         self.direction = direction
+        self.centeredInParentView = centeredInParentView
         
         super.init(presentedViewController: presentedViewController,
                    presenting: presentingViewController)
@@ -89,7 +96,11 @@ class SlideInPresentationController: UIPresentationController {
             case .left, .right:
                 return CGSize(width: parentSize.width*(2.0/3.0), height: parentSize.height)
             case .bottom, .top:
-                return CGSize(width: parentSize.width*(2.0/3.0), height: parentSize.height*(1.0/2.0))
+                if centeredInParentView {
+                    return CGSize(width: parentSize.width*(2.0/3.0), height: parentSize.height*(1.0/2.0))
+                } else {
+                    return CGSize(width: parentSize.width, height: parentSize.height*(4.0/10.0))
+                }
         }
     }
     

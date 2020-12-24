@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DefaultCell: TVCellBuilder {
+class DefaultCell: TableViewCellBuilder {
     var label: String?
     var detail: String?
     
