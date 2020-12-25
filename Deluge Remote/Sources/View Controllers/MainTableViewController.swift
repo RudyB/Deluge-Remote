@@ -14,7 +14,7 @@ protocol MainTableViewControllerDelegate: AnyObject {
     func torrentSelected(torrentHash: String)
     func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: APIResult<Void>, _ onClientComplete: @escaping ()->())->())?)
     func showAddTorrentView()
-    func showClientsView()
+    func showSettingsView()
 }
 
 class MainTableViewController: UITableViewController, Storyboarded {
@@ -92,34 +92,49 @@ class MainTableViewController: UITableViewController, Storyboarded {
         delegate.showAddTorrentView()
     }
     
-    @IBAction func showClientsAction(_ sender: Any) {
+    @IBAction func showSettingsAction(_ sender: Any) {
         guard let delegate = delegate else { return }
-        delegate.showClientsView()
+        delegate.showSettingsView()
     }
     
+    lazy var slideInTransitioningDelegate = SlideInPresentationManager()
     @IBOutlet weak var organizeMenuBarButton: UIBarButtonItem!
     @IBAction func displayOrganizeMenu(_ sender: UIBarButtonItem) {
 
-        let title = "Sorted by: \(activeSortKey.rawValue) (\(activeOrderKey.rawValue))"
-        let orderAs = UIAlertAction(title: "Order As", style: .default) { [weak self] _ in
-            self?.displayOrderByMenu()
+        let vc: TorrentSortingPopup = TorrentSortingPopup.instantiate()
+        vc.sortKey = activeSortKey
+        vc.orderKey = activeOrderKey
+        vc.onApplied = { [weak self] (sortKey, orderKey) in
+            self?.activeSortKey = sortKey
+            self?.activeOrderKey = orderKey
         }
-        let sortBy = UIAlertAction(title: "Sort By", style: .default) { [weak self] _ in
-            self?.displaySortByMenu()
-        }
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-
-        showAlert(target: self, title: title, message: nil, style: .actionSheet, sender: sender, actionList: [sortBy, orderAs, cancel])
+        vc.transitioningDelegate = slideInTransitioningDelegate
+        vc.modalPresentationStyle = .custom
+        present(vc, animated: true, completion: nil)
+        
     }
     
     // MARK: - Properties
 
+    let hapticEngine = UINotificationFeedbackGenerator()
     weak var delegate: MainTableViewControllerDelegate?
     
     var collapseDetailViewController: Bool = true
 
-    var activeSortKey = SortKey.Name
-    var activeOrderKey = Order.Ascending
+    var activeSortKey = SortKey.Name {
+        didSet {
+            reloadTableView()
+            UserDefaults.standard.set(activeSortKey.rawValue, forKey: "SortKey")
+        }
+    }
+    
+    var activeOrderKey = Order.Ascending {
+        didSet {
+            reloadTableView()
+            UserDefaults.standard.set(activeOrderKey.rawValue, forKey: "OrderKey")
+        }
+    }
+    
     let byteCountFormatter = ByteCountFormatter()
     let searchController = UISearchController(searchResultsController: nil)
 
@@ -139,7 +154,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        pollingQueue = DispatchQueue(label: "io.rudybermudez.DelugeRemote.MainTableView.PollingQueue", qos: .userInteractive)
+        pollingQueue = DispatchQueue(label: "io.rudybermudez.deluge-remote.MainTableView.PollingQueue", qos: .userInteractive)
         pollingTimer = RepeatingTimer(timeInterval: .seconds(5), leeway: .seconds(1), queue: pollingQueue)
         pollingTimer?.eventHandler = dataPollingEvent
 
@@ -191,8 +206,15 @@ class MainTableViewController: UITableViewController, Storyboarded {
         super.viewWillAppear(animated)
         
         self.initUploadDownloadLabels()
+        title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
+        hidesBottomBarWhenPushed = false
+        navigationController?.setToolbarHidden(false, animated: true)
+        
+        navigationController?.title = title
+        splitViewController?.title = title
         if let svc = splitViewController {
             if svc.isCollapsed {
+                selectedHash = nil
                 if let selectionIndexPath = tableView.indexPathForSelectedRow {
                     tableView.deselectRow(at: selectionIndexPath, animated: false)
                 }
@@ -262,44 +284,6 @@ class MainTableViewController: UITableViewController, Storyboarded {
                 self.restoreSelectedRow()
             }
         }
-    }
-
-    func displaySortByMenu() {
-
-        var actions = [UIAlertAction]()
-
-        for item in SortKey.allCases {
-            let action = UIAlertAction(title: item.rawValue, style: .default) { [weak self] _ in
-                self?.activeSortKey = item
-                self?.reloadTableView()
-                UserDefaults.standard.set(item.rawValue, forKey: "SortKey")
-            }
-            actions.append(action)
-        }
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        actions.append(cancel)
-
-        showAlert(target: self, title: "Sort By:", message: nil, style: .actionSheet, sender: organizeMenuBarButton, actionList: actions)
-    }
-
-    func displayOrderByMenu() {
-
-        var actions = [UIAlertAction]()
-
-        for item in Order.allCases {
-            let action = UIAlertAction(title: item.rawValue, style: .default) { [weak self] _ in
-                self?.activeOrderKey = item
-                self?.reloadTableView()
-                UserDefaults.standard.set(item.rawValue, forKey: "OrderKey")
-            }
-            actions.append(action)
-        }
-
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        actions.append(cancel)
-
-        showAlert(target: self, title: "Order By:", message: nil,
-                  style: .actionSheet, sender: organizeMenuBarButton, actionList: actions)
     }
 
     // MARK: - Data Polling
@@ -380,7 +364,9 @@ class MainTableViewController: UITableViewController, Storyboarded {
         Logger.debug("New Client")
 
         isHostOnline = false
-        navigationItem.title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
+        title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
+        navigationController?.title = title
+        splitViewController?.title = title
 
         // Reset UI
         pauseAllTorrentsBarButton.isEnabled = false
@@ -502,7 +488,6 @@ class MainTableViewController: UITableViewController, Storyboarded {
                 showAlert(target: self, title: "Error", message: error.domain())
             } else {
                 Logger.error(error)
-                showAlert(target: self, title: "Error", message: error.localizedDescription)
             }
         }
     }
@@ -594,6 +579,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
             currentItem = tableViewDataSource[indexPath.row]
         }
 
+        cell.paused = currentItem.paused
         cell.nameLabel.text = currentItem.name
         cell.progressBar.setProgress(Float(currentItem.progress/100), animated: false)
         cell.currentStatusLabel.text = currentItem.state
@@ -666,6 +652,91 @@ class MainTableViewController: UITableViewController, Storyboarded {
                       style: .alert, actionList: [deleteTorrent, deleteTorrentWithData, cancel])
         }
     }
+    
+    override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        // Get the actual cell instance for the index path
+        guard let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell else { return nil }
+        
+        // Instantiate the detail view controller
+        let vc  = TorrentDetailViewTabController.instantiate()
+        vc.torrentHash = cell.torrentHash
+        
+        var actionList: [UIMenuElement] = []
+        
+        if cell.paused {
+            let resume = UIAction( title: "Resume", image: UIImage(systemName: "play.fill")) { [weak self] _ in
+                ClientManager.shared.activeClient?.resumeTorrent(withHash: cell.torrentHash) { (result) in
+                    DispatchQueue.main.async {
+                        self?.playPauseActionHandler(paused: cell.paused, with: result)
+                    }
+                }
+            }
+            actionList.append(resume)
+        } else {
+            let pause = UIAction(title: "Pause", image: UIImage(systemName: "pause")) { [weak self] _ in
+                ClientManager.shared.activeClient?.pauseTorrent(withHash: cell.torrentHash){ (result) in
+                    DispatchQueue.main.async {
+                        self?.playPauseActionHandler(paused: cell.paused, with: result)
+                    }
+                }
+            }
+            actionList.append(pause)
+        }
+        
+        let delete = UIAction(title: "Delete Torrent", attributes: [.destructive]) { [weak self] _ in
+            self?.delegate?.removeTorrent(with: cell.torrentHash, removeData: false) { [weak self] result, onClientComplete  in
+                self?.deletedTorrentCallbackHandler(indexPath: indexPath, result: result, onGuiUpdatesComplete: onClientComplete)
+            }
+        }
+        
+        let deleteWithData = UIAction(title: "Delete Torrent with Data", attributes: [.destructive]) { [weak self] _ in
+            self?.delegate?.removeTorrent(with: cell.torrentHash, removeData: true) { [weak self] result, onClientComplete in
+                self?.deletedTorrentCallbackHandler(indexPath: indexPath, result: result, onGuiUpdatesComplete: onClientComplete)
+            }
+        }
+        
+        let deleteMenu = UIMenu(title: "Delete", image: UIImage(systemName: "trash.fill"), options: [.destructive], children: [delete, deleteWithData])
+        actionList.append(deleteMenu)
+
+        let menu = UIMenu(title: "Actions", children: actionList)
+        
+        return UIContextMenuConfiguration(identifier: indexPath as NSIndexPath, previewProvider: { vc }, actionProvider: { _ in menu })
+    }
+    
+    override func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        
+        guard
+            let indexPath = configuration.identifier as? IndexPath,
+            let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell
+        else { return }
+        
+        selectedHash = cell.torrentHash
+        delegate?.torrentSelected(torrentHash: cell.torrentHash)
+    }
+    
+    fileprivate func playPauseActionHandler(paused: Bool, with result: APIResult<Void>) {
+        
+        switch result {
+           case .success:
+               hapticEngine.notificationOccurred(.success)
+               
+               if paused {
+                    view.showHUD(title: "Successfully Resumed Torrent")
+               } else {
+                    view.showHUD(title: "Successfully Paused Torrent")
+               }
+
+           case .failure:
+               hapticEngine.notificationOccurred(.error)
+               
+               if paused {
+                   view.showHUD(title: "Failed To Resume Torrent", type: .failure)
+               } else {
+                   view.showHUD(title: "Failed to Pause Torrent", type: .failure)
+               }
+           }
+       }
 }
 
 // MARK: - UISearchResultsUpdating Extension
@@ -774,5 +845,4 @@ extension Array where Iterator.Element == TorrentOverview {
         return sortedContent
     }
 }
-
 // swiftlint:disable:this file_length

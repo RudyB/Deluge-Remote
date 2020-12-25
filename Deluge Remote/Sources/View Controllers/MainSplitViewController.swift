@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import MessageUI
 
 // MARK: MainSplitViewController
 class MainSplitViewController: UISplitViewController {
@@ -85,9 +85,8 @@ extension MainSplitViewController: MainTableViewControllerDelegate
         master.pushViewController(vc, animated: true)
     }
     
-    func showClientsView()
-    {
-        let vc = ClientsTableViewController.instantiate()
+    func showSettingsView() {
+        let vc = SettingsViewController.instantiate()
         vc.delegate = self
         master.pushViewController(vc, animated: true)
     }
@@ -139,8 +138,15 @@ extension MainSplitViewController: AddTorrentViewControllerDelegate
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 
-            // This should pop the Add Torrent View Controller from the navigation stack
-            self.master.popViewController(animated: true)
+            // Pop Add Torrent View Controller from the navigation stack
+//            if self.master.viewControllers.first is AddTorrentViewController {
+//                self.master.popViewController(animated: true)
+//            }
+//
+//            if self.master.viewControllers.first is TorrentDetailViewTabController {
+//                self.master.popViewController(animated: true)
+//            }
+            self.master.popToRootViewController(animated: true)
             
             // Now tell the MainTableaViewController to animated to the newly selected hash
             if let mainViewController = self.master.viewControllers.first as? MainTableViewController {
@@ -166,6 +172,79 @@ extension MainSplitViewController: ClientsTableViewControllerDelegate
     
 }
 
+extension MainSplitViewController: SettingsViewControllerDelegate {
+    
+    func exportLogs() {
+        guard
+            let settingsVC = master.topViewController as? SettingsViewController
+        else { return }
+        
+        var actions: [UIAlertAction] = []
+        
+        if MFMailComposeViewController.canSendMail() {
+            let emailAction = UIAlertAction(title: "Email", style: .default) { [weak self] _ in
+                
+                let mail = MFMailComposeViewController()
+                mail.setToRecipients(["hello@rudybermudez.io"])
+                mail.setSubject("[Deluge Remote \(Bundle.main.releaseVersionNumberPretty) Logs]")
+                mail.setMessageBody("Please describe the issue you're having (why your're sending these logs)", isHTML: true)
+                mail.mailComposeDelegate = self
+                //add attachment
+                let url = getLogFile()
+                if let data = try? Data(contentsOf: url){
+                    mail.addAttachmentData(data as Data, mimeType: "text/plain" , fileName: url.lastPathComponent)
+                }
+                self?.present(mail, animated: true)
+            }
+            actions.append(emailAction)
+        }
+
+        let shareAction = UIAlertAction(title: "Share", style: .default) { [weak self] _ in
+            let activity = UIActivityViewController(
+                activityItems: ["You can send to the email address hello@rudybermudez.io Please make sure you include details about the issue and why you're sending the logs", getLogFile()],
+                applicationActivities: nil
+              )
+            self?.present(activity, animated: true, completion: nil)
+        }
+        actions.append(shareAction)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        actions.append(cancelAction)
+        
+        showAlert(target: settingsVC, title: "Deluge Remote Logs", style: .actionSheet, actionList: actions)
+    }
+    
+    
+    func showAcknowledgementsView() {
+        let vc = AcknowledgementsTableViewController()
+        master.pushViewController(vc, animated: true)
+    }
+    
+    func showCrashReportingView() {
+        let vc = CrashReportingViewController()
+        master.pushViewController(vc, animated: true)
+    }
+    
+    func showClientsView()
+    {
+        let vc = ClientsTableViewController.instantiate()
+        vc.delegate = self
+        master.pushViewController(vc, animated: true)
+    }
+}
+
+// MARK: - MFMailComposeViewControllerDelegate
+extension MainSplitViewController: MFMailComposeViewControllerDelegate {
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        
+        if let _ = error {
+              self.dismiss(animated: true, completion: nil)
+        }
+        
+        controller.dismiss(animated: true, completion: nil)
+    }
+}
+
 // MARK: - TorrentHandler
 extension MainSplitViewController: TorrentHandler
 {
@@ -182,9 +261,7 @@ extension MainSplitViewController: TorrentHandler
 // MARK: - UISplitViewControllerDelegate
 extension MainSplitViewController: UISplitViewControllerDelegate
 {
-    func splitViewController(_ svc: UISplitViewController,
-                             willShow vc: UIViewController,
-                             invalidating barButtonItem: UIBarButtonItem) {
+    func splitViewController(_ svc: UISplitViewController, willShow vc: UIViewController, invalidating barButtonItem: UIBarButtonItem) {
         if let detailView = svc.viewControllers.first as? UINavigationController {
             svc.navigationItem.backBarButtonItem = nil
             detailView.topViewController?.navigationItem.leftBarButtonItem = nil
@@ -194,7 +271,6 @@ extension MainSplitViewController: UISplitViewControllerDelegate
     func splitViewController(_ splitViewController: UISplitViewController,
                              collapseSecondary secondaryViewController: UIViewController,
                              onto primaryViewController: UIViewController) -> Bool {
-        
         
         guard
             let masterNavigationController = primaryViewController as? UINavigationController,
@@ -235,7 +311,7 @@ extension MainSplitViewController: UISplitViewControllerDelegate
             newDetailViewControllers.append(PlaceholderViewController.instantiate())
         }
 
-        master?.setViewControllers(newMasterViewControllers, animated: false)
+        master.setViewControllers(newMasterViewControllers, animated: false)
         detail.setViewControllers(newDetailViewControllers, animated: false)
         return detail
     }
@@ -243,8 +319,7 @@ extension MainSplitViewController: UISplitViewControllerDelegate
     func splitViewController(_ splitViewController: UISplitViewController, showDetail vc: UIViewController, sender: Any?) -> Bool {
         if isCollapsed {
             master.pushViewController(vc, animated: true)
-        }
-        else {
+        } else {
             detail.setViewControllers([vc], animated: true)
         }
         return true

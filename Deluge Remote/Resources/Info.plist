@@ -21,7 +21,7 @@
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>io.rudybermudez.deluge.torrent</string>
+				<string>io.rudybermudez.deluge-remote.torrent</string>
 			</array>
 		</dict>
 	</array>
@@ -45,7 +45,7 @@
 			<key>CFBundleURLIconFile</key>
 			<string>icons8-torrent-48</string>
 			<key>CFBundleURLName</key>
-			<string>io.rudybermudez.deluge.magnet</string>
+			<string>io.rudybermudez.deluge-remote.magnet</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>magnet</string>
@@ -109,7 +109,7 @@
 				<string>FileIcon2@3X.png</string>
 			</array>
 			<key>UTTypeIdentifier</key>
-			<string>io.rudybermudez.deluge.torrent</string>
+			<string>io.rudybermudez.deluge-remote.torrent</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>

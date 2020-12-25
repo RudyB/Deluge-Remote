@@ -16,7 +16,7 @@ class SelectableActiveLabel: ActiveLabel {
         super.awakeFromNib()
         enabledTypes = [.url]
         urlMaximumLength = 30
-        handleURLTap { url in UIApplication.shared.openURL(url) }
+        handleURLTap { url in UIApplication.shared.open(url) }
         isUserInteractionEnabled = true
         addGestureRecognizer(
             UILongPressGestureRecognizer(

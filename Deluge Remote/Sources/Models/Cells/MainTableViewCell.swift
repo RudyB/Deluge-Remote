@@ -11,7 +11,6 @@ import UIKit
 class MainTableViewCell: UITableViewCell {
 
 	// MARK: - Properties
-
 	@IBOutlet weak var nameLabel: UILabel!
 	@IBOutlet weak var progressBar: UIProgressView!
 	@IBOutlet weak var currentStatusLabel: UILabel!
@@ -20,6 +19,7 @@ class MainTableViewCell: UITableViewCell {
 	@IBOutlet weak var etaLabel: UILabel!
 
 	var torrentHash: String!
+    var paused: Bool!
 
     override func awakeFromNib() {
         super.awakeFromNib()

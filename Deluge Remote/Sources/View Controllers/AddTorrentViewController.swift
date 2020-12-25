@@ -54,6 +54,7 @@ class AddTorrentViewController: FormViewController, Storyboarded {
         hidesBottomBarWhenPushed = false
         navigationController?.setToolbarHidden(false, animated: true)
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -124,7 +125,6 @@ class AddTorrentViewController: FormViewController, Storyboarded {
                 DispatchQueue.main.async {
                     self?.showTorrentConfig(name: torrentInfo.name, hash: torrentInfo.hash)
                 }
-                torrentInfo.files.prettyPrint()
             }.catch { [weak self] error in
                 guard let self = self else { return }
                 if let error = error as? ClientError {
@@ -208,7 +208,7 @@ class AddTorrentViewController: FormViewController, Storyboarded {
                 }
                 }.onCellSelection { [weak self] _, _ in
                     let vc = UIDocumentPickerViewController(
-                        documentTypes: ["io.rudybermudez.deluge.torrent"], in: UIDocumentPickerMode.import
+                        documentTypes: ["io.rudybermudez.deluge-remote.torrent"], in: UIDocumentPickerMode.import
                     )
                     vc.delegate = self
                     self?.present(vc, animated: true, completion: nil)

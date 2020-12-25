@@ -3,10 +3,17 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		470F5CF6259460D500B7155D /* MenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5CF5259460D500B7155D /* MenuTableViewCell.swift */; };
+		470F5CFE2594A0E700B7155D /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */; };
+		470F5D022594A14600B7155D /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 470F5D012594A14600B7155D /* FirebaseAnalytics */; };
+		470F5D092594A29400B7155D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 470F5D082594A29400B7155D /* GoogleService-Info.plist */; };
+		470F5D192595689100B7155D /* CrashReportingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5D182595689100B7155D /* CrashReportingViewController.swift */; };
+		470F5D1D2595701200B7155D /* AcknowledgementsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5D1C2595701200B7155D /* AcknowledgementsTableViewController.swift */; };
+		470F5D2625957DFB00B7155D /* MenuTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 470F5D2425957DFB00B7155D /* MenuTableViewCell.xib */; };
 		4714775825869DF00019A278 /* TorrentFileStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4714775725869DF00019A278 /* TorrentFileStructure.swift */; };
 		4714775B25869F810019A278 /* DelugeTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4714775A25869F810019A278 /* DelugeTypes.swift */; };
 		471477622586A1270019A278 /* TorrentUploadInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471477612586A1270019A278 /* TorrentUploadInfo.swift */; };
@@ -19,6 +26,13 @@
 		4716023C1DD4305800727CBD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4716023A1DD4305800727CBD /* LaunchScreen.storyboard */; };
 		471602791DD433A700727CBD /* DelugeClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471602761DD433A700727CBD /* DelugeClient.swift */; };
 		4716027A1DD433A700727CBD /* TorrentMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471602771DD433A700727CBD /* TorrentMetadata.swift */; };
+		472595DD2594578100BBFE10 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472595DC2594578100BBFE10 /* SettingsViewController.swift */; };
+		472595E02594589A00BBFE10 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472595DF2594589A00BBFE10 /* Bundle.swift */; };
+		472595E42594596E00BBFE10 /* SettingsTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472595E32594596E00BBFE10 /* SettingsTableViewModel.swift */; };
+		472595E825945A3000BBFE10 /* TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472595E725945A3000BBFE10 /* TableView.swift */; };
+		472AA9672593FE4200529B45 /* TorrentSortingPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472AA9662593FE4200529B45 /* TorrentSortingPopup.swift */; };
+		472AA96A25940AE600529B45 /* SlideInPresentationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472AA96925940AE600529B45 /* SlideInPresentationManager.swift */; };
+		472AA96D25940B8C00529B45 /* SlideInPresentationController .swift in Sources */ = {isa = PBXBuildFile; fileRef = 472AA96C25940B8C00529B45 /* SlideInPresentationController .swift */; };
 		473D1F75258AE16E00045DB0 /* ChevronTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473D1F74258AE16E00045DB0 /* ChevronTableViewCell.swift */; };
 		473D1F79258B1C6E00045DB0 /* PlainCircularProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473D1F78258B1C6E00045DB0 /* PlainCircularProgressBar.swift */; };
 		473D1F7C258B1F7000045DB0 /* TorrentConnectedClientCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473D1F7B258B1F6F00045DB0 /* TorrentConnectedClientCell.swift */; };
@@ -66,6 +80,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		470F5CF5259460D500B7155D /* MenuTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
+		470F5D082594A29400B7155D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		470F5D182595689100B7155D /* CrashReportingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashReportingViewController.swift; sourceTree = "<group>"; };
+		470F5D1C2595701200B7155D /* AcknowledgementsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsTableViewController.swift; sourceTree = "<group>"; };
+		470F5D2425957DFB00B7155D /* MenuTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MenuTableViewCell.xib; sourceTree = "<group>"; };
 		4714775725869DF00019A278 /* TorrentFileStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorrentFileStructure.swift; sourceTree = "<group>"; };
 		4714775A25869F810019A278 /* DelugeTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelugeTypes.swift; sourceTree = "<group>"; };
 		471477612586A1270019A278 /* TorrentUploadInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorrentUploadInfo.swift; sourceTree = "<group>"; };
@@ -81,6 +100,13 @@
 		471602761DD433A700727CBD /* DelugeClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelugeClient.swift; sourceTree = "<group>"; };
 		471602771DD433A700727CBD /* TorrentMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorrentMetadata.swift; sourceTree = "<group>"; };
 		471602821DD5845500727CBD /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		472595DC2594578100BBFE10 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		472595DF2594589A00BBFE10 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		472595E32594596E00BBFE10 /* SettingsTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewModel.swift; sourceTree = "<group>"; };
+		472595E725945A3000BBFE10 /* TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; };
+		472AA9662593FE4200529B45 /* TorrentSortingPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentSortingPopup.swift; sourceTree = "<group>"; };
+		472AA96925940AE600529B45 /* SlideInPresentationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideInPresentationManager.swift; sourceTree = "<group>"; };
+		472AA96C25940B8C00529B45 /* SlideInPresentationController .swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SlideInPresentationController .swift"; sourceTree = "<group>"; };
 		473D1F74258AE16E00045DB0 /* ChevronTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChevronTableViewCell.swift; sourceTree = "<group>"; };
 		473D1F78258B1C6E00045DB0 /* PlainCircularProgressBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlainCircularProgressBar.swift; sourceTree = "<group>"; };
 		473D1F7B258B1F6F00045DB0 /* TorrentConnectedClientCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentConnectedClientCell.swift; sourceTree = "<group>"; };
@@ -129,7 +155,9 @@
 				47E685CF25907874008C2969 /* Alamofire in Frameworks */,
 				47E685E7259079B5008C2969 /* MBProgressHUD in Frameworks */,
 				47E685E325907953008C2969 /* Valet in Frameworks */,
+				470F5D022594A14600B7155D /* FirebaseAnalytics in Frameworks */,
 				47C8011C259280F000A01831 /* ExpandableCollectionViewKit in Frameworks */,
+				470F5CFE2594A0E700B7155D /* FirebaseCrashlytics in Frameworks */,
 				47C801272592D09100A01831 /* ActiveLabel in Frameworks */,
 				47E685DB259078F2008C2969 /* Eureka in Frameworks */,
 			);
@@ -138,11 +166,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		470F5D002594A14600B7155D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		470F5D172595682700B7155D /* Settings View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				472595DC2594578100BBFE10 /* SettingsViewController.swift */,
+				470F5D182595689100B7155D /* CrashReportingViewController.swift */,
+				470F5D1C2595701200B7155D /* AcknowledgementsTableViewController.swift */,
+			);
+			name = "Settings View Controllers";
+			sourceTree = "<group>";
+		};
 		4714775525869D890019A278 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
 				47ED997225856380002EB8DA /* TorrentHandler.swift */,
 				47ED995D2584282C002EB8DA /* Storyboarded.swift */,
+				472595E725945A3000BBFE10 /* TableView.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -152,6 +198,7 @@
 			children = (
 				471602301DD4305800727CBD /* Deluge Remote */,
 				4716022F1DD4305800727CBD /* Products */,
+				470F5D002594A14600B7155D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -190,6 +237,7 @@
 		4716027E1DD433D800727CBD /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				470F5D172595682700B7155D /* Settings View Controllers */,
 				47C800F72590966200A01831 /* Detail View Controllers */,
 				47ED996525842A93002EB8DA /* MainSplitViewController.swift */,
 				47D035621DD81B34003BB2A0 /* MainTableViewController.swift */,
@@ -197,6 +245,7 @@
 				47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */,
 				47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */,
 				47ED996E25848F8C002EB8DA /* PlaceholderViewController.swift */,
+				472AA9662593FE4200529B45 /* TorrentSortingPopup.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -204,6 +253,7 @@
 		4716027F1DD433F400727CBD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				470F5D082594A29400B7155D /* GoogleService-Info.plist */,
 				4716023A1DD4305800727CBD /* LaunchScreen.storyboard */,
 				471602351DD4305800727CBD /* Main.storyboard */,
 				4716023D1DD4305800727CBD /* Info.plist */,
@@ -216,11 +266,20 @@
 		47200D771DD85FB400D61EC0 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				475A45992589D042003B0EF9 /* TorrentInfoTableModel.swift */,
+				472595E22594594E00BBFE10 /* View Models */,
 				47B0E3CB21E07A1900E3056A /* Cells */,
 				47B0E3C821E0732100E3056A /* Deluge */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		472595E22594594E00BBFE10 /* View Models */ = {
+			isa = PBXGroup;
+			children = (
+				475A45992589D042003B0EF9 /* TorrentInfoTableModel.swift */,
+				472595E32594596E00BBFE10 /* SettingsTableViewModel.swift */,
+			);
+			path = "View Models";
 			sourceTree = "<group>";
 		};
 		47A716B021DEB7E200C7650C /* FileIcon */ = {
@@ -266,6 +325,8 @@
 				4714776C258707410019A278 /* DefaultTableViewCell.swift */,
 				47B0E3CC21E07A1900E3056A /* MainTableViewCell.swift */,
 				473D1F7B258B1F6F00045DB0 /* TorrentConnectedClientCell.swift */,
+				470F5CF5259460D500B7155D /* MenuTableViewCell.swift */,
+				470F5D2425957DFB00B7155D /* MenuTableViewCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -277,6 +338,7 @@
 				47B0E3D321E07B5B00E3056A /* Double.swift */,
 				477BFAF021E4748B008E80CF /* String.swift */,
 				47C22F41235643AB00E85A30 /* PromiseKit.swift */,
+				472595DF2594589A00BBFE10 /* Bundle.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -284,6 +346,8 @@
 		47B0E3D521E07C0A00E3056A /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				472AA96925940AE600529B45 /* SlideInPresentationManager.swift */,
+				472AA96C25940B8C00529B45 /* SlideInPresentationController .swift */,
 				473D1F78258B1C6E00045DB0 /* PlainCircularProgressBar.swift */,
 				7FD0632F23848DC00087768F /* ColorCompatibility.swift */,
 				47B0E3D621E07C0A00E3056A /* CustomAlert.swift */,
@@ -333,6 +397,8 @@
 				47E68796259088AA008C2969 /* Houston */,
 				47C8011B259280F000A01831 /* ExpandableCollectionViewKit */,
 				47C801262592D09100A01831 /* ActiveLabel */,
+				470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */,
+				470F5D012594A14600B7155D /* FirebaseAnalytics */,
 			);
 			productName = "Deluge Remote";
 			productReference = 4716022E1DD4305800727CBD /* Deluge Remote.app */;
@@ -383,6 +449,7 @@
 				47E68795259088AA008C2969 /* XCRemoteSwiftPackageReference "Houston" */,
 				47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */,
 				47C801252592D09100A01831 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */,
+				470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 4716022F1DD4305800727CBD /* Products */;
 			projectDirPath = "";
@@ -400,9 +467,11 @@
 			files = (
 				4716023C1DD4305800727CBD /* LaunchScreen.storyboard in Resources */,
 				471602391DD4305800727CBD /* Assets.xcassets in Resources */,
+				470F5D2625957DFB00B7155D /* MenuTableViewCell.xib in Resources */,
 				47A716B421DEB9B300C7650C /* FileIcon2@3X.png in Resources */,
 				47A716B221DEB7E200C7650C /* TorrentFile@3x.png in Resources */,
 				471602371DD4305800727CBD /* Main.storyboard in Resources */,
+				470F5D092594A29400B7155D /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,12 +480,15 @@
 /* Begin PBXShellScriptBuildPhase section */
 		477D7B4121D9DE5100F78CE1 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			alwaysOutOfDate = 1;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
 			);
 			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}",
 			);
 			outputFileListPaths = (
 			);
@@ -424,8 +496,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "
-";
+			shellScript = "${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -442,12 +513,14 @@
 				477BFAF121E4748B008E80CF /* String.swift in Sources */,
 				47C8011F25929DA200A01831 /* TorrentOptionsViewController.swift in Sources */,
 				47C800F9259096A500A01831 /* TorrentFilesViewController.swift in Sources */,
+				472AA96A25940AE600529B45 /* SlideInPresentationManager.swift in Sources */,
 				477D7B3221D3EFE000F78CE1 /* ClientManager.swift in Sources */,
 				477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */,
 				47A3018D24954EF100AC5EED /* FileManagerHelper.swift in Sources */,
 				47F9C73321DC66790017281C /* TorrentConfig.swift in Sources */,
 				476A9BBA21E83822009C0971 /* Host.swift in Sources */,
 				47C20BC222268B4C0069A9B0 /* NetworkReachability.swift in Sources */,
+				472595DD2594578100BBFE10 /* SettingsViewController.swift in Sources */,
 				47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */,
 				4716027A1DD433A700727CBD /* TorrentMetadata.swift in Sources */,
 				4714776A258701FD0019A278 /* TorrentInfoTableViewController.swift in Sources */,
@@ -456,10 +529,13 @@
 				47599CAD21E30BB3001CD9C7 /* HUDAlert.swift in Sources */,
 				473D1F75258AE16E00045DB0 /* ChevronTableViewCell.swift in Sources */,
 				47B0E3D421E07B5B00E3056A /* Double.swift in Sources */,
+				470F5CF6259460D500B7155D /* MenuTableViewCell.swift in Sources */,
+				472595E825945A3000BBFE10 /* TableView.swift in Sources */,
 				47B0E3CD21E07A1900E3056A /* MainTableViewCell.swift in Sources */,
 				473D1F7C258B1F7000045DB0 /* TorrentConnectedClientCell.swift in Sources */,
 				471477672586F37B0019A278 /* TorrentDetailViewTabController.swift in Sources */,
 				477BFAEF21E442F8008E80CF /* DelugeRequestRetrier.swift in Sources */,
+				472595E42594596E00BBFE10 /* SettingsTableViewModel.swift in Sources */,
 				47C22F42235643AB00E85A30 /* PromiseKit.swift in Sources */,
 				471477622586A1270019A278 /* TorrentUploadInfo.swift in Sources */,
 				47C801222592C12500A01831 /* SelectableActiveLabel.swift in Sources */,
@@ -472,10 +548,15 @@
 				475A459A2589D042003B0EF9 /* TorrentInfoTableModel.swift in Sources */,
 				47ED997325856380002EB8DA /* TorrentHandler.swift in Sources */,
 				47ED996F25848F8C002EB8DA /* PlaceholderViewController.swift in Sources */,
+				472AA9672593FE4200529B45 /* TorrentSortingPopup.swift in Sources */,
 				47F9C73621DC6EB80017281C /* AddTorrentViewController.swift in Sources */,
 				47B0E3D721E07C0A00E3056A /* CustomAlert.swift in Sources */,
+				470F5D1D2595701200B7155D /* AcknowledgementsTableViewController.swift in Sources */,
+				472595E02594589A00BBFE10 /* Bundle.swift in Sources */,
+				472AA96D25940B8C00529B45 /* SlideInPresentationController .swift in Sources */,
 				47ED997925858440002EB8DA /* RepeatingTimer.swift in Sources */,
 				47ED995E2584282C002EB8DA /* Storyboarded.swift in Sources */,
+				470F5D192595689100B7155D /* CrashReportingViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -625,6 +706,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = NZ8449Y9W6;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",
@@ -638,8 +720,9 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "";
-				MARKETING_VERSION = 1.4.1;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
+				MARKETING_VERSION = 1.5;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.deluge-remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -666,8 +749,9 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "";
-				MARKETING_VERSION = 1.4.1;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
+				MARKETING_VERSION = 1.5;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.deluge-remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -699,6 +783,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.3.1;
+			};
+		};
 		47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RudyB/expandable-collection-view-kit.git";
@@ -774,6 +866,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		470F5D012594A14600B7155D /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
 		47C8011B259280F000A01831 /* ExpandableCollectionViewKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */;

@@ -235,7 +235,7 @@ class DelugeClient {
                             seal.reject(ClientError.torrentCouldNotBeParsed)
                         }
 
-                    case .failure(let error): seal.reject(ClientError.unexpectedError(error.localizedDescription))
+                    case .failure(let error): seal.reject(error)
                     }
             }
         }
@@ -297,7 +297,7 @@ class DelugeClient {
             "method": "core.get_torrents_status",
             "params": [[], ["name", "hash", "upload_payload_rate", "download_payload_rate", "ratio",
                             "progress", "total_wanted", "state", "tracker_host", "label", "eta",
-                            "total_size", "all_time_download", "total_uploaded", "time_added"]]
+                            "total_size", "all_time_download", "total_uploaded", "time_added", "paused"]]
         ]
 
         return Promise { seal in

@@ -8,7 +8,8 @@
 
 import UIKit
 
-class DefaultCell: TVCellBuilder {
+class DefaultCell: TableViewCellBuilder {
+    
     var label: String?
     var detail: String?
     
@@ -23,6 +24,10 @@ class DefaultCell: TVCellBuilder {
         cell.detail.text = detail
         return cell
     }
+    
+    func registerCell(in tableView: UITableView) {
+    }
+    
 }
 
 class DefaultTableViewCell: UITableViewCell {
