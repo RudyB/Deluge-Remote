@@ -9,6 +9,7 @@
 import Houston
 import PromiseKit
 import UIKit
+import NotificationBannerSwift
 
 protocol MainTableViewControllerDelegate: AnyObject {
     func torrentSelected(torrentHash: String)
@@ -485,7 +486,8 @@ class MainTableViewController: UITableViewController, Storyboarded {
 
             if let error = error as? ClientError {
                 Logger.error(error.domain())
-                showAlert(target: self, title: "Error", message: error.domain())
+                let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.domain(), style: .danger)
+                banner.show()
             } else {
                 Logger.error(error)
             }

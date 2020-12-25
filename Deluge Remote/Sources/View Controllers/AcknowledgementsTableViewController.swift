@@ -68,6 +68,9 @@ fileprivate class MainSection: TableViewSection {
         cells.append(MenuCell(label: "MBProgressHUD", icon: UIImage(named: "menu/github")){
             UIApplication.shared.open(URL(string: "https://github.com/jdg/MBProgressHUD")!)
         })
+        cells.append(MenuCell(label: "NotificationBanner", icon: UIImage(named: "menu/github")){
+            UIApplication.shared.open(URL(string: "https://github.com/Daltron/NotificationBanner")!)
+        })
         cells.append(MenuCell(label: "PromiseKit", icon: UIImage(named: "menu/github")){
             UIApplication.shared.open(URL(string: "https://github.com/mxcl/PromiseKit")!)
         })

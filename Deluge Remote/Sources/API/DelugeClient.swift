@@ -49,13 +49,13 @@ enum ClientError: Error {
             case .unableToResumeTorrent(let errorMessage):
                 return "Unable to Resume Torrent. \(errorMessage.localizedDescription)"
             case .unableToParseTableViewTorrent:
-                return "The Data for Table View Torrent was unable to be parsed"
+                return "Unable to parse Torrent Overview"
             case .unableToDeleteTorrent:
                 return "The Torrent could not be deleted"
             case .unableToAddTorrent:
                 return "The Torrent could not be added"
             case .unableToParseTorrentInfo:
-                return "The Torrent Info could not be parsed"
+                return "The Torrent Metadata could not be parsed"
             case .unableToParseTorrentFiles:
                 return "The Torrent Files could not be parsed"
             case .failedToConvertTorrentToData:
