@@ -116,6 +116,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
     
     // MARK: - Properties
 
+    let hapticEngine = UINotificationFeedbackGenerator()
     weak var delegate: MainTableViewControllerDelegate?
     
     var collapseDetailViewController: Bool = true
@@ -153,7 +154,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        pollingQueue = DispatchQueue(label: "io.rudybermudez.DelugeRemote.MainTableView.PollingQueue", qos: .userInteractive)
+        pollingQueue = DispatchQueue(label: "io.rudybermudez.deluge-remote.MainTableView.PollingQueue", qos: .userInteractive)
         pollingTimer = RepeatingTimer(timeInterval: .seconds(5), leeway: .seconds(1), queue: pollingQueue)
         pollingTimer?.eventHandler = dataPollingEvent
 
@@ -206,10 +207,14 @@ class MainTableViewController: UITableViewController, Storyboarded {
         
         self.initUploadDownloadLabels()
         title = ClientManager.shared.activeClient?.clientConfig.nickname ?? "Deluge Remote"
+        hidesBottomBarWhenPushed = false
+        navigationController?.setToolbarHidden(false, animated: true)
+        
         navigationController?.title = title
         splitViewController?.title = title
         if let svc = splitViewController {
             if svc.isCollapsed {
+                selectedHash = nil
                 if let selectionIndexPath = tableView.indexPathForSelectedRow {
                     tableView.deselectRow(at: selectionIndexPath, animated: false)
                 }
@@ -574,6 +579,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
             currentItem = tableViewDataSource[indexPath.row]
         }
 
+        cell.paused = currentItem.paused
         cell.nameLabel.text = currentItem.name
         cell.progressBar.setProgress(Float(currentItem.progress/100), animated: false)
         cell.currentStatusLabel.text = currentItem.state
@@ -646,6 +652,91 @@ class MainTableViewController: UITableViewController, Storyboarded {
                       style: .alert, actionList: [deleteTorrent, deleteTorrentWithData, cancel])
         }
     }
+    
+    override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        // Get the actual cell instance for the index path
+        guard let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell else { return nil }
+        
+        // Instantiate the detail view controller
+        let vc  = TorrentDetailViewTabController.instantiate()
+        vc.torrentHash = cell.torrentHash
+        
+        var actionList: [UIMenuElement] = []
+        
+        if cell.paused {
+            let resume = UIAction( title: "Resume", image: UIImage(systemName: "play.fill")) { [weak self] _ in
+                ClientManager.shared.activeClient?.resumeTorrent(withHash: cell.torrentHash) { (result) in
+                    DispatchQueue.main.async {
+                        self?.playPauseActionHandler(paused: cell.paused, with: result)
+                    }
+                }
+            }
+            actionList.append(resume)
+        } else {
+            let pause = UIAction(title: "Pause", image: UIImage(systemName: "pause")) { [weak self] _ in
+                ClientManager.shared.activeClient?.pauseTorrent(withHash: cell.torrentHash){ (result) in
+                    DispatchQueue.main.async {
+                        self?.playPauseActionHandler(paused: cell.paused, with: result)
+                    }
+                }
+            }
+            actionList.append(pause)
+        }
+        
+        let delete = UIAction(title: "Delete Torrent", attributes: [.destructive]) { [weak self] _ in
+            self?.delegate?.removeTorrent(with: cell.torrentHash, removeData: false) { [weak self] result, onClientComplete  in
+                self?.deletedTorrentCallbackHandler(indexPath: indexPath, result: result, onGuiUpdatesComplete: onClientComplete)
+            }
+        }
+        
+        let deleteWithData = UIAction(title: "Delete Torrent with Data", attributes: [.destructive]) { [weak self] _ in
+            self?.delegate?.removeTorrent(with: cell.torrentHash, removeData: true) { [weak self] result, onClientComplete in
+                self?.deletedTorrentCallbackHandler(indexPath: indexPath, result: result, onGuiUpdatesComplete: onClientComplete)
+            }
+        }
+        
+        let deleteMenu = UIMenu(title: "Delete", image: UIImage(systemName: "trash.fill"), options: [.destructive], children: [delete, deleteWithData])
+        actionList.append(deleteMenu)
+
+        let menu = UIMenu(title: "Actions", children: actionList)
+        
+        return UIContextMenuConfiguration(identifier: indexPath as NSIndexPath, previewProvider: { vc }, actionProvider: { _ in menu })
+    }
+    
+    override func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        
+        guard
+            let indexPath = configuration.identifier as? IndexPath,
+            let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell
+        else { return }
+        
+        selectedHash = cell.torrentHash
+        delegate?.torrentSelected(torrentHash: cell.torrentHash)
+    }
+    
+    fileprivate func playPauseActionHandler(paused: Bool, with result: APIResult<Void>) {
+        
+        switch result {
+           case .success:
+               hapticEngine.notificationOccurred(.success)
+               
+               if paused {
+                    view.showHUD(title: "Successfully Resumed Torrent")
+               } else {
+                    view.showHUD(title: "Successfully Paused Torrent")
+               }
+
+           case .failure:
+               hapticEngine.notificationOccurred(.error)
+               
+               if paused {
+                   view.showHUD(title: "Failed To Resume Torrent", type: .failure)
+               } else {
+                   view.showHUD(title: "Failed to Pause Torrent", type: .failure)
+               }
+           }
+       }
 }
 
 // MARK: - UISearchResultsUpdating Extension
@@ -754,5 +845,4 @@ extension Array where Iterator.Element == TorrentOverview {
         return sortedContent
     }
 }
-
 // swiftlint:disable:this file_length

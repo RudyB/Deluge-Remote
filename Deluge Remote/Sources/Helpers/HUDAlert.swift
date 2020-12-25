@@ -18,9 +18,14 @@ extension UIView {
 
     func showHUD(title: String, type: HUDType = .success, square: Bool = false, onCompletion: (() -> Void)? = nil) {
         DispatchQueue.main.async {
+            
+            var image: UIImage {
+                return type == .success ?  #imageLiteral(resourceName: "icons8-checkmark") :  #imageLiteral(resourceName: "icons8-cancel")
+            }
+            
             let hud = MBProgressHUD.showAdded(to: self, animated: true)
             hud.mode = MBProgressHUDMode.customView
-            hud.customView = type == .success ? UIImageView(image: #imageLiteral(resourceName: "icons8-checkmark")) : UIImageView(image: #imageLiteral(resourceName: "icons8-cancel"))
+            hud.customView = UIImageView(image: image.withTintColor(.label))
             hud.isSquare = square
             hud.label.text = title
             let delay = type == .success ? 1.5 : 3.0

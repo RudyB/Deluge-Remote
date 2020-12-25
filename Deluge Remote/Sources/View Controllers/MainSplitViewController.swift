@@ -248,9 +248,7 @@ extension MainSplitViewController: TorrentHandler
 // MARK: - UISplitViewControllerDelegate
 extension MainSplitViewController: UISplitViewControllerDelegate
 {
-    func splitViewController(_ svc: UISplitViewController,
-                             willShow vc: UIViewController,
-                             invalidating barButtonItem: UIBarButtonItem) {
+    func splitViewController(_ svc: UISplitViewController, willShow vc: UIViewController, invalidating barButtonItem: UIBarButtonItem) {
         if let detailView = svc.viewControllers.first as? UINavigationController {
             svc.navigationItem.backBarButtonItem = nil
             detailView.topViewController?.navigationItem.leftBarButtonItem = nil
@@ -260,7 +258,6 @@ extension MainSplitViewController: UISplitViewControllerDelegate
     func splitViewController(_ splitViewController: UISplitViewController,
                              collapseSecondary secondaryViewController: UIViewController,
                              onto primaryViewController: UIViewController) -> Bool {
-        
         
         guard
             let masterNavigationController = primaryViewController as? UINavigationController,
@@ -301,7 +298,7 @@ extension MainSplitViewController: UISplitViewControllerDelegate
             newDetailViewControllers.append(PlaceholderViewController.instantiate())
         }
 
-        master?.setViewControllers(newMasterViewControllers, animated: false)
+        master.setViewControllers(newMasterViewControllers, animated: false)
         detail.setViewControllers(newDetailViewControllers, animated: false)
         return detail
     }
@@ -309,8 +306,7 @@ extension MainSplitViewController: UISplitViewControllerDelegate
     func splitViewController(_ splitViewController: UISplitViewController, showDetail vc: UIViewController, sender: Any?) -> Bool {
         if isCollapsed {
             master.pushViewController(vc, animated: true)
-        }
-        else {
+        } else {
             detail.setViewControllers([vc], animated: true)
         }
         return true

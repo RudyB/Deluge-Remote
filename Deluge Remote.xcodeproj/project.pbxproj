@@ -3,11 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		470F5CF6259460D500B7155D /* MenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5CF5259460D500B7155D /* MenuTableViewCell.swift */; };
+		470F5CFE2594A0E700B7155D /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */; };
+		470F5D022594A14600B7155D /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 470F5D012594A14600B7155D /* FirebaseAnalytics */; };
+		470F5D092594A29400B7155D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 470F5D082594A29400B7155D /* GoogleService-Info.plist */; };
 		4714775825869DF00019A278 /* TorrentFileStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4714775725869DF00019A278 /* TorrentFileStructure.swift */; };
 		4714775B25869F810019A278 /* DelugeTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4714775A25869F810019A278 /* DelugeTypes.swift */; };
 		471477622586A1270019A278 /* TorrentUploadInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471477612586A1270019A278 /* TorrentUploadInfo.swift */; };
@@ -75,6 +78,7 @@
 
 /* Begin PBXFileReference section */
 		470F5CF5259460D500B7155D /* MenuTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
+		470F5D082594A29400B7155D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4714775725869DF00019A278 /* TorrentFileStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorrentFileStructure.swift; sourceTree = "<group>"; };
 		4714775A25869F810019A278 /* DelugeTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelugeTypes.swift; sourceTree = "<group>"; };
 		471477612586A1270019A278 /* TorrentUploadInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorrentUploadInfo.swift; sourceTree = "<group>"; };
@@ -145,7 +149,9 @@
 				47E685CF25907874008C2969 /* Alamofire in Frameworks */,
 				47E685E7259079B5008C2969 /* MBProgressHUD in Frameworks */,
 				47E685E325907953008C2969 /* Valet in Frameworks */,
+				470F5D022594A14600B7155D /* FirebaseAnalytics in Frameworks */,
 				47C8011C259280F000A01831 /* ExpandableCollectionViewKit in Frameworks */,
+				470F5CFE2594A0E700B7155D /* FirebaseCrashlytics in Frameworks */,
 				47C801272592D09100A01831 /* ActiveLabel in Frameworks */,
 				47E685DB259078F2008C2969 /* Eureka in Frameworks */,
 			);
@@ -154,6 +160,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		470F5D002594A14600B7155D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		4714775525869D890019A278 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
@@ -169,6 +182,7 @@
 			children = (
 				471602301DD4305800727CBD /* Deluge Remote */,
 				4716022F1DD4305800727CBD /* Products */,
+				470F5D002594A14600B7155D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -223,6 +237,7 @@
 		4716027F1DD433F400727CBD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				470F5D082594A29400B7155D /* GoogleService-Info.plist */,
 				4716023A1DD4305800727CBD /* LaunchScreen.storyboard */,
 				471602351DD4305800727CBD /* Main.storyboard */,
 				4716023D1DD4305800727CBD /* Info.plist */,
@@ -365,6 +380,8 @@
 				47E68796259088AA008C2969 /* Houston */,
 				47C8011B259280F000A01831 /* ExpandableCollectionViewKit */,
 				47C801262592D09100A01831 /* ActiveLabel */,
+				470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */,
+				470F5D012594A14600B7155D /* FirebaseAnalytics */,
 			);
 			productName = "Deluge Remote";
 			productReference = 4716022E1DD4305800727CBD /* Deluge Remote.app */;
@@ -415,6 +432,7 @@
 				47E68795259088AA008C2969 /* XCRemoteSwiftPackageReference "Houston" */,
 				47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */,
 				47C801252592D09100A01831 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */,
+				470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 4716022F1DD4305800727CBD /* Products */;
 			projectDirPath = "";
@@ -435,6 +453,7 @@
 				47A716B421DEB9B300C7650C /* FileIcon2@3X.png in Resources */,
 				47A716B221DEB7E200C7650C /* TorrentFile@3x.png in Resources */,
 				471602371DD4305800727CBD /* Main.storyboard in Resources */,
+				470F5D092594A29400B7155D /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,12 +462,15 @@
 /* Begin PBXShellScriptBuildPhase section */
 		477D7B4121D9DE5100F78CE1 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			alwaysOutOfDate = 1;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
 			);
 			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}",
 			);
 			outputFileListPaths = (
 			);
@@ -456,8 +478,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "
-";
+			shellScript = "${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -665,6 +686,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = NZ8449Y9W6;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",
@@ -678,8 +700,9 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "";
-				MARKETING_VERSION = 1.4.1;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
+				MARKETING_VERSION = 1.5;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.deluge-remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -706,8 +729,9 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "";
-				MARKETING_VERSION = 1.4.1;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
+				MARKETING_VERSION = 1.5;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.deluge-remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -739,6 +763,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.3.1;
+			};
+		};
 		47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RudyB/expandable-collection-view-kit.git";
@@ -814,6 +846,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		470F5D012594A14600B7155D /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
 		47C8011B259280F000A01831 /* ExpandableCollectionViewKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */;
