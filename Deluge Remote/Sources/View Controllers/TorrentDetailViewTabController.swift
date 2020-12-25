@@ -75,7 +75,7 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
         super.viewDidLoad()
         delegate = self
         
-        dataPollingQueue =  DispatchQueue(label: "io.rudybermudez.deluge-remote.DetailDataView.PollingQueue", qos: .userInteractive)
+        dataPollingQueue =  DispatchQueue(label: "io.rudybermudez.Deluge-Remote.DetailDataView.PollingQueue", qos: .userInteractive)
         dataPollingTimer = RepeatingTimer(timeInterval: .seconds(3), leeway: .seconds(1), queue: dataPollingQueue)
         dataPollingTimer?.eventHandler = dataPollingEvent
         

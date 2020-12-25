@@ -154,7 +154,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        pollingQueue = DispatchQueue(label: "io.rudybermudez.deluge-remote.MainTableView.PollingQueue", qos: .userInteractive)
+        pollingQueue = DispatchQueue(label: "io.rudybermudez.Deluge-Remote.MainTableView.PollingQueue", qos: .userInteractive)
         pollingTimer = RepeatingTimer(timeInterval: .seconds(5), leeway: .seconds(1), queue: pollingQueue)
         pollingTimer?.eventHandler = dataPollingEvent
 

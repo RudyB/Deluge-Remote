@@ -26,7 +26,7 @@ class ClientsTableViewController: UITableViewController, Storyboarded {
     
     var configs = [ClientConfig]()
 
-    private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.deluge-remote")!,
+    private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.Deluge-Remote")!,
                                        accessibility: .whenUnlocked)
     
     // MARK: - View Related Methods
