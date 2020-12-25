@@ -8,6 +8,7 @@
 
 import UIKit
 import Houston
+import NotificationBannerSwift
 
 protocol TorrentDetailViewDelegate: AnyObject
 {
@@ -111,11 +112,11 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
                 Logger.verbose("New Data")
                 self?.torrentData = torrent
                 self?.title = torrent.name
-            }.catch { [weak self] error in
+            }.catch { error in
                 Logger.error(error)
-                if let self = self, let error = error as? ClientError {
-                    showAlert(target: self, title: "Error", message: error.domain(),
-                              style: .alert)
+                if let error = error as? ClientError {
+                    let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.domain(), style: .danger)
+                    banner.show()
                 }
             }
     }
@@ -134,8 +135,8 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
                 if case .torrentHasNoFiles = error {
                     self.filesVC.tabBarItem.isEnabled = false
                 } else {
-                    showAlert(target: self, title: "Error", message: error.domain(),
-                              style: .alert)
+                    let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.domain(), style: .danger)
+                    banner.show()
                 }
             }
     }

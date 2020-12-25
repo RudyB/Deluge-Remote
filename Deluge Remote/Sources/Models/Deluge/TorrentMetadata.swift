@@ -91,7 +91,7 @@ struct PeerMetadata: Decodable {
 
 struct TrackerMetadata: Decodable {
     let send_stats: Bool?
-    let fails: Int
+    let fails: Int?
     let verified: Bool
     let scrape_incomplete: Int?
     let min_announce: Int?
