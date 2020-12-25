@@ -109,7 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func shouldHandle(shortcutItem: UIApplicationShortcutItem) -> Bool {
         
-        if shortcutItem.type == "io.rudybermudez.deluge-remote.adduser" {
+        if shortcutItem.type == "io.rudybermudez.Deluge-Remote.adduser" {
             rootController.showAddTorrentView()
             return true
         }
@@ -120,7 +120,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func updateShortcutItems() {
         if let client = ClientManager.shared.activeClient {
             let icon = UIApplicationShortcutIcon(type: .add)
-            let item = UIApplicationShortcutItem(type: "io.rudybermudez.deluge-remote.adduser", localizedTitle: "Add Torrent", localizedSubtitle: "Upload to \(client.clientConfig.nickname)", icon: icon, userInfo: nil)
+            let item = UIApplicationShortcutItem(type: "io.rudybermudez.Deluge-Remote.adduser", localizedTitle: "Add Torrent", localizedSubtitle: "Upload to \(client.clientConfig.nickname)", icon: icon, userInfo: nil)
             UIApplication.shared.shortcutItems = [item]
         } else {
             UIApplication.shared.shortcutItems = []

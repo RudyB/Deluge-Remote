@@ -208,7 +208,7 @@ class AddTorrentViewController: FormViewController, Storyboarded {
                 }
                 }.onCellSelection { [weak self] _, _ in
                     let vc = UIDocumentPickerViewController(
-                        documentTypes: ["io.rudybermudez.deluge-remote.torrent"], in: UIDocumentPickerMode.import
+                        documentTypes: ["io.rudybermudez.Deluge-Remote.torrent"], in: UIDocumentPickerMode.import
                     )
                     vc.delegate = self
                     self?.present(vc, animated: true, completion: nil)
