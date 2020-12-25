@@ -11,7 +11,6 @@ import ExpandableCollectionViewKit
 
 class TorrentFilesViewController: UIViewController, Storyboarded {
 
-    
     // MARK: - Properties
     var torrentFileStructure: TorrentFileStructure? {
         didSet {
@@ -19,11 +18,7 @@ class TorrentFilesViewController: UIViewController, Storyboarded {
         }
     }
     var filesLoaded = false;
-    
-    
-    lazy var expVCManager: ExpandableCollectionViewManager = {
-        return ExpandableCollectionViewManager(parentViewController: self)
-    }()
+    var expVCManager: ExpandableCollectionViewManager?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +27,7 @@ class TorrentFilesViewController: UIViewController, Storyboarded {
     func displayTorrentFiles() {
         guard let files = torrentFileStructure else { return }
         if !filesLoaded {
-            expVCManager.appendItem(files.files.toExpandableItems())
+            expVCManager = ExpandableCollectionViewManager(parentViewController: self) { files.files.toExpandableItems() }
             filesLoaded = true
         }
         

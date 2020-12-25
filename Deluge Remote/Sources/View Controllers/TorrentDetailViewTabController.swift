@@ -67,6 +67,7 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
     
     // MARK: - UIViewController Methods
     deinit {
+        filesVC.expVCManager = nil
         Logger.debug("Destroyed")
     }
     

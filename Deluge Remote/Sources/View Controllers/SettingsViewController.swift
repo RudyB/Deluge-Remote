@@ -11,6 +11,7 @@ import UIKit
 protocol SettingsViewControllerDelegate: AnyObject {
     func showClientsView()
     func showAcknowledgementsView()
+    func showCrashReportingView()
     func exportLogs()
 }
 
@@ -33,6 +34,8 @@ class SettingsViewController: UIViewController, Storyboarded {
         tableView.dataSource = self
         
         AppName.text = "Deluge Remote \(Bundle.main.releaseVersionNumberPretty)"
+        
+        model.registerCells(in: tableView)
     }
 
 }
@@ -56,6 +59,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         return model.cell(for: tableView, at: indexPath)
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         model.didSelectRow(in: tableView, at: indexPath)
         tableView.deselectRow(at: indexPath, animated: true)

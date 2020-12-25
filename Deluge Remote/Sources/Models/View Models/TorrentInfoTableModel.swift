@@ -186,9 +186,6 @@ class TorrentInfoAdditionalSection: TorrentInfoSection {
 // MARK: - TorrentInfoModel
 class TorrentInfoModel: TableViewModel {
     
-    // MARK: - Properties
-    internal let sections: [TableViewSection] = [TorrentInfoBasicSection(), TorrentInfoDownloadSection(), TorrentInfoTrackerSection(), TorrentInfoAdditionalSection()]
-    
     /// Closure will be called when a section adds rows
     public var onRowsAdded: ((_ indexPaths: [IndexPath]) -> ())? {
         didSet {
@@ -217,17 +214,18 @@ class TorrentInfoModel: TableViewModel {
         }
     }
     
-    var sectionCount: Int {
-        return sections.count
-    }
-    
     public var torrent: TorrentMetadata? {
         didSet {
             updateModel()
         }
     }
     
-    internal func updateModel() {
+    override init() {
+        super.init()
+        sections = [TorrentInfoBasicSection(), TorrentInfoDownloadSection(), TorrentInfoTrackerSection(), TorrentInfoAdditionalSection()]
+    }
+    
+    override func updateModel() {
         guard let torrent = torrent else { return }
         
         for section in sections {
@@ -236,36 +234,5 @@ class TorrentInfoModel: TableViewModel {
             }
         }
     }
-    
-    
-    
-    // MARK: - Public UITableViewDataSource functions
-    
-    /// Returns the row count for a given section in the model
-    public func rowCount(for section: Int) -> Int {
-        if section > sectionCount {
-            return 0
-        } else {
-            return sections[section].rowsCount()
-        }
-    }
-    
-    public func sectionHeaderTitle(for section: Int) -> String? {
-        if section > sectionCount {
-            return nil
-        } else {
-            return sections[section].titleForHeader()
-        }
-    }
-    
-    /// Returns the cell for a given indexpath
-    func cell(for tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell {
-        return sections[indexPath.section].cell(for: tableView, at: indexPath)
-    }
-    
-    func didSelectRow(in tableView: UITableView, at indexPath: IndexPath) {
-        sections[indexPath.section].didSelectRow(in: tableView, at: indexPath)
-    }
-    
 }
 

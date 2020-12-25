@@ -138,8 +138,15 @@ extension MainSplitViewController: AddTorrentViewControllerDelegate
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 
-            // This should pop the Add Torrent View Controller from the navigation stack
-            self.master.popViewController(animated: true)
+            // Pop Add Torrent View Controller from the navigation stack
+//            if self.master.viewControllers.first is AddTorrentViewController {
+//                self.master.popViewController(animated: true)
+//            }
+//
+//            if self.master.viewControllers.first is TorrentDetailViewTabController {
+//                self.master.popViewController(animated: true)
+//            }
+            self.master.popToRootViewController(animated: true)
             
             // Now tell the MainTableaViewController to animated to the newly selected hash
             if let mainViewController = self.master.viewControllers.first as? MainTableViewController {
@@ -209,7 +216,13 @@ extension MainSplitViewController: SettingsViewControllerDelegate {
     
     
     func showAcknowledgementsView() {
-        
+        let vc = AcknowledgementsTableViewController()
+        master.pushViewController(vc, animated: true)
+    }
+    
+    func showCrashReportingView() {
+        let vc = CrashReportingViewController()
+        master.pushViewController(vc, animated: true)
     }
     
     func showClientsView()

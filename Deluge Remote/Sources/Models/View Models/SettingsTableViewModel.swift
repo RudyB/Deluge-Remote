@@ -7,11 +7,13 @@
 //
 
 import UIKit
-import Houston
 
 class SettingsTableViewModel: TableViewModel {
     
-    var sections: [TableViewSection] = [SettingsSection(),AboutSection()]
+    override init() {
+        super.init()
+        sections = [SettingsSection(),AboutSection()]
+    }
     
     weak var delegate: SettingsViewControllerDelegate? {
         didSet {
@@ -21,36 +23,6 @@ class SettingsTableViewModel: TableViewModel {
                 }
             }
         }
-    }
-    
-    var sectionCount: Int {
-        return sections.count
-    }
-    
-    func updateModel() {}
-    
-    func rowCount(for section: Int) -> Int {
-        if section > sectionCount {
-            return 0
-        } else {
-            return sections[section].rowsCount()
-        }
-    }
-    
-    func sectionHeaderTitle(for section: Int) -> String? {
-        if section > sectionCount {
-            return nil
-        } else {
-            return sections[section].titleForHeader()
-        }
-    }
-    
-    func cell(for tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell {
-        return sections[indexPath.section].cell(for: tableView, at: indexPath)
-    }
-    
-    func didSelectRow(in tableView: UITableView, at indexPath: IndexPath) {
-        sections[indexPath.section].didSelectRow(in: tableView, at: indexPath)
     }
 }
 
@@ -107,17 +79,14 @@ class AboutSection: SettingsTableViewSection {
         let bugReports = MenuCell(label: "Bug Reports / Feature Requests", icon: UIImage(named: "menu/bug")!) {
             UIApplication.shared.open(URL(string: "https://github.com/RudyB/Deluge-Remote/issues/")!)
         }
+        let crashReporting = MenuCell(label: "Crash Reproting & Analytics", icon: UIImage(named: "menu/crash-reporting")!) { [weak self] in
+            self?.delegate?.showCrashReportingView()
+        }
         let logs = MenuCell(label: "Logs", icon: UIImage(named: "menu/logs")!) { [weak self] in
             self?.delegate?.exportLogs()
         }
         
-        cells.append(twitter)
-        cells.append(github)
-        cells.append(donation)
-        cells.append(acknowledgements)
-        cells.append(bugReports)
-        cells.append(logs)
-    
+        cells = [twitter, github, donation, acknowledgements, bugReports, crashReporting, logs]
     }
     
 }

@@ -235,7 +235,7 @@ class DelugeClient {
                             seal.reject(ClientError.torrentCouldNotBeParsed)
                         }
 
-                    case .failure(let error): seal.reject(ClientError.unexpectedError(error.localizedDescription))
+                    case .failure(let error): seal.reject(error)
                     }
             }
         }

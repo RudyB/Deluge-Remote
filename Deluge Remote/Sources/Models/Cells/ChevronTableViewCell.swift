@@ -53,6 +53,10 @@ class ChevronCell: TableViewCellBuilder {
         self.cell = cell
         return cell
     }
+    
+    func registerCell(in tableView: UITableView) {
+        
+    }
 }
 
 class ChevronTableViewCell: UITableViewCell {

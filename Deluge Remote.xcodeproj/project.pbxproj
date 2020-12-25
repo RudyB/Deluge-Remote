@@ -11,6 +11,9 @@
 		470F5CFE2594A0E700B7155D /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */; };
 		470F5D022594A14600B7155D /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 470F5D012594A14600B7155D /* FirebaseAnalytics */; };
 		470F5D092594A29400B7155D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 470F5D082594A29400B7155D /* GoogleService-Info.plist */; };
+		470F5D192595689100B7155D /* CrashReportingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5D182595689100B7155D /* CrashReportingViewController.swift */; };
+		470F5D1D2595701200B7155D /* AcknowledgementsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5D1C2595701200B7155D /* AcknowledgementsTableViewController.swift */; };
+		470F5D2625957DFB00B7155D /* MenuTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 470F5D2425957DFB00B7155D /* MenuTableViewCell.xib */; };
 		4714775825869DF00019A278 /* TorrentFileStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4714775725869DF00019A278 /* TorrentFileStructure.swift */; };
 		4714775B25869F810019A278 /* DelugeTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4714775A25869F810019A278 /* DelugeTypes.swift */; };
 		471477622586A1270019A278 /* TorrentUploadInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471477612586A1270019A278 /* TorrentUploadInfo.swift */; };
@@ -79,6 +82,9 @@
 /* Begin PBXFileReference section */
 		470F5CF5259460D500B7155D /* MenuTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
 		470F5D082594A29400B7155D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		470F5D182595689100B7155D /* CrashReportingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashReportingViewController.swift; sourceTree = "<group>"; };
+		470F5D1C2595701200B7155D /* AcknowledgementsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsTableViewController.swift; sourceTree = "<group>"; };
+		470F5D2425957DFB00B7155D /* MenuTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MenuTableViewCell.xib; sourceTree = "<group>"; };
 		4714775725869DF00019A278 /* TorrentFileStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorrentFileStructure.swift; sourceTree = "<group>"; };
 		4714775A25869F810019A278 /* DelugeTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelugeTypes.swift; sourceTree = "<group>"; };
 		471477612586A1270019A278 /* TorrentUploadInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorrentUploadInfo.swift; sourceTree = "<group>"; };
@@ -167,6 +173,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		470F5D172595682700B7155D /* Settings View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				472595DC2594578100BBFE10 /* SettingsViewController.swift */,
+				470F5D182595689100B7155D /* CrashReportingViewController.swift */,
+				470F5D1C2595701200B7155D /* AcknowledgementsTableViewController.swift */,
+			);
+			name = "Settings View Controllers";
+			sourceTree = "<group>";
+		};
 		4714775525869D890019A278 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
@@ -221,6 +237,7 @@
 		4716027E1DD433D800727CBD /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				470F5D172595682700B7155D /* Settings View Controllers */,
 				47C800F72590966200A01831 /* Detail View Controllers */,
 				47ED996525842A93002EB8DA /* MainSplitViewController.swift */,
 				47D035621DD81B34003BB2A0 /* MainTableViewController.swift */,
@@ -229,7 +246,6 @@
 				47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */,
 				47ED996E25848F8C002EB8DA /* PlaceholderViewController.swift */,
 				472AA9662593FE4200529B45 /* TorrentSortingPopup.swift */,
-				472595DC2594578100BBFE10 /* SettingsViewController.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -310,6 +326,7 @@
 				47B0E3CC21E07A1900E3056A /* MainTableViewCell.swift */,
 				473D1F7B258B1F6F00045DB0 /* TorrentConnectedClientCell.swift */,
 				470F5CF5259460D500B7155D /* MenuTableViewCell.swift */,
+				470F5D2425957DFB00B7155D /* MenuTableViewCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -450,6 +467,7 @@
 			files = (
 				4716023C1DD4305800727CBD /* LaunchScreen.storyboard in Resources */,
 				471602391DD4305800727CBD /* Assets.xcassets in Resources */,
+				470F5D2625957DFB00B7155D /* MenuTableViewCell.xib in Resources */,
 				47A716B421DEB9B300C7650C /* FileIcon2@3X.png in Resources */,
 				47A716B221DEB7E200C7650C /* TorrentFile@3x.png in Resources */,
 				471602371DD4305800727CBD /* Main.storyboard in Resources */,
@@ -533,10 +551,12 @@
 				472AA9672593FE4200529B45 /* TorrentSortingPopup.swift in Sources */,
 				47F9C73621DC6EB80017281C /* AddTorrentViewController.swift in Sources */,
 				47B0E3D721E07C0A00E3056A /* CustomAlert.swift in Sources */,
+				470F5D1D2595701200B7155D /* AcknowledgementsTableViewController.swift in Sources */,
 				472595E02594589A00BBFE10 /* Bundle.swift in Sources */,
 				472AA96D25940B8C00529B45 /* SlideInPresentationController .swift in Sources */,
 				47ED997925858440002EB8DA /* RepeatingTimer.swift in Sources */,
 				47ED995E2584282C002EB8DA /* Storyboarded.swift in Sources */,
+				470F5D192595689100B7155D /* CrashReportingViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

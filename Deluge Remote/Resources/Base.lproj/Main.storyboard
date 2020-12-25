@@ -844,57 +844,6 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="OTG-zX-gyj">
                                 <rect key="frame" x="0.0" y="238" width="414" height="624"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="menuCell" id="LlU-rD-ikO" customClass="MenuTableViewCell" customModule="Deluge_Remote" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="55.333332061767578" width="414" height="43.666667938232422"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="LlU-rD-ikO" id="LoK-C4-tR8">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.666667938232422"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="menu/twitter" translatesAutoresizingMaskIntoConstraints="NO" id="Hd9-3p-eKp">
-                                                    <rect key="frame" x="20" y="7" width="30" height="30"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="30" id="tv0-cT-Lif"/>
-                                                        <constraint firstAttribute="height" constant="30" id="zvW-eu-PLB"/>
-                                                    </constraints>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                            <integer key="value" value="5"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                    </userDefinedRuntimeAttributes>
-                                                </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@RudyBermudez" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kuv-Pw-PRJ">
-                                                    <rect key="frame" x="65.000000000000014" y="11.666666666666666" width="132.33333333333337" height="20.333333333333336"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron.right" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="g1x-oB-rvA">
-                                                    <rect key="frame" x="374" y="13.999999999999998" width="20" height="16.333333333333329"/>
-                                                    <color key="tintColor" systemColor="secondaryLabelColor"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="20" id="5he-24-3Qk"/>
-                                                        <constraint firstAttribute="width" constant="20" id="CWI-e6-xPP"/>
-                                                    </constraints>
-                                                </imageView>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="g1x-oB-rvA" firstAttribute="centerY" secondItem="LoK-C4-tR8" secondAttribute="centerY" id="8lO-4w-mct"/>
-                                                <constraint firstItem="Hd9-3p-eKp" firstAttribute="leading" secondItem="LoK-C4-tR8" secondAttribute="leadingMargin" id="G4w-Kl-Bv3"/>
-                                                <constraint firstItem="g1x-oB-rvA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="kuv-Pw-PRJ" secondAttribute="trailing" constant="15" id="VpG-7q-987"/>
-                                                <constraint firstItem="Hd9-3p-eKp" firstAttribute="centerY" secondItem="LoK-C4-tR8" secondAttribute="centerY" id="guL-uS-aeQ"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="g1x-oB-rvA" secondAttribute="trailing" id="hjx-Vj-q7L"/>
-                                                <constraint firstItem="kuv-Pw-PRJ" firstAttribute="centerY" secondItem="LoK-C4-tR8" secondAttribute="centerY" id="qUO-wg-Crs"/>
-                                                <constraint firstItem="kuv-Pw-PRJ" firstAttribute="leading" secondItem="Hd9-3p-eKp" secondAttribute="trailing" constant="15" id="vlf-47-Xhx"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <connections>
-                                            <outlet property="icon" destination="Hd9-3p-eKp" id="kpu-gI-YJl"/>
-                                            <outlet property="label" destination="kuv-Pw-PRJ" id="irL-sq-vSn"/>
-                                        </connections>
-                                    </tableViewCell>
-                                </prototypes>
                             </tableView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -930,7 +879,6 @@
         <image name="flags/us" width="16" height="11"/>
         <image name="icon" width="40" height="40"/>
         <image name="line.horizontal.3.decrease.circle" catalog="system" width="128" height="121"/>
-        <image name="menu/twitter" width="40" height="40"/>
         <image name="settings" width="33.333332061767578" height="33.333332061767578"/>
         <systemColor name="groupTableViewBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

@@ -11,11 +11,11 @@ import UIKit
 
 class MenuCell: TableViewCellBuilder {
     var label: String
-    var icon: UIImage
+    var icon: UIImage?
     
     var onTapped: (()->())?
     
-    init(label: String, icon: UIImage, onTap: (()->())? = nil) {
+    init(label: String, icon: UIImage? = nil, onTap: (()->())? = nil) {
         self.label = label
         self.icon = icon
         self.onTapped = onTap
@@ -26,6 +26,10 @@ class MenuCell: TableViewCellBuilder {
         cell.label.text = label
         cell.icon.image = icon
         return cell
+    }
+    
+    func registerCell(in tableView: UITableView) {
+        tableView.register(UINib(nibName: "MenuTableViewCell", bundle: nil), forCellReuseIdentifier: "menuCell")
     }
 }
 

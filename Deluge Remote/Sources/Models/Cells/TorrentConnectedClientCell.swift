@@ -44,6 +44,10 @@ class TorrentPeerTableViewCellData: TableViewCellBuilder {
         cell.progress.progress = Float(progress)
         return cell
     }
+    
+    func registerCell(in tableView: UITableView) {
+        
+    }
 }
 
 class TorrentPeerTableViewCell: UITableViewCell {
@@ -62,8 +66,6 @@ class TorrentPeerTableViewCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
 }

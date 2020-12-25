@@ -11,6 +11,7 @@ import UIKit
 
 protocol TableViewCellBuilder: AnyObject {
     func cell(for tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell
+    func registerCell( in tableView: UITableView)
 }
 
 protocol TableViewSectionProvider {
@@ -22,17 +23,46 @@ protocol TableViewSectionProvider {
     func titleForHeader() -> String?
     func updateData()
     func cell(for tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell
-    func didSelectRow(in tableView: UITableView, at indexPath: IndexPath) 
+    func didSelectRow(in tableView: UITableView, at indexPath: IndexPath)
+    func registerCells(in tableView: UITableView)
 }
 
-protocol TableViewModel {
-    var sections: [TableViewSection] { get }
-    var sectionCount: Int { get }
-    func updateModel()
-    func rowCount(for section: Int) -> Int
-    func sectionHeaderTitle(for section: Int) -> String?
-    func cell(for tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell
-    func didSelectRow(in tableView: UITableView, at indexPath: IndexPath)
+class TableViewModel {
+    internal var sections: [TableViewSection] = []
+    
+    public var sectionCount: Int  {
+        return sections.count
+    }
+    
+    func registerCells(in tableView: UITableView) {
+        sections.forEach { $0.registerCells(in: tableView) }
+    }
+    
+    func updateModel() {}
+    
+    func rowCount(for section: Int) -> Int {
+        if section > sectionCount {
+            return 0
+        } else {
+            return sections[section].rowsCount()
+        }
+    }
+    
+    func sectionHeaderTitle(for section: Int) -> String? {
+        if section > sectionCount {
+            return nil
+        } else {
+            return sections[section].titleForHeader()
+        }
+    }
+    
+    func cell(for tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell {
+        return sections[indexPath.section].cell(for: tableView, at: indexPath)
+    }
+    
+    func didSelectRow(in tableView: UITableView, at indexPath: IndexPath) {
+        sections[indexPath.section].didSelectRow(in: tableView, at: indexPath)
+    }
 }
 
 class TableViewSection: TableViewSectionProvider {
@@ -66,4 +96,9 @@ class TableViewSection: TableViewSectionProvider {
     func didSelectRow(in tableView: UITableView, at indexPath: IndexPath) {
     }
     
+    func registerCells(in tableView: UITableView) {
+        for cell in cells {
+            cell.registerCell(in: tableView)
+        }
+    }
 }
