@@ -12,7 +12,7 @@ import NotificationBannerSwift
 
 protocol TorrentDetailViewDelegate: AnyObject
 {
-    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: APIResult<Void>, _ onClientComplete: @escaping ()->())->())?)
+    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: Result<Void, Error>, _ onClientComplete: @escaping ()->())->())?)
 }
 
 class TorrentDetailViewTabController: UITabBarController, Storyboarded {
@@ -115,12 +115,12 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
             }.catch { error in
                 Logger.error(error)
                 if let error = error as? ClientError {
-                    let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.domain(), style: .danger)
+                    let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.localizedDescription, style: .danger)
                     banner.show()
                 }
             }
     }
-        
+    
     func getTorrentFiles(withHash hash: String) {
         ClientManager.shared.activeClient?.getTorrentFiles(withHash: hash)
             .done { [weak self] fileStructure in
@@ -132,10 +132,10 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
                     let self = self,
                     let error = error as? ClientError
                 else { return }
-                if case .torrentHasNoFiles = error {
+                if case  .decoding = error {
                     self.filesVC.tabBarItem.isEnabled = false
                 } else {
-                    let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.domain(), style: .danger)
+                    let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.localizedDescription, style: .danger)
                     banner.show()
                 }
             }
