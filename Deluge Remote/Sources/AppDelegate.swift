@@ -25,6 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         
         let consoleDest = ConsoleDestination()
+        consoleDest.minLevel = .debug
         
         let fileDest = FileDestination()
         fileDest.logFileURL = getLogFile();

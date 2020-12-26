@@ -109,7 +109,7 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
                   actionList: [deleteTorrent, deleteTorrentWithData, cancel] )
     }
     
-    fileprivate func deleteTorrentCallback(result: APIResult<Void>, onGuiUpdatesComplete: @escaping ()->())
+    fileprivate func deleteTorrentCallback(result: Result<Void, Error>, onGuiUpdatesComplete: @escaping ()->())
         {
             switch result {
             case .success():
@@ -122,7 +122,7 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
             case .failure(let error):
                 self.hapticEngine.notificationOccurred(.error)
                 if let error = error as? ClientError {
-                    showAlert(target: self, title: "Error", message: error.domain())
+                    showAlert(target: self, title: "Error", message: error.localizedDescription)
                 } else {
                     showAlert(target: self, title: "Error", message: error.localizedDescription)
                 }
@@ -187,11 +187,11 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
         }
     }
     
-    fileprivate func playPauseActionHandler(for torrent: TorrentMetadata, with result: APIResult<Void>) {
+    fileprivate func playPauseActionHandler(for torrent: TorrentMetadata, with result: Result<Void, Error>) {
         
         let row = self.form.rowBy(tag: "PlayPauseBtn") as! ButtonRow
         switch result {
-           case .success:
+           case .success():
                hapticEngine.notificationOccurred(.success)
                
                if torrent.paused {
@@ -204,7 +204,7 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
                     row.title = "Resume Torrent"
                }
 
-           case .failure:
+           case .failure(_):
                hapticEngine.notificationOccurred(.error)
                
                if torrent.paused {

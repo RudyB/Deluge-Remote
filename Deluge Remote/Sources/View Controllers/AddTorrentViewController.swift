@@ -128,7 +128,7 @@ class AddTorrentViewController: FormViewController, Storyboarded {
             }.catch { [weak self] error in
                 guard let self = self else { return }
                 if let error = error as? ClientError {
-                    showAlert(target: self, title: "Connection failure", message: error.domain())
+                    showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
                 } else {
                     showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
                 }

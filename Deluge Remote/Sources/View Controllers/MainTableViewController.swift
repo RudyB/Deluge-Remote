@@ -13,7 +13,7 @@ import NotificationBannerSwift
 
 protocol MainTableViewControllerDelegate: AnyObject {
     func torrentSelected(torrentHash: String)
-    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: APIResult<Void>, _ onClientComplete: @escaping ()->())->())?)
+    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: Swift.Result<Void, Error>, _ onClientComplete: @escaping ()->())->())?)
     func showAddTorrentView()
     func showSettingsView()
 }
@@ -314,10 +314,10 @@ class MainTableViewController: UITableViewController, Storyboarded {
     
     // MARK: - Helper Functions
     
-    fileprivate func deletedTorrentCallbackHandler(indexPath: IndexPath, result: APIResult<Void>, onGuiUpdatesComplete: ()->())
+    fileprivate func deletedTorrentCallbackHandler(indexPath: IndexPath, result: Swift.Result<Void, Error>, onGuiUpdatesComplete: ()->())
     {
         switch result {
-        case .success():
+        case .success:
             if isFiltering() {
                 tableViewDataSource?.removeAll { $0 == self.filteredTableViewDataSource[indexPath.row] }
                 self.filteredTableViewDataSource.remove(at: indexPath.row)
@@ -409,7 +409,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
             self?.pauseAllTorrentsBarButton.isEnabled = true
             self?.resumeAllTorrentsBarButton.isEnabled = true
             self?.updateHeader()
-            self?.pollingQueue?.async { [weak self] in self?.dataPollingEvent() }
+            self?.forceDataPollingUpdate()
         }.catch { [weak self] error in
             self?.isHostOnline = false
 
@@ -436,7 +436,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
                 default:
                     errorMsg = "Host Offline"
                 }
-                Logger.error(error.domain())
+                Logger.error(error)
             } else {
                 Logger.error(error)
                 errorMsg = error.localizedDescription
@@ -485,8 +485,8 @@ class MainTableViewController: UITableViewController, Storyboarded {
             self.updateHeader()
 
             if let error = error as? ClientError {
-                Logger.error(error.domain())
-                let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.domain(), style: .danger)
+                Logger.error(error)
+                let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.localizedDescription, style: .danger)
                 banner.show()
             } else {
                 Logger.error(error)
@@ -717,7 +717,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
         delegate?.torrentSelected(torrentHash: cell.torrentHash)
     }
     
-    fileprivate func playPauseActionHandler(paused: Bool, with result: APIResult<Void>) {
+    fileprivate func playPauseActionHandler(paused: Bool, with result: Swift.Result<Void, Error>) {
         
         switch result {
            case .success:
@@ -729,7 +729,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
                     view.showHUD(title: "Successfully Paused Torrent")
                }
 
-           case .failure:
+           case .failure(_):
                hapticEngine.notificationOccurred(.error)
                
                if paused {

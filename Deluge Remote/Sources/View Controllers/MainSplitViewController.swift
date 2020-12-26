@@ -55,7 +55,7 @@ class MainSplitViewController: UISplitViewController {
 // MARK: - MainTableViewControllerDelegate
 extension MainSplitViewController: MainTableViewControllerDelegate
 {
-    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((APIResult<Void>, @escaping () -> ()) -> ())?) {
+    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((Result<Void, Error>, @escaping () -> ()) -> ())?) {
         suspendDetailViewDataPolling()
         ClientManager.shared.activeClient?.removeTorrent(withHash: hash, removeData: removeData)
             .done {

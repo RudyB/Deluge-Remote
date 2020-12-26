@@ -21,10 +21,8 @@ class AddClientViewController: UITableViewController, Storyboarded {
     @IBOutlet weak var networkSecurityControl: UISegmentedControl!
 
     @IBAction func doneAction(_ sender: UIBarButtonItem) {
-        print("Done Action")
         if let onConfigAdded = onConfigAdded, let config = config {
             onConfigAdded(config)
-            print("Clicked Closure")
         }
     }
 
@@ -33,56 +31,55 @@ class AddClientViewController: UITableViewController, Storyboarded {
     }
 
     @IBAction func testConnectionAction(_ sender: Any) {
-        var port: String = ""
+        
         sslEnabled = networkSecurityControl.selectedSegmentIndex == 1
-
+        
         guard
             let nickname = nicknameTextField.text,
             let hostname = hostnameTextField.text,
-            let password = passwordTextField.text
-            else {
-                return
-        }
-        let relativePath = relativePathTextField.text ?? ""
-
-        port = portTextField.text ?? port
+            let password = passwordTextField.text,
+            let portString = portTextField.text,
+            let relativePath = relativePathTextField.text
+        else { return }
+        
         if nickname.isEmpty { showAlert(target: self, title: "Nickname cannot be left empty")}
         if hostname.isEmpty { showAlert(target: self, title: "Hostname cannot be empty")}
-        if port.isEmpty { showAlert(target: self, title: "Port cannot be empty")}
-
-        if !hostname.isEmpty && !port.isEmpty && !nickname.isEmpty {
-            DispatchQueue.main.async {
-                MBProgressHUD.showAdded(to: self.view, animated: true)
-            }
-
-            let tempConfig = ClientConfig(nickname: nickname, hostname: hostname,
-                                          relativePath: relativePath, port: port,
-                                          password: password, isHTTP: !sslEnabled)
-
-            tempClient = DelugeClient(config: tempConfig)
-            tempClient?.authenticateAndConnect()
-                .done { [weak self] in
-                    guard let self = self else { return }
-                    DispatchQueue.main.async {
-                        MBProgressHUD.hide(for: self.view, animated: true)
-                        self.view.showHUD(title: "Valid Configuration")
-                        self.config = tempConfig
-                        self.navigationItem.rightBarButtonItem?.isEnabled = true
-                    }
-
-                }.catch { [weak self] error in
-                    guard let self = self else { return }
-                    DispatchQueue.main.async {
-                        MBProgressHUD.hide(for: self.view, animated: true)
-                        if let error = error as? ClientError {
-                            showAlert(target: self, title: "Connection failure", message: error.domain())
-                        } else {
-                            showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
-                        }
-                    }
-
-            }
+        if portString.isEmpty { showAlert(target: self, title: "Port cannot be empty")}
+        
+        guard let port = Int(portString) else {
+            showAlert(target: self, title: "Port must be a numeric type")
+            return
         }
+        
+        MBProgressHUD.showAdded(to: self.view, animated: true)
+        
+        guard let tempConfig = ClientConfig(nickname: nickname, hostname: hostname,
+                                            relativePath: relativePath, port: port,
+                                            password: password, isHTTP: !sslEnabled)
+        else {
+            MBProgressHUD.hide(for: self.view, animated: true)
+            showAlert(target: self, title: "Invalid Config", message: "Unable to parse a valid URL from the config")
+            return
+        }
+        
+        tempClient = DelugeClient(config: tempConfig)
+        tempClient?.authenticateAndConnect()
+            .done { [weak self] in
+                guard let self = self else { return }
+                MBProgressHUD.hide(for: self.view, animated: true)
+                self.view.showHUD(title: "Valid Configuration")
+                self.config = tempConfig
+            }.catch { [weak self] error in
+                guard let self = self else { return }
+                MBProgressHUD.hide(for: self.view, animated: true)
+                if let error = error as? ClientError {
+                    Logger.error(error)
+                    showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
+                } else {
+                    Logger.error(error)
+                    showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
+                }
+            }
     }
 
     var sslEnabled: Bool = false
@@ -91,7 +88,11 @@ class AddClientViewController: UITableViewController, Storyboarded {
 
     public var onConfigAdded: ((ClientConfig) -> Void)?
 
-    var config: ClientConfig?
+    var config: ClientConfig? {
+        didSet {
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
+        }
+    }
     var tempClient: DelugeClient?
 
     deinit {
@@ -100,22 +101,18 @@ class AddClientViewController: UITableViewController, Storyboarded {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        
+        self.navigationItem.rightBarButtonItem?.isEnabled = config != nil
 
         if let config = config {
             self.title = "Edit Client"
             nicknameTextField.text = config.nickname
             hostnameTextField.text = config.hostname
             relativePathTextField.text = config.relativePath
-            portTextField.text = config.port
+            portTextField.text = "\(config.port)"
             networkSecurityControl.selectedSegmentIndex = config.isHTTP ? 0 : 1
             passwordTextField.text = config.password
         }
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     // MARK: - Table view data source
