@@ -292,7 +292,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
     /// Event Handler for RepeatingTimer
     func dataPollingEvent()
     {
-        guard (ClientManager.shared.activeClient != nil) else { return }
+        guard let client = ClientManager.shared.activeClient else { return }
         
         if !IsConnectedToNetwork() {
             DispatchQueue.main.async {
@@ -301,10 +301,74 @@ class MainTableViewController: UITableViewController, Storyboarded {
             return
         }
         
-        if isHostOnline {
-            downloadNewData()
-        } else {
-            refreshAuthentication()
+        
+        if !isHostOnline {
+            DispatchQueue.main.async { [weak self] in
+                self?.updateHeader(with: "Attempting Connection",
+                             color: UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0))
+            }
+        }
+        
+        Logger.verbose("Attempting Authenticated")
+        firstly {
+            client.authenticate()
+        }.done { [weak self] in
+            Logger.verbose("User Authenticated")
+            self?.isHostOnline = true
+
+            // Enable UI Components
+            self?.navigationItem.rightBarButtonItem?.isEnabled = true
+            self?.pauseAllTorrentsBarButton.isEnabled = true
+            self?.resumeAllTorrentsBarButton.isEnabled = true
+            self?.updateHeader()
+        }.then {
+            client.getAllTorrents()
+        }.done { [weak self] data -> Void in
+            self?.tableViewDataSource = data
+            self?.reloadTableView()
+        }.then { _ in
+            client.getSessionStatus()
+        }.done { [weak self] status in
+            let download  = status.payload_download_rate.transferRateString()
+            let upload = status.payload_upload_rate.transferRateString()
+
+            self?.currentDownloadSpeedLabel.text = "↓ \(download)"
+            self?.currentUploadSpeedLabel.text = "↑ \(upload)"
+        }.done { [weak self] _ in
+            self?.updateHeader()
+        }.catch { [weak self] error in
+            self?.isHostOnline = false
+
+            // Disable UI Components
+            self?.pauseAllTorrentsBarButton.isEnabled = false
+            self?.resumeAllTorrentsBarButton.isEnabled = false
+            self?.navigationItem.rightBarButtonItem?.isEnabled = false
+
+            self?.currentDownloadSpeedLabel.text = "↓ Zero KB/s"
+            self?.currentUploadSpeedLabel.text = "↑ Zero KB/s"
+
+            self?.tableViewDataSource?.removeAll()
+            self?.reloadTableView()
+
+            var errorMsg = ""
+            if let error = error as? ClientError {
+                switch error {
+                case .incorrectPassword:
+                    errorMsg = "Incorrect Password"
+                case .noHostsExist:
+                    errorMsg = "No Hosts Configured for WebUI"
+                case .hostNotOnline:
+                    errorMsg = "Default Daemon for WebUI Offline"
+                default:
+                    errorMsg = "Host Offline"
+                }
+                Logger.error(error)
+            } else {
+                Logger.error(error)
+                errorMsg = error.localizedDescription
+            }
+
+            self?.updateHeader(with: errorMsg, isError: true)
         }
     }
     
@@ -385,158 +449,32 @@ class MainTableViewController: UITableViewController, Storyboarded {
         self.initUploadDownloadLabels()
       }
 
-    // MARK: - Deluge UI Wrapper Methods
-
-    func refreshAuthentication () {
-        // swiftlint:disable:previous function_body_length
-
-        guard let client = ClientManager.shared.activeClient else { return }
-        Logger.debug("Began Auth Refresh")
-
-        DispatchQueue.main.async { [weak self] in
-            self?.updateHeader(with: "Attempting Connection",
-                         color: UIColor(red: 4.0/255.0, green: 123.0/255.0, blue: 242.0/255.0, alpha: 1.0))
-        }
-
-        firstly {
-            client.authenticateAndConnect()
-        }.done { [weak self] _ in
-            Logger.debug("User Authenticated")
-            self?.isHostOnline = true
-
-            // Enable UI Components
-            self?.navigationItem.rightBarButtonItem?.isEnabled = true
-            self?.pauseAllTorrentsBarButton.isEnabled = true
-            self?.resumeAllTorrentsBarButton.isEnabled = true
-            self?.updateHeader()
-            self?.forceDataPollingUpdate()
-        }.catch { [weak self] error in
-            self?.isHostOnline = false
-
-            // Disable UI Components
-            self?.pauseAllTorrentsBarButton.isEnabled = false
-            self?.resumeAllTorrentsBarButton.isEnabled = false
-            self?.navigationItem.rightBarButtonItem?.isEnabled = false
-
-            self?.currentDownloadSpeedLabel.text = "↓ Zero KB/s"
-            self?.currentUploadSpeedLabel.text = "↑ Zero KB/s"
-
-            self?.tableViewDataSource?.removeAll()
-            self?.reloadTableView()
-
-            var errorMsg = ""
-            if let error = error as? ClientError {
-                switch error {
-                case .incorrectPassword:
-                    errorMsg = "Incorrect Password"
-                case .noHostsExist:
-                    errorMsg = "No Hosts Configured for WebUI"
-                case .hostNotOnline:
-                    errorMsg = "Default Daemon for WebUI Offline"
-                default:
-                    errorMsg = "Host Offline"
-                }
-                Logger.error(error)
-            } else {
-                Logger.error(error)
-                errorMsg = error.localizedDescription
-            }
-
-            self?.updateHeader(with: errorMsg, isError: true)
-        }
-    }
-
-    func downloadNewData() {
-
-        guard let client = ClientManager.shared.activeClient else { return }
-        Logger.verbose("Attempting to get all torrents")
-        firstly {
-            client.getAllTorrents()
-        }.done { [weak self] data -> Void in
-            self?.tableViewDataSource = data
-            self?.reloadTableView()
-        }.then { _ in
-            client.getSessionStatus()
-        }.done { [weak self] status in
-
-            let download  = status.payload_download_rate.transferRateString()
-            let upload = status.payload_upload_rate.transferRateString()
-
-            self?.currentDownloadSpeedLabel.text = "↓ \(download)"
-            self?.currentUploadSpeedLabel.text = "↑ \(upload)"
-        }.done { [weak self] _ in
-            self?.updateHeader()
-        }.catch { [weak self] error in
-            guard let self = self else { return }
-
-            self.isHostOnline = false
-
-            // Disable UI Components
-            self.pauseAllTorrentsBarButton.isEnabled = false
-            self.resumeAllTorrentsBarButton.isEnabled = false
-            self.navigationItem.rightBarButtonItem?.isEnabled = false
-
-            self.currentDownloadSpeedLabel.text = "↓ Zero KB/s"
-            self.currentUploadSpeedLabel.text = "↑ Zero KB/s"
-
-            self.tableViewDataSource?.removeAll()
-            self.reloadTableView()
-
-            self.updateHeader()
-
-            if let error = error as? ClientError {
-                Logger.error(error)
-                let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.localizedDescription, style: .danger)
-                banner.show()
-            } else {
-                Logger.error(error)
-            }
-        }
-    }
+    // MARK: - Deluge UI Wrapper Method
 
     func pauseAllTorrents() {
-        ClientManager.shared.activeClient?.pauseAllTorrents { [weak self] result in
-            guard let self = self else { return }
-            let haptic: UINotificationFeedbackGenerator?  = UINotificationFeedbackGenerator()
-            haptic?.prepare()
-            switch result {
-            case .success:
-                DispatchQueue.main.async {
-                    haptic?.notificationOccurred(.success)
-                    self.view.showHUD(title: "Successfully Paused")
-                }
-                Logger.verbose("All Torrents Paused Successfully")
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    haptic?.notificationOccurred(.error)
-                    self.view.showHUD(title: "Failed to Pause All Torrents", type: .failure)
-                }
+        hapticEngine.prepare()
+        ClientManager.shared.activeClient?.pauseAllTorrents()
+            .done { [weak self] _ in
+                self?.hapticEngine.notificationOccurred(.success)
+                self?.view.showHUD(title: "Successfully Paused")
+            } .catch { [weak self] error in
+                self?.hapticEngine.notificationOccurred(.error)
+                self?.view.showHUD(title: "Failed to Pause All Torrents", type: .failure)
                 Logger.error(error)
             }
-        }
     }
 
     func resumeAllTorrents() {
-        ClientManager.shared.activeClient?.resumeAllTorrents { [weak self] result in
-            guard let self = self else { return }
-            var haptic: UINotificationFeedbackGenerator? = UINotificationFeedbackGenerator()
-            haptic?.prepare()
-            switch result {
-            case .success:
-                DispatchQueue.main.async {
-                    haptic?.notificationOccurred(.success)
-                    self.view.showHUD(title: "Successfully Resumed")
-                }
-                Logger.verbose("All Torrents Resumed")
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    haptic?.notificationOccurred(.error)
-                    self.view.showHUD(title: "Failed to Resume All Torrents", type: .failure)
-                }
+        hapticEngine.prepare()
+        ClientManager.shared.activeClient?.resumeAllTorrents()
+            .done { [weak self] _ in
+                self?.hapticEngine.notificationOccurred(.success)
+                self?.view.showHUD(title: "Successfully Resumed")
+            } .catch { [weak self] error in
+                self?.hapticEngine.notificationOccurred(.error)
+                self?.view.showHUD(title: "Failed to Resume All Torrents", type: .failure)
                 Logger.error(error)
             }
-            haptic = nil
-        }
     }
 
     // MARK: - Table view data source
@@ -668,20 +606,26 @@ class MainTableViewController: UITableViewController, Storyboarded {
         
         if cell.paused {
             let resume = UIAction( title: "Resume", image: UIImage(systemName: "play.fill")) { [weak self] _ in
-                ClientManager.shared.activeClient?.resumeTorrent(withHash: cell.torrentHash) { (result) in
-                    DispatchQueue.main.async {
-                        self?.playPauseActionHandler(paused: cell.paused, with: result)
+                ClientManager.shared.activeClient?.resumeTorrent(withHash: cell.torrentHash)
+                    .done { [weak self] _ in
+                        self?.hapticEngine.notificationOccurred(.success)
+                        self?.view.showHUD(title: "Successfully Resumed Torrent")
+                    } .catch { [weak self] error in
+                        self?.hapticEngine.notificationOccurred(.error)
+                        self?.view.showHUD(title: "Failed To Resume Torrent", type: .failure)
                     }
-                }
             }
             actionList.append(resume)
         } else {
             let pause = UIAction(title: "Pause", image: UIImage(systemName: "pause")) { [weak self] _ in
-                ClientManager.shared.activeClient?.pauseTorrent(withHash: cell.torrentHash){ (result) in
-                    DispatchQueue.main.async {
-                        self?.playPauseActionHandler(paused: cell.paused, with: result)
+                ClientManager.shared.activeClient?.pauseTorrent(withHash: cell.torrentHash)
+                    .done { [weak self] _ in
+                        self?.hapticEngine.notificationOccurred(.success)
+                        self?.view.showHUD(title: "Successfully Paused Torrent")
+                    } .catch { [weak self] error in
+                        self?.hapticEngine.notificationOccurred(.error)
+                        self?.view.showHUD(title: "Failed to Pause Torrent", type: .failure)
                     }
-                }
             }
             actionList.append(pause)
         }
@@ -716,29 +660,6 @@ class MainTableViewController: UITableViewController, Storyboarded {
         selectedHash = cell.torrentHash
         delegate?.torrentSelected(torrentHash: cell.torrentHash)
     }
-    
-    fileprivate func playPauseActionHandler(paused: Bool, with result: Swift.Result<Void, Error>) {
-        
-        switch result {
-           case .success:
-               hapticEngine.notificationOccurred(.success)
-               
-               if paused {
-                    view.showHUD(title: "Successfully Resumed Torrent")
-               } else {
-                    view.showHUD(title: "Successfully Paused Torrent")
-               }
-
-           case .failure(_):
-               hapticEngine.notificationOccurred(.error)
-               
-               if paused {
-                   view.showHUD(title: "Failed To Resume Torrent", type: .failure)
-               } else {
-                   view.showHUD(title: "Failed to Pause Torrent", type: .failure)
-               }
-           }
-       }
 }
 
 // MARK: - UISearchResultsUpdating Extension

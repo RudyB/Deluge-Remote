@@ -14,6 +14,10 @@ enum DelugeRouter: URLRequestConvertible {
     /// Authenticate to the Deluge API
     case login(ClientConfig)
     
+    case checkAuth(ClientConfig)
+    
+    case isConnected(ClientConfig)
+    
     /// Get `TorrentMetadata`
     case getMetadata(ClientConfig,hash: String)
     
@@ -95,6 +99,10 @@ enum DelugeRouter: URLRequestConvertible {
         switch self {
             case .login(let config):
                 return config.url
+            case .checkAuth(let config):
+                return config.url
+            case .isConnected(let config):
+                return config.url
             case .getMetadata(let config, hash: _):
                 return config.url
             case .getFiles(let config, hash: _):
@@ -144,6 +152,10 @@ enum DelugeRouter: URLRequestConvertible {
         switch self {
             case .login(let config):
                 return paramsFor( method: "auth.login", with: [config.password])
+            case .checkAuth(_):
+                return paramsFor(method: "auth.check_session", with: [])
+            case .isConnected(_):
+                return paramsFor(method: "web.connected", with: [])
             case .getMetadata(_, hash: let hash):
                 return paramsFor(method: "core.get_torrent_status", with: [hash, []])
             case .getFiles(_, hash: let hash):

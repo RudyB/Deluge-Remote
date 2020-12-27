@@ -25,7 +25,7 @@ class TorrentFilesViewController: UIViewController, Storyboarded {
     }
     
     func displayTorrentFiles() {
-        guard let files = torrentFileStructure, let subFiles = torrentFileStructure?.files else { return }
+        guard let subFiles = torrentFileStructure?.files else { return }
         if !filesLoaded {
             expVCManager = ExpandableCollectionViewManager(parentViewController: self) { subFiles.toExpandableItems() }
             filesLoaded = true

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Houston
 
 class TorrentInfoSection: TableViewSection {
     
@@ -23,19 +24,87 @@ class TorrentInfoBasicSection: TorrentInfoSection {
         return "Basic Info"
     }
     
+    private let nameCell = DefaultCell(label: "Name", detail: nil)
+    private let stateCell = DefaultCell(label: "State", detail: nil)
+    private let etaCell = DefaultCell(label: "ETA", detail: nil)
+    private let completedCell = DefaultCell(label: "Completed", detail: nil)
+    private let sizeCell = DefaultCell(label: "Size", detail: nil)
+    private let statusCell = DefaultCell(label: "Status", detail: nil)
+    
     override func updateData() {
         guard let torrent = torrent else { return }
-        cells.removeAll()
-        cells.append(DefaultCell(label: "Name", detail: torrent.name))
-        cells.append(DefaultCell(label: "State", detail: torrent.state))
-        if torrent.eta != 0, let eta = torrent.eta.timeRemainingString() {
-            cells.append(DefaultCell(label: "ETA", detail: eta))
+        
+        nameCell.detail = torrent.name
+        stateCell.detail = torrent.state
+        etaCell.detail = torrent.eta.timeRemainingString()
+        completedCell.detail = String(format: "%.1f%%", torrent.progress)
+        sizeCell.detail = torrent.total_size.sizeString()
+        statusCell.detail = torrent.message
+        
+        if cells.isEmpty {
+            cells.append(nameCell)
+            cells.append(stateCell)
+            cells.append(sizeCell)
+            if torrent.eta != 0 {
+                cells.append(etaCell)
+            }
+            if torrent.progress < 100 {
+                cells.append(completedCell)
+            }
+            cells.append(statusCell)
         }
+        
+        var defaultCells = cells.compactMap { $0 as? DefaultCell }
+        var containsETA = defaultCells.enumerated().first { $0.element.label == etaCell.label }
+        var containsProgress = defaultCells.enumerated().first { $0.element.label == completedCell.label }
+        
+        var indexAdded: [Int] = []
+        var indexRemoved: [Int] = []
+        
+        if torrent.eta != 0 {
+            if containsETA == nil {
+                cells.insert(etaCell, at: 3)
+                indexAdded.append(3)
+            }
+        } else {
+            if let eta = containsETA {
+                cells.remove(at: eta.offset)
+                indexRemoved.append(eta.offset)
+            }
+        }
+        
+        defaultCells = cells.compactMap { $0 as? DefaultCell }
+        containsETA = defaultCells.enumerated().first { $0.element.label == etaCell.label }
+        containsProgress = defaultCells.enumerated().first { $0.element.label == completedCell.label }
+        
         if torrent.progress < 100 {
-            cells.append(DefaultCell(label: "Completed", detail: String(format: "%.1f%%", torrent.progress)))
+            if containsProgress == nil {
+                var index = 3
+                if let eta = containsETA {
+                    index = eta.offset + 1
+                }
+                cells.insert(completedCell, at: index)
+                indexAdded.append(index)
+            }
+        } else {
+            if let progress = containsProgress {
+                cells.remove(at: progress.offset)
+                indexRemoved.append(progress.offset)
+            }
         }
-        cells.append(DefaultCell(label: "Size", detail: torrent.total_size.sizeString()))
-        cells.append(DefaultCell(label: "Status", detail: torrent.message))
+        
+        if !indexAdded.isEmpty {
+            if let onRowsAdded = onRowsAdded {
+                onRowsAdded(indexAdded)
+            }
+        }
+        
+        if !indexRemoved.isEmpty {
+            if let onRowsRemoved = onRowsRemoved {
+                onRowsRemoved(indexRemoved)
+            }
+        }
+
     }
 }
 
@@ -108,20 +177,22 @@ class TorrentInfoTrackerSection: TorrentInfoSection {
             let newSize = coreCells.count + peerSubSection.count
             
             if oldSize < newSize {
-                print("Rows Added old:\(oldSize) new:\(newSize)")
+                Logger.debug("Rows Added old:\(oldSize) new:\(newSize)")
                 
                 cells.removeLast(oldSize - coreCells.count)
                 cells.append(contentsOf: peerSubSection)
                 if let onRowsAdded = onRowsAdded {
+                    Logger.debug(Array(oldSize...newSize-1))
                     onRowsAdded(Array(oldSize...newSize-1))
                 }
             } else if (oldSize > newSize) {
                 // Rows were removed
-                print("Rows Removed old:\(oldSize) new:\(newSize)")
+                Logger.debug("Rows Removed old:\(oldSize) new:\(newSize)")
                 
                 cells.removeLast(oldSize - coreCells.count)
                 cells.append(contentsOf: peerSubSection)
                 if let onRowsRemoved = onRowsRemoved {
+                    Logger.debug(Array(newSize...oldSize-1))
                     onRowsRemoved(Array(newSize...oldSize-1))
                 }
             } else {
@@ -193,6 +264,7 @@ class TorrentInfoModel: TableViewModel {
                 section.onRowsAdded = { [weak self] rows in
                     if let onRowsAdded = self?.onRowsAdded {
                         let indexPaths = rows.map{ IndexPath(row: $0, section: sectionIndex) }
+                        Logger.debug("Asking to add \(indexPaths.count) rows")
                         onRowsAdded(indexPaths)
                     }
                 }
@@ -207,6 +279,7 @@ class TorrentInfoModel: TableViewModel {
                 section.onRowsRemoved = { [weak self] rows in
                     if let onRowsRemoved = self?.onRowsRemoved {
                         let indexPaths = rows.map{ IndexPath(row: $0, section: sectionIndex) }
+                        Logger.debug("Asking to remove \(indexPaths.count) rows")
                         onRowsRemoved(indexPaths)
                     }
                 }
