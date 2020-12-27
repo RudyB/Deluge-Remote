@@ -13,7 +13,7 @@ typealias DirectoryName = String
 
 struct TorrentFileStructure {
     
-    let files: DownloadedTorrentFileNode?
+    let files: DownloadedTorrentFileNode
     let isDir: Bool
     
     init?(json: JSON) {
@@ -21,11 +21,12 @@ struct TorrentFileStructure {
             let type = json["type"] as? String,
             let contents = json["contents"] as? JSON,
             let rootKey = contents.keys.first,
-            let rootKeyJSON = contents[rootKey] as? JSON
+            let rootKeyJSON = contents[rootKey] as? JSON,
+            let files = DownloadedTorrentFileNode(fileName: rootKey, json: rootKeyJSON)
         else { return nil }
         
         self.isDir = type == "dir"
-        self.files = DownloadedTorrentFileNode(fileName: rootKey, json: rootKeyJSON)
+        self.files = files
             
     }
 }

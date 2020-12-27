@@ -8,6 +8,12 @@
 
 import Foundation
 
+
+struct MagnetInfo: Decodable {
+    let name: String
+    let info_hash: String
+}
+
 struct UploadedTorrentInfo {
     let name: String
     let hash: String

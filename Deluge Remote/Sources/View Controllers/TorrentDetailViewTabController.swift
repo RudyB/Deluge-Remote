@@ -125,7 +125,7 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
         ClientManager.shared.activeClient?.getTorrentFiles(withHash: hash)
             .done { [weak self] fileStructure in
                 self?.torrentFileStructure = fileStructure
-                self?.filesVC.tabBarItem.isEnabled = true
+                self?.filesVC.tabBarItem.isEnabled = fileStructure != nil
             }.catch { [weak self] error in
                 Logger.error(error)
                 guard

@@ -58,7 +58,7 @@ extension MainSplitViewController: MainTableViewControllerDelegate
     func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((Result<Void, Error>, @escaping () -> ()) -> ())?) {
         suspendDetailViewDataPolling()
         ClientManager.shared.activeClient?.removeTorrent(withHash: hash, removeData: removeData)
-            .done {
+            .done { [weak self] _ in 
                 if let onCompletion = onCompletion {
                     onCompletion(.success(())) { [weak self] in
                         self?.updateDetailViewAfterDeletion()
