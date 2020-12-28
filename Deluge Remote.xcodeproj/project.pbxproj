@@ -3,15 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		470F5CF6259460D500B7155D /* MenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5CF5259460D500B7155D /* MenuTableViewCell.swift */; };
-		470F5CFE2594A0E700B7155D /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */; };
-		470F5D022594A14600B7155D /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 470F5D012594A14600B7155D /* FirebaseAnalytics */; };
-		470F5D092594A29400B7155D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 470F5D082594A29400B7155D /* GoogleService-Info.plist */; };
-		470F5D192595689100B7155D /* CrashReportingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5D182595689100B7155D /* CrashReportingViewController.swift */; };
 		470F5D1D2595701200B7155D /* AcknowledgementsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5D1C2595701200B7155D /* AcknowledgementsTableViewController.swift */; };
 		470F5D2625957DFB00B7155D /* MenuTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 470F5D2425957DFB00B7155D /* MenuTableViewCell.xib */; };
 		4714775825869DF00019A278 /* TorrentFileStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4714775725869DF00019A278 /* TorrentFileStructure.swift */; };
@@ -83,8 +79,6 @@
 
 /* Begin PBXFileReference section */
 		470F5CF5259460D500B7155D /* MenuTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
-		470F5D082594A29400B7155D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		470F5D182595689100B7155D /* CrashReportingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashReportingViewController.swift; sourceTree = "<group>"; };
 		470F5D1C2595701200B7155D /* AcknowledgementsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsTableViewController.swift; sourceTree = "<group>"; };
 		470F5D2425957DFB00B7155D /* MenuTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MenuTableViewCell.xib; sourceTree = "<group>"; };
 		4714775725869DF00019A278 /* TorrentFileStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorrentFileStructure.swift; sourceTree = "<group>"; };
@@ -159,9 +153,7 @@
 				47E685CF25907874008C2969 /* Alamofire in Frameworks */,
 				47E685E7259079B5008C2969 /* MBProgressHUD in Frameworks */,
 				47E685E325907953008C2969 /* Valet in Frameworks */,
-				470F5D022594A14600B7155D /* FirebaseAnalytics in Frameworks */,
 				47C8011C259280F000A01831 /* ExpandableCollectionViewKit in Frameworks */,
-				470F5CFE2594A0E700B7155D /* FirebaseCrashlytics in Frameworks */,
 				47C801272592D09100A01831 /* ActiveLabel in Frameworks */,
 				47E685DB259078F2008C2969 /* Eureka in Frameworks */,
 			);
@@ -181,7 +173,6 @@
 			isa = PBXGroup;
 			children = (
 				472595DC2594578100BBFE10 /* SettingsViewController.swift */,
-				470F5D182595689100B7155D /* CrashReportingViewController.swift */,
 				470F5D1C2595701200B7155D /* AcknowledgementsTableViewController.swift */,
 			);
 			name = "Settings View Controllers";
@@ -257,7 +248,6 @@
 		4716027F1DD433F400727CBD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				470F5D082594A29400B7155D /* GoogleService-Info.plist */,
 				4716023A1DD4305800727CBD /* LaunchScreen.storyboard */,
 				471602351DD4305800727CBD /* Main.storyboard */,
 				4716023D1DD4305800727CBD /* Info.plist */,
@@ -385,7 +375,6 @@
 				4716022A1DD4305800727CBD /* Sources */,
 				4716022B1DD4305800727CBD /* Frameworks */,
 				4716022C1DD4305800727CBD /* Resources */,
-				477D7B4121D9DE5100F78CE1 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -402,8 +391,6 @@
 				47E68796259088AA008C2969 /* Houston */,
 				47C8011B259280F000A01831 /* ExpandableCollectionViewKit */,
 				47C801262592D09100A01831 /* ActiveLabel */,
-				470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */,
-				470F5D012594A14600B7155D /* FirebaseAnalytics */,
 				473CB8BC2595C9B700A4B3EF /* NotificationBannerSwift */,
 			);
 			productName = "Deluge Remote";
@@ -453,7 +440,6 @@
 				47E68795259088AA008C2969 /* XCRemoteSwiftPackageReference "Houston" */,
 				47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */,
 				47C801252592D09100A01831 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */,
-				470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				473CB8BB2595C9B700A4B3EF /* XCRemoteSwiftPackageReference "NotificationBanner" */,
 			);
 			productRefGroup = 4716022F1DD4305800727CBD /* Products */;
@@ -476,34 +462,10 @@
 				47A716B421DEB9B300C7650C /* FileIcon2@3X.png in Resources */,
 				47A716B221DEB7E200C7650C /* TorrentFile@3x.png in Resources */,
 				471602371DD4305800727CBD /* Main.storyboard in Resources */,
-				470F5D092594A29400B7155D /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		477D7B4121D9DE5100F78CE1 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 12;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
-				"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}",
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4716022A1DD4305800727CBD /* Sources */ = {
@@ -562,7 +524,6 @@
 				472AA96D25940B8C00529B45 /* SlideInPresentationController .swift in Sources */,
 				47ED997925858440002EB8DA /* RepeatingTimer.swift in Sources */,
 				47ED995E2584282C002EB8DA /* Storyboarded.swift in Sources */,
-				470F5D192595689100B7155D /* CrashReportingViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -795,14 +756,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 7.3.1;
-			};
-		};
 		473CB8BB2595C9B700A4B3EF /* XCRemoteSwiftPackageReference "NotificationBanner" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Daltron/NotificationBanner.git";
@@ -886,16 +839,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCrashlytics;
-		};
-		470F5D012594A14600B7155D /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
 		473CB8BC2595C9B700A4B3EF /* NotificationBannerSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 473CB8BB2595C9B700A4B3EF /* XCRemoteSwiftPackageReference "NotificationBanner" */;

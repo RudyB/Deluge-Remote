@@ -220,11 +220,6 @@ extension MainSplitViewController: SettingsViewControllerDelegate {
         master.pushViewController(vc, animated: true)
     }
     
-    func showCrashReportingView() {
-        let vc = CrashReportingViewController()
-        master.pushViewController(vc, animated: true)
-    }
-    
     func showClientsView()
     {
         let vc = ClientsTableViewController.instantiate()

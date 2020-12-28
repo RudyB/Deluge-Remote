@@ -11,7 +11,6 @@ import UIKit
 protocol SettingsViewControllerDelegate: AnyObject {
     func showClientsView()
     func showAcknowledgementsView()
-    func showCrashReportingView()
     func exportLogs()
 }
 

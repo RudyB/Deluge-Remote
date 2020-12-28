@@ -79,14 +79,11 @@ class AboutSection: SettingsTableViewSection {
         let bugReports = MenuCell(label: "Bug Reports / Feature Requests", icon: UIImage(named: "menu/bug")!) {
             UIApplication.shared.open(URL(string: "https://github.com/RudyB/Deluge-Remote/issues/")!)
         }
-        let crashReporting = MenuCell(label: "Crash Reporting & Analytics", icon: UIImage(named: "menu/crash-reporting")!) { [weak self] in
-            self?.delegate?.showCrashReportingView()
-        }
         let logs = MenuCell(label: "Logs", icon: UIImage(named: "menu/logs")!) { [weak self] in
             self?.delegate?.exportLogs()
         }
         
-        cells = [twitter, github, donation, acknowledgements, bugReports, crashReporting, logs]
+        cells = [twitter, github, donation, acknowledgements, bugReports, logs]
     }
     
 }
