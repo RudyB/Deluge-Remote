@@ -237,7 +237,7 @@ class DelugeClient {
                             Logger.error(ClientError.other(error))
                             seal.reject(ClientError.other(error))
                         } else if error.isResponseSerializationError {
-                            Logger.error(error.localizedDescription)
+                            Logger.error(error)
                             seal.reject(ClientError.decoding)
                         } else {
                             Logger.error(error)
