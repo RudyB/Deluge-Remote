@@ -50,7 +50,7 @@ fileprivate class MainSection: TableViewSection {
         cells.append(MenuCell(label: "ActiveLabel", icon: UIImage(named: "menu/github")){
             UIApplication.shared.open(URL(string: "https://github.com/optonaut/ActiveLabel.swift")!)
         })
-        cells.append(MenuCell(label: "Bar Magnet", icon: UIImage(named: "menu/github")){
+        cells.append(MenuCell(label: "BarMagnet", icon: UIImage(named: "menu/github")){
             UIApplication.shared.open(URL(string: "https://github.com/Qata/BarMagnet")!)
         })
         cells.append(MenuCell(label: "Eureka", icon: UIImage(named: "menu/github")){
