@@ -10,16 +10,20 @@ import Foundation
 
 enum TorrentType: String {
     case magnet = "Magnet Link"
+    case url = "Torrent URL"
     case file = "Torrent File"
 }
 
 enum TorrentData
 {
     case magnet(URL)
+    case url(URL)
     case file(Data)
     
     var type: TorrentType {
         switch self {
+            case .url(_):
+                return TorrentType.url
         case .magnet(_):
             return TorrentType.magnet
         case .file(_):

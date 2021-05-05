@@ -51,6 +51,11 @@ enum DelugeRouter: URLRequestConvertible {
     /// Add a torrent file to the server
     case addTorrentFile(ClientConfig, filename: String, data: Data, config: TorrentConfig)
     
+    /// Adds a torrent to the server from a URL
+    case addTorrentURL(ClientConfig, URL, TorrentConfig)
+    
+    case downloadTorrent(ClientConfig, from: URL)
+    
     /// Upload a torrent to the server
     ///
     /// **Note**: This does not add the torrent to the client
@@ -125,6 +130,10 @@ enum DelugeRouter: URLRequestConvertible {
                 return config.url
             case .addTorrentFile(let config, filename: _, data: _, config: _):
                 return config.url
+            case .addTorrentURL(let config, _, _):
+                return config.url
+            case .downloadTorrent(let config, from: _):
+                return config.url
             case .uploadTorrentFile(let config, _):
                 return config.url
             case .getUploadedTorrentInfo(let config, filename: _):
@@ -180,6 +189,10 @@ enum DelugeRouter: URLRequestConvertible {
                 return paramsFor(method: "core.remove_torrent", with: [hash, withData])
             case .addTorrentMagnet(_, let url, config: let config):
                 return paramsFor(method: "core.add_torrent_magnet", with: [url.absoluteString, config.toParams()])
+            case .downloadTorrent(_, from: let url):
+                return paramsFor(method: "web.download_torrent_from_url", with: [url.absoluteString, []])
+            case .addTorrentURL(_, let url, let config):
+                return paramsFor(method: "core.add_torrent_url", with: [url.absoluteString, config.toParams()])
             case .getMagnetInfo(_, let url):
                 return paramsFor(method: "web.get_magnet_info", with: [url.absoluteString])
             case .addTorrentFile(_, filename: let filename, data: let data, config: let config):

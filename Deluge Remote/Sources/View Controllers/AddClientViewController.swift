@@ -118,10 +118,15 @@ class AddClientViewController: UITableViewController, Storyboarded {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 3
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 7
+        switch section {
+            case 0: return 1
+            case 1: return 5
+            case 2: return 1
+            default: return 0
+        }
     }
 }

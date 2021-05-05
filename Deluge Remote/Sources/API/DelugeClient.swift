@@ -466,7 +466,47 @@ class DelugeClient {
             }
         }
     }
+    
+    func downloadTorrent(from url: URL)-> Promise<String> { return Promise { seal in
+        Manager.request(DelugeRouter.downloadTorrent(clientConfig, from: url))
+            .validate().responseDecodable(of: DelugeResponse<String>?.self, queue: self.queue) { response in
+                switch response.result {
+                    case .success(let data):
+                        if let result = data?.result {
+                            seal.fulfill(result)
+                        } else {
+                            if let error = data?.error {
+                                seal.reject(ClientError.apiError(error))
+                            } else {
+                                seal.reject(ClientError.unexpectedResponse)
+                            }
+                        }
+                    case .failure(let error): seal.reject(ClientError.other(error))
+                }
+            }
+        }
+    }
 
+    func addTorrentURL(_ url: URL, with config: TorrentConfig) -> Promise<String> { return Promise { seal in
+        Manager.request(DelugeRouter.addTorrentURL(clientConfig, url, config))
+            .validate().responseDecodable(of: DelugeResponse<String>?.self, queue: self.queue) { response in
+                switch response.result {
+                    case .success(let data):
+                        if let result = data?.result {
+                            seal.fulfill(result)
+                        } else {
+                            if let error = data?.error {
+                                seal.reject(ClientError.apiError(error))
+                            } else {
+                                seal.reject(ClientError.unexpectedResponse)
+                            }
+                        }
+                    case .failure(let error): seal.reject(ClientError.other(error))
+                }
+            }
+        }
+    }
+    
     func addTorrentFile(fileName: String, torrent: Data, with config: TorrentConfig) -> Promise<String> { return Promise { seal in
         Manager.request(DelugeRouter.addTorrentFile(self.clientConfig, filename: fileName, data: torrent, config: config))
             .validate().responseDecodable(of: DelugeResponse<String>?.self, queue: self.queue) { response in
@@ -518,6 +558,33 @@ class DelugeClient {
 
     func getTorrentInfo(torrent: Data) -> Promise<UploadedTorrentInfo> { return Promise { seal in
             firstly { upload(torrentData: torrent) }
+                .done { fileName in
+                    self.Manager.request(DelugeRouter.getUploadedTorrentInfo(self.clientConfig, filename: fileName))
+                        .validate().responseJSON(queue: self.queue) { response in
+                            switch response.result {
+                            case .success(let json):
+                                guard
+                                    let dict = json as? JSON,
+                                    let result = dict["result"] as? JSON,
+                                    let info = UploadedTorrentInfo(json: result)
+                                else {
+                                    seal.reject(ClientError.unexpectedResponse)
+                                    return
+                                }
+                                seal.fulfill(info)
+                            case .failure(let error):
+                                seal.reject(ClientError.other(error))
+                            }
+                    }
+
+                }.catch { error in
+                    seal.reject(error)
+            }
+        }
+    }
+    
+    func getTorrentInfo(url: URL) -> Promise<UploadedTorrentInfo> { return Promise { seal in
+            firstly { downloadTorrent(from: url) }
                 .done { fileName in
                     self.Manager.request(DelugeRouter.getUploadedTorrentInfo(self.clientConfig, filename: fileName))
                         .validate().responseJSON(queue: self.queue) { response in
