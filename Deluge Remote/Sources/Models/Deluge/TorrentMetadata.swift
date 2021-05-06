@@ -100,14 +100,14 @@ struct TrackerMetadata: Decodable {
     let last_error: ErrorMetadata?
     let fail_limit: Int?
     let next_announce: Int?
-    let complete_sent: Bool
-    let source: Int
+    let complete_sent: Bool?
+    let source: Int?
     let trackerid: String?
-    let start_sent: Bool
-    let tier: Int
+    let start_sent: Bool?
+    let tier: Int?
     let scrape_complete: Int?
     let message: String?
-    let updating: Bool
+    let updating: Bool?
 }
 
  struct ErrorMetadata: Decodable {
