@@ -9,6 +9,7 @@
 import Houston
 import UIKit
 import IQKeyboardManagerSwift
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -20,7 +21,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // swiftlint:disable:next line_length
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        FirebaseApp.configure()
+        
+        
         let consoleDest = ConsoleDestination()
+        consoleDest.minLevel = .debug
         
         let fileDest = FileDestination()
         fileDest.logFileURL = getLogFile();
@@ -105,7 +110,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func shouldHandle(shortcutItem: UIApplicationShortcutItem) -> Bool {
         
-        if shortcutItem.type == "io.rudybermudez.DelugeRemote.adduser" {
+        if shortcutItem.type == "io.rudybermudez.Deluge-Remote.adduser" {
             rootController.showAddTorrentView()
             return true
         }
@@ -116,7 +121,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func updateShortcutItems() {
         if let client = ClientManager.shared.activeClient {
             let icon = UIApplicationShortcutIcon(type: .add)
-            let item = UIApplicationShortcutItem(type: "io.rudybermudez.DelugeRemote.adduser", localizedTitle: "Add Torrent", localizedSubtitle: "Upload to \(client.clientConfig.nickname)", icon: icon, userInfo: nil)
+            let item = UIApplicationShortcutItem(type: "io.rudybermudez.Deluge-Remote.adduser", localizedTitle: "Add Torrent", localizedSubtitle: "Upload to \(client.clientConfig.nickname)", icon: icon, userInfo: nil)
             UIApplication.shared.shortcutItems = [item]
         } else {
             UIApplication.shared.shortcutItems = []

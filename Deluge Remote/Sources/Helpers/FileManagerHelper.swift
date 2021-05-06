@@ -18,7 +18,7 @@ func getLogFile() -> URL {
     let today = Date()
     let formatter = DateFormatter()
     formatter.dateFormat = "MM-dd-yyyy"
-    let fileName = "DelugeRemoteLog-\(formatter.string(from: today)).txt"
+    let fileName = "com.rudybermudez.io.DelugeRemote-\(formatter.string(from: today)).log"
     
     let logPath = getDocumentsDirectory().appendingPathComponent("Logs")
     do

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ChevronCell: TVCellBuilder {
+class ChevronCell: TableViewCellBuilder {
     var label: String?
     var detail: String?
     var state: ChevronTableViewCell.State
@@ -52,6 +52,10 @@ class ChevronCell: TVCellBuilder {
         }
         self.cell = cell
         return cell
+    }
+    
+    func registerCell(in tableView: UITableView) {
+        
     }
 }
 

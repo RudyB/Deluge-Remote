@@ -25,7 +25,7 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
             }
         }
     }
-
+    
     
     init() {
         super.init(style: .insetGrouped)
@@ -109,26 +109,26 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
                   actionList: [deleteTorrent, deleteTorrentWithData, cancel] )
     }
     
-    fileprivate func deleteTorrentCallback(result: APIResult<Void>, onGuiUpdatesComplete: @escaping ()->())
-        {
-            switch result {
+    fileprivate func deleteTorrentCallback(result: Result<Void, Error>, onGuiUpdatesComplete: @escaping ()->())
+    {
+        switch result {
             case .success():
                 hapticEngine.notificationOccurred(.success)
                 
                 view.showHUD(title: "Torrent Successfully Deleted") {
                     onGuiUpdatesComplete()
                 }
-
+                
             case .failure(let error):
                 self.hapticEngine.notificationOccurred(.error)
                 if let error = error as? ClientError {
-                    showAlert(target: self, title: "Error", message: error.domain())
+                    showAlert(target: self, title: "Error", message: error.localizedDescription)
                 } else {
                     showAlert(target: self, title: "Error", message: error.localizedDescription)
                 }
                 onGuiUpdatesComplete()
-            }
         }
+    }
     
     func moveStorage() {
         let alert = UIAlertController(title: "Move Torrent", message: "Please enter a new directory",
@@ -169,52 +169,46 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
     }
     
     func playPauseTorrent() {
-        guard let torrentData = torrentData else { return }
-                
+        guard
+            let torrentData = torrentData,
+            let row = self.form.rowBy(tag: "PlayPauseBtn") as? ButtonRow
+        else { return }
+        
         hapticEngine.prepare()
         if torrentData.paused {
-            ClientManager.shared.activeClient?.resumeTorrent(withHash: torrentData.hash) { [weak self] result in
-                DispatchQueue.main.async {
-                    self?.playPauseActionHandler(for: torrentData, with: result)
-                }
-            }
-        } else {
-            ClientManager.shared.activeClient?.pauseTorrent(withHash: torrentData.hash) { [weak self] result in
-                DispatchQueue.main.async {
-                    self?.playPauseActionHandler(for: torrentData, with: result)
-                }
-            }
-        }
-    }
-    
-    fileprivate func playPauseActionHandler(for torrent: TorrentMetadata, with result: APIResult<Void>) {
-        
-        let row = self.form.rowBy(tag: "PlayPauseBtn") as! ButtonRow
-        switch result {
-           case .success:
-               hapticEngine.notificationOccurred(.success)
-               
-               if torrent.paused {
-                    view.showHUD(title: "Successfully Resumed Torrent")
+            ClientManager.shared.activeClient?.resumeTorrent(withHash: torrentData.hash)
+                .done { [weak self] in
+                    guard let self = self else { return }
+                    self.hapticEngine.notificationOccurred(.success)
+                    self.view.showHUD(title: "Successfully Resumed Torrent")
                     row.cell.textLabel?.text = "Pause Torrent"
                     row.title = "Pause Torrent"
-               } else {
-                    view.showHUD(title: "Successfully Paused Torrent")
+                }
+                .catch { [weak self ]_ in
+                    guard let self = self else { return }
+                    self.hapticEngine.notificationOccurred(.error)
+                    self.view.showHUD(title: "Failed To Resume Torrent", type: .failure)
+                }
+            
+        } else {
+            ClientManager.shared.activeClient?.pauseTorrent(withHash: torrentData.hash)
+                .done { [weak self] in
+                    guard let self = self else { return }
+                    self.hapticEngine.notificationOccurred(.success)
+                    self.view.showHUD(title: "Successfully Paused Torrent")
                     row.cell.textLabel?.text = "Resume Torrent"
                     row.title = "Resume Torrent"
-               }
-
-           case .failure:
-               hapticEngine.notificationOccurred(.error)
-               
-               if torrent.paused {
-                   view.showHUD(title: "Failed To Resume Torrent", type: .failure)
-               } else {
-                   view.showHUD(title: "Failed to Pause Torrent", type: .failure)
-               }
-           }
-       }
+                }
+                .catch { [weak self ]_ in
+                    guard let self = self else { return }
+                    self.hapticEngine.notificationOccurred(.error)
+                    self.view.showHUD(title: "Failed to Pause Torrent", type: .failure)
+                }
+        }
+    }
 }
+
+
 
 extension TorrentOptionsViewController {
     enum TorrentOptionsCodingKeys: String {

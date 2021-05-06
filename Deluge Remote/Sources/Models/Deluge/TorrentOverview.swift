@@ -13,6 +13,7 @@ struct TorrentOverview: Decodable, Equatable {
         return lhs.hash == rhs.hash
     }
 
+    let paused: Bool
 	let download_payload_rate: Double
 	let hash: String
 	let ratio: Double

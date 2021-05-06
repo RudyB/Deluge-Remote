@@ -8,10 +8,11 @@
 
 import UIKit
 import Houston
+import NotificationBannerSwift
 
 protocol TorrentDetailViewDelegate: AnyObject
 {
-    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: APIResult<Void>, _ onClientComplete: @escaping ()->())->())?)
+    func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: Result<Void, Error>, _ onClientComplete: @escaping ()->())->())?)
 }
 
 class TorrentDetailViewTabController: UITabBarController, Storyboarded {
@@ -67,6 +68,7 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
     
     // MARK: - UIViewController Methods
     deinit {
+        filesVC.expVCManager = nil
         Logger.debug("Destroyed")
     }
     
@@ -74,7 +76,7 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
         super.viewDidLoad()
         delegate = self
         
-        dataPollingQueue =  DispatchQueue(label: "io.rudybermudez.DelugeRemote.DetailDataView.PollingQueue", qos: .userInteractive)
+        dataPollingQueue =  DispatchQueue(label: "io.rudybermudez.Deluge-Remote.DetailDataView.PollingQueue", qos: .userInteractive)
         dataPollingTimer = RepeatingTimer(timeInterval: .seconds(3), leeway: .seconds(1), queue: dataPollingQueue)
         dataPollingTimer?.eventHandler = dataPollingEvent
         
@@ -110,31 +112,31 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
                 Logger.verbose("New Data")
                 self?.torrentData = torrent
                 self?.title = torrent.name
-            }.catch { [weak self] error in
+            }.catch { error in
                 Logger.error(error)
-                if let self = self, let error = error as? ClientError {
-                    showAlert(target: self, title: "Error", message: error.domain(),
-                              style: .alert)
+                if let error = error as? ClientError {
+                    let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.localizedDescription, style: .danger)
+                    banner.show()
                 }
             }
     }
-        
+    
     func getTorrentFiles(withHash hash: String) {
         ClientManager.shared.activeClient?.getTorrentFiles(withHash: hash)
             .done { [weak self] fileStructure in
                 self?.torrentFileStructure = fileStructure
-                self?.filesVC.tabBarItem.isEnabled = true
+                self?.filesVC.tabBarItem.isEnabled = fileStructure != nil
             }.catch { [weak self] error in
                 Logger.error(error)
                 guard
                     let self = self,
                     let error = error as? ClientError
                 else { return }
-                if case .torrentHasNoFiles = error {
+                if case  .decoding = error {
                     self.filesVC.tabBarItem.isEnabled = false
                 } else {
-                    showAlert(target: self, title: "Error", message: error.domain(),
-                              style: .alert)
+                    let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.localizedDescription, style: .danger)
+                    banner.show()
                 }
             }
     }

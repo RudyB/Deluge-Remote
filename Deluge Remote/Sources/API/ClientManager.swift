@@ -14,9 +14,9 @@ final class ClientManager {
     // MARK: Properties
     public static var shared = ClientManager()
     private var _activeClient: DelugeClient?
-    private let lockQueue = DispatchQueue(label: "io.rudybermudez.deluge.clientManager",
+    private let lockQueue = DispatchQueue(label: "io.rudybermudez.Deluge-Remote.clientManager",
                                           qos: .userInteractive, attributes: .concurrent)
-    private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.deluge")!,
+    private let keychain = Valet.valet(with: Identifier(nonEmpty: "io.rudybermudez.Deluge-Remote")!,
                                        accessibility: .whenUnlocked)
 
     public static let NewActiveClientNotification = "NewActiveClient"

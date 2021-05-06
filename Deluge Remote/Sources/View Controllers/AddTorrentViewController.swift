@@ -11,6 +11,7 @@ import Houston
 import MBProgressHUD
 import PromiseKit
 import UIKit
+import NotificationBannerSwift
 
 protocol AddTorrentViewControllerDelegate: AnyObject {
     func torrentAdded(_ torrentHash: String)
@@ -27,12 +28,10 @@ class AddTorrentViewController: FormViewController, Storyboarded {
     var torrentType: TorrentType?
     var torrentData: TorrentData?
     
-    let pasteboard = UIPasteboard.general
-
     enum CodingKeys: String {
         case selectionSection
         case torrentType
-        case magnetURL
+        case torrentURL
         // Torrent Config
         case bandwidthConfig
         case queueConfig
@@ -54,6 +53,7 @@ class AddTorrentViewController: FormViewController, Storyboarded {
         hidesBottomBarWhenPushed = false
         navigationController?.setToolbarHidden(false, animated: true)
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -68,9 +68,9 @@ class AddTorrentViewController: FormViewController, Storyboarded {
         else
         {
             populateTorrentTypeSelection()
-            checkPasteboardForMagnetLink()
-            NotificationCenter.default.addObserver(self, selector: #selector(self.checkPasteboardForMagnetLink),
-                                                   name: UIPasteboard.changedNotification, object: pasteboard)
+            inspectPasteboard()
+            NotificationCenter.default.addObserver(self, selector: #selector(inspectPasteboard),
+                                                   name: UIPasteboard.changedNotification, object: UIPasteboard.general)
             return;
         }
         torrentType = torrentData.type
@@ -82,84 +82,100 @@ class AddTorrentViewController: FormViewController, Storyboarded {
             handleFormConfigurationFor(torrent: data)
         case .magnet(let url):
             handleFormConfigurationFor(magnetURL: url)
+        case .url(let url):
+            handleFormConfigurationFor(torrentURL: url)
         }
     }
 
     deinit {
         Logger.debug("Destroyed")
-        
-        NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: pasteboard)
+        NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: UIPasteboard.general)
     }
 
-    
-    @objc func checkPasteboardForMagnetLink()
+    @objc func inspectPasteboard()
     {
+        if let _ = torrentData { return } // Only inspect pasteboard if we have no data
+        if !UIPasteboard.general.hasURLs { return }
+        
         guard
-            let url = pasteboard.url,
-            url.absoluteString.hasPrefix("magnet:?"),
-            let urlRow = form.rowBy(tag: CodingKeys.magnetURL.rawValue) as? URLRow,
+            let url = UIPasteboard.general.url,
+            let urlRow = form.rowBy(tag: CodingKeys.torrentURL.rawValue) as? URLRow,
             let buttonRow = form.rowBy(tag: CodingKeys.torrentType.rawValue) as? SegmentedRow<String>
         else { return }
         
-        
-        if torrentData == nil || torrentType == TorrentType.magnet {
+        if url.absoluteString.hasPrefix("magnet:?") {
             torrentType = .magnet // TODO: RudyB 6/14 - Make this click select the magnet option
             urlRow.value = url
-            buttonRow.value = "Magnet Link"
-            buttonRow.reload()
-            urlRow.evaluateHidden()
-        }
+            buttonRow.value = "Magnet"
+        } else if url.absoluteString.hasSuffix(".torrent") {
+            torrentType = .url // TODO: RudyB 6/14 - Make this click select the magnet option
+            urlRow.value = url
+            buttonRow.value = "URL"
+        } else { return }
+        
+        buttonRow.reload()
+        urlRow.evaluateHidden()
     }
     
     func handleFormConfigurationFor(torrent: Data) {
-        ClientManager.shared.activeClient?.getTorrentInfo(torrent: torrent)
-            .ensure { [weak self] in
-                if let self = self {
-                    DispatchQueue.main.async {
-                        MBProgressHUD.hide(for: self.view, animated: true)
-                    }
-                }
+        guard let client = ClientManager.shared.activeClient else { return }
+        
+        firstly {
+            client.authenticate()
+        }.then {
+            client.getTorrentInfo(torrent: torrent)
+        } .ensure { [weak self] in
+            if let self = self {
+                MBProgressHUD.hide(for: self.view, animated: true)
             }
-            .done { [weak self] torrentInfo in
-                DispatchQueue.main.async {
-                    self?.showTorrentConfig(name: torrentInfo.name, hash: torrentInfo.hash)
-                }
-                torrentInfo.files.prettyPrint()
-            }.catch { [weak self] error in
-                guard let self = self else { return }
-                if let error = error as? ClientError {
-                    showAlert(target: self, title: "Connection failure", message: error.domain())
-                } else {
-                    showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
-                }
-                if self.torrentType != nil {
-                    self.populateTorrentTypeSelection()
-                }
+        }.done { [weak self] torrentInfo in
+            self?.showTorrentConfig(name: torrentInfo.name, hash: torrentInfo.hash)
+        }.catch { [weak self] error in
+            guard let self = self else { return }
+            showAlert(target: self, title: "Connection failure", message: error.localizedDescription)
+            if self.torrentType != nil {
+                self.populateTorrentTypeSelection()
+            }
+        }
+    }
+    
+    func handleFormConfigurationFor(torrentURL: URL) {
+        guard let client = ClientManager.shared.activeClient else { return }
+        firstly {
+            client.authenticate()
+        }.then {
+            client.getTorrentInfo(url: torrentURL)
+        }.ensure { [weak self] in
+            if let self = self {
+                MBProgressHUD.hide(for: self.view, animated: true)
+            }
+        }.done { [weak self] output in
+            self?.torrentData = TorrentData.url(torrentURL)
+            self?.showTorrentConfig(name: output.name, hash: output.hash)
+        }.catch { [weak self] _ in
+            guard let self = self else { return }
+            showAlert(target: self, title: "Failure to load magnet URL",
+                      message: "An error occurred while attempting to load the magnet URL")
         }
     }
 
     func handleFormConfigurationFor(magnetURL: URL) {
-        ClientManager.shared.activeClient?.getMagnetInfo(url: magnetURL)
-            .ensure { [weak self] in
-                if let self = self {
-                    DispatchQueue.main.async {
-                        MBProgressHUD.hide(for: self.view, animated: true)
-                    }
-                }
+        guard let client = ClientManager.shared.activeClient else { return }
+        firstly {
+            client.authenticate()
+        }.then {
+            client.getMagnetInfo(url: magnetURL)
+        }.ensure { [weak self] in
+            if let self = self {
+                MBProgressHUD.hide(for: self.view, animated: true)
             }
-            .done { [weak self] output in
-                DispatchQueue.main.async {
-                    self?.torrentData = TorrentData.magnet(magnetURL)
-                    self?.showTorrentConfig(name: output.name, hash: output.hash)
-                }
-            }.catch { [weak self] _ in
-                guard let self = self else { return }
-                DispatchQueue.main.async {
-
-                    showAlert(target: self, title: "Failure to load magnet URL",
-                              message: "An error occurred while attempting to load the magnet URL")
-
-                }
+        }.done { [weak self] output in
+            self?.torrentData = TorrentData.magnet(magnetURL)
+            self?.showTorrentConfig(name: output.name, hash: output.info_hash)
+        }.catch { [weak self] _ in
+            guard let self = self else { return }
+            showAlert(target: self, title: "Failure to load magnet URL",
+                      message: "An error occurred while attempting to load the magnet URL")
         }
     }
 
@@ -172,24 +188,27 @@ class AddTorrentViewController: FormViewController, Storyboarded {
 
             <<< SegmentedRow<String> {
                 $0.tag = CodingKeys.torrentType.rawValue
-                $0.options = ["Magnet Link", "Torrent File"]
+                $0.options = ["URL", "Magnet", "File"]
                 }.onChange { [weak self] row in
                     if let value = row.value, let type = TorrentType(rawValue: value) {
                         self?.torrentType = type
-                        if(type == TorrentType.magnet) {
-                            self?.checkPasteboardForMagnetLink()
+                        switch type {
+                            case .magnet, .url:
+                                self?.inspectPasteboard()
+                            default:
+                                break
                         }
                     }
             }
 
             <<< URLRow {
                 $0.title = "URL:"
-                $0.tag = CodingKeys.magnetURL.rawValue
+                $0.tag = CodingKeys.torrentURL.rawValue
                 $0.validationOptions = .validatesOnBlur
                 $0.hidden = Condition.function([CodingKeys.torrentType.rawValue]) { form in
                     let selection = (form.rowBy(tag: CodingKeys.torrentType.rawValue)
                         as? SegmentedRow<String>)?.value ?? ""
-                    return selection != "Magnet Link"
+                    return selection == "File" || selection == ""
                 }
                 }.cellUpdate { cell, _ in
                     cell.textLabel?.textColor = ColorCompatibility.label
@@ -204,36 +223,42 @@ class AddTorrentViewController: FormViewController, Storyboarded {
 
                     let selection = (form.rowBy(tag: CodingKeys.torrentType.rawValue)
                         as? SegmentedRow<String>)?.value ?? ""
-                    return selection != "Torrent File"
+                    return selection != "File"
                 }
                 }.onCellSelection { [weak self] _, _ in
                     let vc = UIDocumentPickerViewController(
-                        documentTypes: ["io.rudybermudez.deluge.torrent"], in: UIDocumentPickerMode.import
+                        documentTypes: ["io.rudybermudez.Deluge-Remote.torrent"], in: UIDocumentPickerMode.import
                     )
                     vc.delegate = self
                     self?.present(vc, animated: true, completion: nil)
             }
 
             <<< ButtonRow {
-                $0.title = "Parse Magnet Link"
-                $0.disabled = Condition.function([CodingKeys.magnetURL.rawValue]) { form in
-                    return (form.rowBy(tag: CodingKeys.magnetURL.rawValue) as? ButtonRow)?.isValid ?? false
+                $0.title = "Parse URL"
+                $0.disabled = Condition.function([CodingKeys.torrentURL.rawValue]) { form in
+                    return (form.rowBy(tag: CodingKeys.torrentURL.rawValue) as? ButtonRow)?.isValid ?? false
                 }
                 $0.hidden = Condition.function([CodingKeys.torrentType.rawValue]) { form in
                     let selection = (form.rowBy(tag: CodingKeys.torrentType.rawValue)
                         as? SegmentedRow<String>)?.value ?? ""
-                    return selection != "Magnet Link"
+                    return selection == "File" || selection == ""
                 }
                 }.onCellSelection { [weak self] _, _ in
                     guard
-                        let url = self?.form.values()[CodingKeys.magnetURL.rawValue] as? URL
+                        let url = self?.form.values()[CodingKeys.torrentURL.rawValue] as? URL,
+                        let type = (self?.form.rowBy(tag: CodingKeys.torrentType.rawValue)
+                            as? SegmentedRow<String>)?.value
                         else { return }
                     DispatchQueue.main.async {
                         if let view = self?.view {
                             MBProgressHUD.showAdded(to: view, animated: true)
                         }
                     }
-                    self?.handleFormConfigurationFor(magnetURL: url)
+                    if type == "Magnet" {
+                        self?.handleFormConfigurationFor(magnetURL: url)
+                    } else if type == "URL" {
+                        self?.handleFormConfigurationFor(torrentURL: url)
+                    }
         }
     }
 
@@ -479,70 +504,92 @@ class AddTorrentViewController: FormViewController, Storyboarded {
             MBProgressHUD.showAdded(to: self.view, animated: true)
         }
         switch torrentData {
-        case .magnet(let url): addMagnetLink(url: url, hash: torrentHash, config: defaultConfig)
-        case .file(let data): addTorrentFile(fileName: torrentName, hash: torrentHash, data: data, config: defaultConfig)
+            case .magnet(let url): addMagnetLink(url: url, hash: torrentHash, config: defaultConfig)
+            case .file(let data): addTorrentFile(fileName: torrentName, hash: torrentHash, data: data, config: defaultConfig)
+            case .url(let url): addTorrentURL(url: url, hash: torrentHash, config: defaultConfig)
         }
     }
 
     func addTorrentFile(fileName: String, hash: String, data: Data, config: TorrentConfig) {
-        ClientManager.shared.activeClient?.addTorrentFile(fileName: fileName, torrent: data, with: config)
-            .ensure { [weak self] in
-                guard let self = self else { return }
-                DispatchQueue.main.async {
-                    MBProgressHUD.hide(for: self.view, animated: true)
+        guard let client = ClientManager.shared.activeClient else { return }
+        firstly {
+            client.authenticate()
+        }.then {
+            client.addTorrentFile(fileName: fileName, torrent: data, with: config)
+        }.ensure { [weak self] in
+            guard let self = self else { return }
+            MBProgressHUD.hide(for: self.view, animated: true)
+        }
+        .done { [weak self] _ in
+            guard let self = self else { return }
+            self.view.showHUD(title: "Torrent Successfully Added") {
+                if let delegate = self.delegate {
+                    delegate.torrentAdded(hash)
                 }
             }
-            .done { [weak self] _ in
-                guard let self = self else { return }
-                self.view.showHUD(title: "Torrent Successfully Added") {
-                    if let delegate = self.delegate {
-                        delegate.torrentAdded(hash)
-                    }
-                }
-            }.catch { [weak self] _ in
-                guard let self = self else { return }
-                self.view.showHUD(title: "Failed to Add Torrent", type: .failure)
+        }.catch { [weak self] _ in
+            guard let self = self else { return }
+            self.view.showHUD(title: "Failed to Add Torrent", type: .failure)
         }
     }
 
     func addMagnetLink(url: URL, hash: String, config: TorrentConfig) {
-        ClientManager.shared.activeClient?.addTorrentMagnet(url: url, with: config)
-            .ensure { [weak self] in
-                guard let self = self else { return }
-                DispatchQueue.main.async {
-                    MBProgressHUD.hide(for: self.view, animated: true)
+        guard let client = ClientManager.shared.activeClient else { return }
+        firstly {
+            client.authenticate()
+        }.then {
+            client.addTorrentMagnet(url: url, with: config)
+        }.ensure { [weak self] in
+            guard let self = self else { return }
+            MBProgressHUD.hide(for: self.view, animated: true)
+        }.done { [weak self] _ in
+            guard let self = self else { return }
+            self.view.showHUD(title: "Torrent Successfully Added") {
+                if let delegate = self.delegate {
+                    delegate.torrentAdded(hash)
                 }
             }
-            .done { [weak self] _ in
-                guard let self = self else { return }
-                self.view.showHUD(title: "Torrent Successfully Added") {
-                    if let delegate = self.delegate {
-                        delegate.torrentAdded(hash)
-                    }
+        }.catch { [weak self] _ in
+            guard let self = self else { return }
+            self.view.showHUD(title: "Failed to Add Torrent", type: .failure)
+        }
+    }
+    
+    func addTorrentURL(url: URL, hash: String, config: TorrentConfig) {
+        guard let client = ClientManager.shared.activeClient else { return }
+        firstly {
+            client.authenticate()
+        }.then {
+            client.addTorrentURL(url, with: config)
+        }.ensure { [weak self] in
+            guard let self = self else { return }
+            MBProgressHUD.hide(for: self.view, animated: true)
+        }.done { [weak self] _ in
+            guard let self = self else { return }
+            self.view.showHUD(title: "Torrent Successfully Added") {
+                if let delegate = self.delegate {
+                    delegate.torrentAdded(hash)
                 }
-            }.catch { [weak self] _ in
-                guard let self = self else { return }
-                self.view.showHUD(title: "Failed to Add Torrent", type: .failure)
+            }
+        }.catch { [weak self] _ in
+            guard let self = self else { return }
+            self.view.showHUD(title: "Failed to Add Torrent", type: .failure)
         }
     }
 
     func getTorrentConfig() {
         guard let client = ClientManager.shared.activeClient else { return }
 
-        attempt { client.authenticateAndConnect() }
+        firstly { client.authenticate() }
         .then { client.getAddTorrentConfig() }
         .done { [weak self] config in
             self?.defaultConfig = config
             self?.form.sectionBy(tag: CodingKeys.bandwidthConfig.rawValue)?.allRows.forEach { $0.updateCell() }
             self?.form.sectionBy(tag: CodingKeys.queueConfig.rawValue)?.allRows.forEach { $0.updateCell() }
-        }.catch { [weak self] _ in
-                let dismiss = UIAlertAction(title: "Ok", style: .default) { _ in
-                    self?.navigationController?.popViewController(animated: true)
-                }
-                guard let self = self else { return }
-                showAlert(target: self, title: "Failure to load config",
-                          message: "An error occurred while attempting to load in the default torrent configuration", actionList: [dismiss])
-                // swiftlint:disable:previous line_length
+        }.catch { error in
+            let banner = FloatingNotificationBanner(title: "Client Error", subtitle: error.localizedDescription, style: .danger)
+            banner.show()
+            Logger.error(error)
         }
     }
 

@@ -12,7 +12,7 @@ struct TorrentMetadata: Decodable {
     let active_time: Double?
     let all_time_download: Int?
     let compact: Bool?
-    let distributed_copies: Double
+    let distributed_copies: Double?
     let download_payload_rate: Int
     let file_priorities: [Double]
     let hash: String
@@ -91,14 +91,14 @@ struct PeerMetadata: Decodable {
 
 struct TrackerMetadata: Decodable {
     let send_stats: Bool?
-    let fails: Int
-    let verified: Bool
+    let fails: Int?
+    let verified: Bool?
     let scrape_incomplete: Int?
     let min_announce: Int?
     let scrape_downloaded: Int?
     let url: String
     let last_error: ErrorMetadata?
-    let fail_limit: Int
+    let fail_limit: Int?
     let next_announce: Int?
     let complete_sent: Bool
     let source: Int

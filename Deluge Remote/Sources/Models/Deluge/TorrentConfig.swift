@@ -34,10 +34,9 @@ struct TorrentConfig: Decodable {
     }
 
     func toParams() -> JSON {
-        return [
+        var params: JSON = [
             "file_priorities": [],
             "add_paused": addPaused,
-            "compact_allocation": compactAllocation,
             "move_completed": moveCompleted,
             "download_location": downloadLocation,
             "move_completed_path": moveCompletedPath,
@@ -47,5 +46,9 @@ struct TorrentConfig: Decodable {
             "max_upload_speed": maxUploadSpeed,
             "prioritize_first_last_pieces": prioritizeFirstLastPieces
         ]
+        if let compactAllocation = compactAllocation {
+            params["compact_allocation"] = compactAllocation
+        }
+        return params
     }
 }

@@ -28,6 +28,17 @@ struct DelugeResponse<T: Decodable>: Decodable {
 struct DelugeError: Decodable {
     let message: String
     let code: Int
+    
+    init?(json: JSON) {
+        guard
+            let error = json["error"] as? JSON,
+            let message = error["message"] as? String,
+            let code = error["code"] as? Int
+        else { return nil }
+        
+        self.message = message
+        self.code = code
+    }
 }
 
 // MARK: - Deluge Bool
