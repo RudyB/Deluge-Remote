@@ -453,7 +453,13 @@
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="hostnameTextField" destination="SIf-P6-25J" id="zmL-AD-veC"/>
+                        <outlet property="networkSecurityControl" destination="CxY-rK-tfD" id="fEF-3p-3Pa"/>
                         <outlet property="nicknameTextField" destination="gR7-yB-iAd" id="VKL-b6-bSU"/>
+                        <outlet property="passwordTextField" destination="222-3p-ANZ" id="u0W-CX-XZx"/>
+                        <outlet property="portTableViewCell" destination="n1Z-TI-abn" id="9iA-pg-Jmv"/>
+                        <outlet property="portTextField" destination="QiW-cq-Ryr" id="4oW-xR-wUq"/>
+                        <outlet property="relativePathTextField" destination="IUq-f6-n0a" id="bWC-a0-gxo"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TwL-zY-yej" userLabel="First Responder" sceneMemberID="firstResponder"/>

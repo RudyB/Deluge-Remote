@@ -42,9 +42,18 @@ class AddClientViewController: UITableViewController, Storyboarded {
             let relativePath = relativePathTextField.text
         else { return }
         
-        if nickname.isEmpty { showAlert(target: self, title: "Nickname cannot be left empty")}
-        if hostname.isEmpty { showAlert(target: self, title: "Hostname cannot be empty")}
-        if portString.isEmpty { showAlert(target: self, title: "Port cannot be empty")}
+        if nickname.isEmpty {
+            showAlert(target: self, title: "Nickname cannot be left empty")
+            return
+        }
+        if hostname.isEmpty {
+            showAlert(target: self, title: "Hostname cannot be empty")
+            return
+        }
+        if portString.isEmpty {
+            showAlert(target: self, title: "Port cannot be empty")
+            return
+        }
         
         guard let port = Int(portString) else {
             showAlert(target: self, title: "Port must be a numeric type")
