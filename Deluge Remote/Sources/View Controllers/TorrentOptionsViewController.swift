@@ -130,6 +130,21 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
         }
     }
     
+    func forceRecheck() {
+        guard let torrentHash = self.torrentData?.hash else { return }
+        hapticEngine.prepare()
+        ClientManager.shared.activeClient?.recheckTorrent(hash: torrentHash)
+            .done { [weak self] _ in
+                self?.hapticEngine.notificationOccurred(.success)
+                self?.view.showHUD(title: "Rechecking Torrent", type: .success)
+            }
+            .catch { [weak self] error -> Void in
+                self?.hapticEngine.notificationOccurred(.error)
+                self?.view.showHUD(title: "Unable to recheck torrent", type: .failure)
+                Logger.error(error)
+            }
+    }
+    
     func moveStorage() {
         let alert = UIAlertController(title: "Move Torrent", message: "Please enter a new directory",
                                       preferredStyle: .alert)
@@ -242,6 +257,13 @@ extension TorrentOptionsViewController {
                 $0.disabled = Condition(booleanLiteral: torrentData == nil)
             }.onCellSelection { [weak self] _, _ in
                 self?.moveStorage()
+            }
+            <<< ButtonRow {
+                $0.title = "Force Recheck"
+                $0.tag = "RecheckBtn"
+                $0.disabled = Condition(booleanLiteral: torrentData == nil)
+            }.onCellSelection { [weak self] _, _ in
+                self?.forceRecheck()
             }
             <<< ButtonRow {
                 $0.title = "Delete Torrent"

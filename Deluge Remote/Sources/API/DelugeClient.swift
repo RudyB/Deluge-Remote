@@ -146,7 +146,7 @@ class DelugeClient {
      
      */
     private func _authenticate() -> Promise<Bool> { return Promise { seal in
-        Manager.request(DelugeRouter.login(clientConfig))
+        Manager.request(DelugeRouter(.login(clientConfig.password), clientConfig))
             .validate().responseDecodable(of: DelugeResponse<Bool?>.self, queue: self.queue) { response in
             switch response.result {
                 case .success(let data):
@@ -167,7 +167,7 @@ class DelugeClient {
     }
     
     func isConnected() -> Promise<Bool> { return Promise { seal in
-        Manager.request(DelugeRouter.isConnected(self.clientConfig))
+        Manager.request(DelugeRouter(.isConnected, clientConfig))
             .validate().responseDecodable(of: DelugeResponse<Bool?>.self, queue: self.queue) { response in
                 switch response.result {
                     case .success(let data):
@@ -188,7 +188,7 @@ class DelugeClient {
     }
     
     func checkAuth() -> Promise <Bool> { return Promise { seal in
-        Manager.request(DelugeRouter.checkAuth(self.clientConfig))
+        Manager.request(DelugeRouter(.checkAuth, clientConfig))
             .validate().responseDecodable(of: DelugeResponse<Bool?>.self, queue: self.queue) { response in
                 switch response.result {
                     case .success(let data):
@@ -219,7 +219,7 @@ class DelugeClient {
      - Returns: A `Promise` embedded with an instance of `Torrent`
      */
     func getTorrentDetails(withHash hash: String) -> Promise<TorrentMetadata> { return Promise { seal in
-        Manager.request(DelugeRouter.getMetadata(clientConfig, hash: hash))
+        Manager.request(DelugeRouter(.getMetadata(hash), clientConfig))
             .validate().responseDecodable(of: DelugeResponse<TorrentMetadata?>.self, queue: queue) { response in
                 switch response.result {
                     case .success(let data):
@@ -241,6 +241,7 @@ class DelugeClient {
                             seal.reject(ClientError.decoding)
                         } else {
                             Logger.error(error)
+                            seal.reject(ClientError.other(error))
                         }
                 }
             }
@@ -258,7 +259,7 @@ class DelugeClient {
      - Returns: A `Promise` embedded with an instance of `TorrentFileStructure`
      */
     func getTorrentFiles(withHash hash: String) -> Promise<TorrentFileStructure?> { return Promise { seal in
-        self.Manager.request(DelugeRouter.getFiles(clientConfig, hash: hash))
+        self.Manager.request(DelugeRouter(.getFiles(hash), clientConfig))
             .validate().responseJSON(queue: self.queue) { response in
                 switch response.result {
                     case .success(let data):
@@ -288,7 +289,7 @@ class DelugeClient {
      - Returns: A `Promise` embedded with a TableViewTorrent
      */
     func getAllTorrents() -> Promise<[TorrentOverview]> { return Promise { seal in
-        Manager.request(DelugeRouter.getOverview(clientConfig))
+        Manager.request(DelugeRouter(.getOverview, clientConfig))
             .validate().responseDecodable(of: DelugeResponse<[String: TorrentOverview]?>.self, queue: self.queue){ response in
                 switch response.result {
                     case .success(let data):
@@ -312,6 +313,7 @@ class DelugeClient {
                             seal.reject(ClientError.decoding)
                         } else {
                             Logger.error(error)
+                            seal.reject(ClientError.other(error))
                         }
                 }
             }
@@ -326,7 +328,7 @@ class DelugeClient {
      This block returns a `Promis<Void>`
      */
     func pauseTorrent(withHash hash: String) -> Promise<Void>{ return Promise { seal in
-        Manager.request(DelugeRouter.pause(clientConfig, hash: hash))
+        Manager.request(DelugeRouter(.pause(hash), clientConfig))
             .validate().response(queue: self.queue) { response in
                 switch response.result {
                     case .success: seal.fulfill(())
@@ -342,7 +344,7 @@ class DelugeClient {
      - precondition: `DelugeClient.authenticate()` must have been called or else `APIResult` will fail with an error
      */
     func pauseAllTorrents() -> Promise<Void> { return Promise { seal in
-        Manager.request(DelugeRouter.pauseAllTorrents(clientConfig))
+        Manager.request(DelugeRouter(.pauseAllTorrents, clientConfig))
             .validate().response(queue: self.queue) { response in
                 switch response.result {
                     case .success: seal.fulfill(())
@@ -361,13 +363,14 @@ class DelugeClient {
      - hash: the hash as a `String` of the torrent the user would like to resume
      */
     func resumeTorrent(withHash hash: String) -> Promise<Void> { return Promise { seal in
-        Manager.request(DelugeRouter.resume(clientConfig, hash: hash)).validate().response(queue: self.queue) { response in
-            switch response.result {
-                case .success: seal.fulfill(())
-                case .failure(let error): seal.reject(ClientError.other(error))
+        Manager.request(DelugeRouter(.resume(hash), clientConfig))
+            .validate().response(queue: self.queue) { response in
+                switch response.result {
+                    case .success: seal.fulfill(())
+                    case .failure(let error): seal.reject(ClientError.other(error))
+                }
             }
         }
-    }
     }
 
     /**
@@ -376,7 +379,7 @@ class DelugeClient {
      - precondition: `DelugeClient.authenticate()` must have been called or else `APIResult` will fail with an error
      */
     func resumeAllTorrents() -> Promise<Void> { return Promise { seal in
-        Manager.request(DelugeRouter.resumeAllTorrents(clientConfig))
+        Manager.request(DelugeRouter(.resumeAllTorrents, clientConfig))
             .validate().responseJSON(queue: queue) { response in
                 switch response.result {
                     case .success: seal.fulfill(())
@@ -401,7 +404,7 @@ class DelugeClient {
      */
     func removeTorrent(withHash hash: String, removeData: Bool) -> Promise<Bool> { return Promise { seal in
         
-        Manager.request(DelugeRouter.removeTorrent(clientConfig, hash: hash, withData: removeData))
+        Manager.request(DelugeRouter(.removeTorrent( hash, removeData), clientConfig))
             .validate().responseJSON(queue: self.queue) { response in
                 switch response.result {
                     case .success(let data):
@@ -427,7 +430,7 @@ class DelugeClient {
     /// Returns the hash
     func addTorrentMagnet(url: URL, with config: TorrentConfig) -> Promise<String> { return Promise { seal in
         // TODO: Add File Priorities
-        Manager.request(DelugeRouter.addTorrentMagnet(clientConfig, url, config: config))
+        Manager.request(DelugeRouter(.addTorrentMagnet(url, config), clientConfig))
             .validate().responseDecodable(of: DelugeResponse<String>?.self, queue: self.queue) { response in
                 switch response.result {
                     case .success(let data):
@@ -447,7 +450,7 @@ class DelugeClient {
     }
 
     func getMagnetInfo(url: URL) -> Promise<MagnetInfo> { return Promise { seal in
-            Manager.request(DelugeRouter.getMagnetInfo(clientConfig, url))
+            Manager.request(DelugeRouter(.getMagnetInfo(url), clientConfig))
                 .validate().responseDecodable(of: DelugeResponse<MagnetInfo>?.self, queue: self.queue) { response in
                     switch response.result {
                     case .success(let data):
@@ -468,7 +471,7 @@ class DelugeClient {
     }
     
     func downloadTorrent(from url: URL)-> Promise<String> { return Promise { seal in
-        Manager.request(DelugeRouter.downloadTorrent(clientConfig, from: url))
+        Manager.request(DelugeRouter(.downloadTorrent(url), clientConfig))
             .validate().responseDecodable(of: DelugeResponse<String>?.self, queue: self.queue) { response in
                 switch response.result {
                     case .success(let data):
@@ -488,7 +491,7 @@ class DelugeClient {
     }
 
     func addTorrentURL(_ url: URL, with config: TorrentConfig) -> Promise<String> { return Promise { seal in
-        Manager.request(DelugeRouter.addTorrentURL(clientConfig, url, config))
+        Manager.request(DelugeRouter(.addTorrentURL(url, config), clientConfig))
             .validate().responseDecodable(of: DelugeResponse<String>?.self, queue: self.queue) { response in
                 switch response.result {
                     case .success(let data):
@@ -508,7 +511,7 @@ class DelugeClient {
     }
     
     func addTorrentFile(fileName: String, torrent: Data, with config: TorrentConfig) -> Promise<String> { return Promise { seal in
-        Manager.request(DelugeRouter.addTorrentFile(self.clientConfig, filename: fileName, data: torrent, config: config))
+        Manager.request(DelugeRouter(.addTorrentFile(fileName, torrent, config), clientConfig))
             .validate().responseDecodable(of: DelugeResponse<String>?.self, queue: self.queue) { response in
                 switch response.result {
                     case .success(let data):
@@ -559,7 +562,7 @@ class DelugeClient {
     func getTorrentInfo(torrent: Data) -> Promise<UploadedTorrentInfo> { return Promise { seal in
             firstly { upload(torrentData: torrent) }
                 .done { fileName in
-                    self.Manager.request(DelugeRouter.getUploadedTorrentInfo(self.clientConfig, filename: fileName))
+                    self.Manager.request(DelugeRouter(.getUploadedTorrentInfo(fileName), self.clientConfig))
                         .validate().responseJSON(queue: self.queue) { response in
                             switch response.result {
                             case .success(let json):
@@ -586,7 +589,7 @@ class DelugeClient {
     func getTorrentInfo(url: URL) -> Promise<UploadedTorrentInfo> { return Promise { seal in
             firstly { downloadTorrent(from: url) }
                 .done { fileName in
-                    self.Manager.request(DelugeRouter.getUploadedTorrentInfo(self.clientConfig, filename: fileName))
+                    self.Manager.request(DelugeRouter(.getUploadedTorrentInfo(fileName), self.clientConfig))
                         .validate().responseJSON(queue: self.queue) { response in
                             switch response.result {
                             case .success(let json):
@@ -611,7 +614,7 @@ class DelugeClient {
     }
 
     func getAddTorrentConfig() -> Promise<TorrentConfig> { return Promise { seal in
-        Manager.request(DelugeRouter.getDefaultTorrentConfig(self.clientConfig))
+        Manager.request(DelugeRouter(.getDefaultTorrentConfig, clientConfig))
                 .validate().responseDecodable(of: DelugeResponse<TorrentConfig?>.self, queue: queue) { response in
                     switch response.result {
                     case .success(let data):
@@ -633,7 +636,7 @@ class DelugeClient {
 
     func setTorrentOptions(hash: String, options: JSON) -> Promise<Void> {
         return Promise { seal in
-            Manager.request(DelugeRouter.setTorrentOptions(self.clientConfig, hash: hash, options))
+            Manager.request(DelugeRouter(.setTorrentOptions(hash, options), clientConfig))
                 .validate().response { response in
                     if let error = response.error {
                         seal.reject(error)
@@ -645,7 +648,7 @@ class DelugeClient {
     }
 
     func moveTorrent(hash: String, filepath: String) -> Promise<Void> { return Promise { seal in
-        Manager.request(DelugeRouter.moveTorrent(self.clientConfig, hash: hash, filePath: filepath))
+        Manager.request(DelugeRouter(.moveTorrent(hash, filepath), clientConfig))
             .validate().response { response in
                 if let error = response.error {
                     seal.reject(error)
@@ -655,9 +658,36 @@ class DelugeClient {
             }
     }
     }
+    
+    func recheckTorrent(hash: String) -> Promise<Void> { return Promise { seal in
+        Manager.request(DelugeRouter(.forceRecheck(hash),clientConfig))
+            .validate().responseDecodable(of: DelugeResponse<Bool?>.self, queue: queue) { response in
+                switch response.result {
+                    case .success(let data):
+                        if let error = data.error {
+                            Logger.error(ClientError.apiError(error))
+                            seal.reject(ClientError.apiError(error))
+                        } else {
+                            seal.fulfill(())
+                        }
+                    case .failure(let error):
+                        if error.isRequestRetryError {
+                            Logger.error(ClientError.other(error))
+                            seal.reject(ClientError.other(error))
+                        } else if error.isResponseSerializationError {
+                            Logger.error(error)
+                            seal.reject(ClientError.decoding)
+                        } else {
+                            Logger.error(error)
+                            seal.reject(ClientError.other(error))
+                        }
+                }
+            }
+        }
+    }
 
     func getHosts() -> Promise<[Host]> { return Promise { seal in
-        Manager.request(DelugeRouter.getHosts(self.clientConfig))
+        Manager.request(DelugeRouter(.getHosts, clientConfig))
             .validate().responseJSON(queue: queue) { response in
                 switch response.result {
                     case .failure(let error):
@@ -679,7 +709,7 @@ class DelugeClient {
     }
 
     func getHostStatus(for host: Host) -> Promise<HostStatus> { return Promise { seal in
-        Manager.request(DelugeRouter.getHostStatus(clientConfig, host))
+        Manager.request(DelugeRouter(.getHostStatus(host), clientConfig))
                 .validate().responseJSON(queue: queue) { response in
                     switch response.result {
                     case .failure(let error):
@@ -702,7 +732,7 @@ class DelugeClient {
     }
     
     func connect(to host: Host) -> Promise<Void> { return Promise { seal in
-        Manager.request(DelugeRouter.connect(clientConfig, host))
+        Manager.request(DelugeRouter(.connect(host), clientConfig))
             .validate().responseJSON(queue: queue) { response in
                 switch response.result {
                     case .failure(let error):
@@ -723,7 +753,7 @@ class DelugeClient {
     @discardableResult
     func getSessionStatus() -> Promise<SessionStatus> { return Promise { seal in
 
-        Manager.request(DelugeRouter.getSessionStatus(self.clientConfig))
+        Manager.request(DelugeRouter(.getSessionStatus, clientConfig))
                 .validate().responseDecodable(of: DelugeResponse<SessionStatus?>.self, queue: queue) { response in
                     switch response.result {
                     case .success(let data):
