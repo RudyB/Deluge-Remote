@@ -9,200 +9,145 @@
 import Foundation
 import Alamofire
 
-enum DelugeRouter: URLRequestConvertible {
+
+struct DelugeRouter: URLRequestConvertible {
+    
+    private var route: DelugeRoute
+    private var config: ClientConfig
+    
+    init(_ route: DelugeRoute, _ config: ClientConfig) {
+        self.route = route
+        self.config =  config
+    }
+    
+    func asURLRequest() throws -> URLRequest {
+        let request = try URLRequest(url: config.url, method: route.method)
+        let encoding = Alamofire.JSONEncoding.default
+        return try encoding.encode(request, with: route.parameters)
+    }
+}
+
+enum DelugeRoute {
     
     /// Authenticate to the Deluge API
-    case login(ClientConfig)
+    case login(_ password: String)
     
-    case checkAuth(ClientConfig)
+    case checkAuth
     
-    case isConnected(ClientConfig)
+    case isConnected
     
     /// Get `TorrentMetadata`
-    case getMetadata(ClientConfig,hash: String)
+    case getMetadata(_ hash: String)
     
     /// Get `TorrentFileStructure`
-    case getFiles(ClientConfig, hash: String)
+    case getFiles(_ hash: String)
     
     /// Get `TorrentOverview`
-    case getOverview(ClientConfig)
+    case getOverview
     
     /// Pause all torrents on the server
-    case pauseAllTorrents(ClientConfig)
+    case pauseAllTorrents
     
     /// Pause an individual torrent
-    case pause(ClientConfig, hash: String)
+    case pause(_ hash: String)
     
     /// Resume all torrents on the server
-    case resumeAllTorrents(ClientConfig)
+    case resumeAllTorrents
     
     /// Resume an individual torrent
-    case resume(ClientConfig, hash: String)
+    case resume(_ hash: String)
     
     /// Remove a torrent from the server
-    case removeTorrent(ClientConfig, hash: String, withData: Bool)
+    case removeTorrent(_ hash: String, _ withData: Bool)
     
     /// Add a magnet URL to the server
-    case addTorrentMagnet(ClientConfig, URL, config: TorrentConfig)
+    case addTorrentMagnet(URL, TorrentConfig)
     
     /// Get metadata about a magnet link
-    case getMagnetInfo(ClientConfig, URL)
+    case getMagnetInfo(URL)
     
     /// Add a torrent file to the server
-    case addTorrentFile(ClientConfig, filename: String, data: Data, config: TorrentConfig)
+    case addTorrentFile(_ filename: String, Data, TorrentConfig)
     
     /// Adds a torrent to the server from a URL
-    case addTorrentURL(ClientConfig, URL, TorrentConfig)
+    case addTorrentURL(URL, TorrentConfig)
     
-    case downloadTorrent(ClientConfig, from: URL)
+    case downloadTorrent(URL)
     
     /// Upload a torrent to the server
     ///
     /// **Note**: This does not add the torrent to the client
-    case uploadTorrentFile(ClientConfig, Data)
+    case uploadTorrentFile(Data)
     
     /// Get metadata about a torrent that was uploaded to the server
-    case getUploadedTorrentInfo(ClientConfig, filename: String)
+    case getUploadedTorrentInfo(_ filename: String)
     
     /// Get the default torrent configuration
-    case getDefaultTorrentConfig(ClientConfig)
+    case getDefaultTorrentConfig
     
     /// Set the  options for a torrent
-    case setTorrentOptions(ClientConfig, hash: String, JSON)
+    case setTorrentOptions(_ hash: String, _ params: JSON)
     
     /// Move a torrents filepath
-    case moveTorrent(ClientConfig, hash: String, filePath: String)
+    case moveTorrent(_ hash: String, _ filePath: String)
+    
+    case forceRecheck(_ hash: String)
     
     /// Get all the hosts on the server
-    case getHosts(ClientConfig)
+    case getHosts
     
     /// Get the status of a host
-    case getHostStatus(ClientConfig,Host)
+    case getHostStatus(Host)
     
     /// Connect to a server
-    case connect(ClientConfig,Host)
+    case connect(Host)
     
     /// Get sessus status
-    case getSessionStatus(ClientConfig)
+    case getSessionStatus
     
     
-    // MARK: - HTTPMethod
-    private var method: HTTPMethod {
-        /// Every method is a post method
-        return .post
-    }
-    
-    private func paramsFor(method: String, with params: Any) -> Parameters {
-        return [
-            "id": id,
-            "method": method,
-            "params": params
-        ]
-    }
-    
-    private var baseURL: URL {
-        switch self {
-            case .login(let config):
-                return config.url
-            case .checkAuth(let config):
-                return config.url
-            case .isConnected(let config):
-                return config.url
-            case .getMetadata(let config, hash: _):
-                return config.url
-            case .getFiles(let config, hash: _):
-                return config.url
-            case .getOverview(let config):
-                return config.url
-            case .pauseAllTorrents(let config):
-                return config.url
-            case .pause(let config, hash: _):
-                return config.url
-            case .resumeAllTorrents(let config):
-                return config.url
-            case .resume(let config, hash: _):
-                return config.url
-            case .removeTorrent(let config, hash: _, withData: _):
-                return config.url
-            case .addTorrentMagnet(let config, _, config: _):
-                return config.url
-            case .getMagnetInfo(let config, _):
-                return config.url
-            case .addTorrentFile(let config, filename: _, data: _, config: _):
-                return config.url
-            case .addTorrentURL(let config, _, _):
-                return config.url
-            case .downloadTorrent(let config, from: _):
-                return config.url
-            case .uploadTorrentFile(let config, _):
-                return config.url
-            case .getUploadedTorrentInfo(let config, filename: _):
-                return config.url
-            case .getDefaultTorrentConfig(let config):
-                return config.url
-            case .setTorrentOptions(let config, hash: _, _):
-                return config.url
-            case .moveTorrent(let config, hash: _, filePath: _):
-                return config.url
-            case .getHosts(let config):
-                return config.url
-            case .getHostStatus(let config, _):
-                return config.url
-            case .connect(let config, _):
-                return config.url
-            case .getSessionStatus(let config):
-                return config.url
-        }
+    // MARK:- Helpers
+    fileprivate var method: HTTPMethod {
+        // Every method is a post method
+        switch self { default: return .post }
     }
     
     // MARK: - Parameters
-    private var parameters: Parameters? {
+    fileprivate var parameters: Parameters? {
         
         switch self {
-            case .login(let config):
-                return paramsFor( method: "auth.login", with: [config.password])
-            case .checkAuth(_):
-                return paramsFor(method: "auth.check_session", with: [])
-            case .isConnected(_):
-                return paramsFor(method: "web.connected", with: [])
-            case .getMetadata(_, hash: let hash):
-                return paramsFor(method: "core.get_torrent_status", with: [hash, []])
-            case .getFiles(_, hash: let hash):
-                return paramsFor(method: "web.get_torrent_files", with: [hash])
-            case .getOverview(_):
-                return paramsFor(method: "core.get_torrents_status",
-                                 with: [[], ["name", "hash", "upload_payload_rate",
-                                             "download_payload_rate", "ratio",
-                                             "progress", "total_wanted", "state",
-                                             "tracker_host", "label", "eta",
-                                             "total_size", "all_time_download",
-                                             "total_uploaded", "time_added", "paused"]])
-            case .pause(_, hash: let hash):
-                return paramsFor(method: "core.pause_torrent", with: [[hash]])
-            case .pauseAllTorrents(_):
-                return paramsFor(method: "core.pause_all_torrents", with: [])
-            case .resumeAllTorrents(_):
-                return paramsFor(method: "core.resume_all_torrents", with: [])
-            case .resume(_, hash: let hash):
-                return paramsFor(method: "core.resume_torrent", with: [[hash]])
-            case .removeTorrent(_, hash: let hash, withData: let withData):
-                return paramsFor(method: "core.remove_torrent", with: [hash, withData])
-            case .addTorrentMagnet(_, let url, config: let config):
-                return paramsFor(method: "core.add_torrent_magnet", with: [url.absoluteString, config.toParams()])
-            case .downloadTorrent(_, from: let url):
-                return paramsFor(method: "web.download_torrent_from_url", with: [url.absoluteString, []])
-            case .addTorrentURL(_, let url, let config):
-                return paramsFor(method: "core.add_torrent_url", with: [url.absoluteString, config.toParams()])
-            case .getMagnetInfo(_, let url):
-                return paramsFor(method: "web.get_magnet_info", with: [url.absoluteString])
-            case .addTorrentFile(_, filename: let filename, data: let data, config: let config):
-                return paramsFor(method: "core.add_torrent_file", with: [filename, data.base64EncodedString(), config.toParams()])
-            case .uploadTorrentFile(_,_):
-                return nil
-            case .getUploadedTorrentInfo(_, let filename):
-                return paramsFor(method: "web.get_torrent_info", with: [filename])
-            case .getDefaultTorrentConfig(_):
-                return paramsFor(method: "core.get_config_values", with: [[
+            case .login(let password):      return params(for: "auth.login", with: [password])
+            case .checkAuth:                return params(for: "auth.check_session", with: [])
+            case .isConnected:              return params(for: "web.connected", with: [])
+            case .getMetadata(let hash):    return params(for: "core.get_torrent_status", with: [hash, []])
+            case .getFiles(let hash):       return params(for: "web.get_torrent_files", with: [hash])
+            case .pause(let hash):          return params(for: "core.pause_torrent", with: [[hash]])
+            case .pauseAllTorrents:         return params(for: "core.pause_all_torrents", with: [])
+            case .resumeAllTorrents:        return params(for: "core.resume_all_torrents", with: [])
+            case .resume(let hash):         return params(for: "core.resume_torrent", with: [[hash]])
+            case .downloadTorrent(let url): return params(for: "web.download_torrent_from_url", with: [url.absoluteString, []])
+            case .getMagnetInfo(let url):   return params(for: "web.get_magnet_info", with: [url.absoluteString])
+            case .forceRecheck(let hash):   return params(for: "core.force_recheck", with: [[hash]]);
+            case .getHosts:                 return params(for: "web.get_hosts", with: [])
+            case .getHostStatus(let host):  return params(for:"web.get_host_status", with: [host.id])
+            case .connect( let host):       return params(for: "web.connect", with: [host.id])
+            case .uploadTorrentFile(_):     return nil
+            case .setTorrentOptions(let hash, let options):
+                return params(for: "core.set_torrent_options", with: [[hash], options])
+            case .moveTorrent( let hash, let filePath):
+                return params(for:"core.move_storage", with: [[hash], filePath])
+            case .removeTorrent( let hash, let withData):
+                return params(for: "core.remove_torrent", with: [hash, withData])
+            case .addTorrentMagnet(let url, let config):
+                return params(for: "core.add_torrent_magnet", with: [url.absoluteString, config.toParams()])
+            case .addTorrentURL(let url, let config):
+                return params(for: "core.add_torrent_url", with: [url.absoluteString, config.toParams()])
+            case .addTorrentFile( let filename, let data, let config):
+                return params(for: "core.add_torrent_file", with: [filename, data.base64EncodedString(), config.toParams()])
+            case .getUploadedTorrentInfo(let filename):
+                return params(for: "web.get_torrent_info", with: [filename])
+            case .getDefaultTorrentConfig:
+                return params(for: "core.get_config_values", with: [[
                     "add_paused",
                     "compact_allocation",
                     "download_location",
@@ -214,18 +159,16 @@ enum DelugeRouter: URLRequestConvertible {
                     "max_upload_speed_per_torrent",
                     "prioritize_first_last_pieces"
                     ]])
-            case .setTorrentOptions(_,hash: let hash, let options):
-                return paramsFor(method: "core.set_torrent_options", with: [[hash], options])
-            case .moveTorrent(_,hash: let hash, filePath: let filePath):
-                return paramsFor(method: "core.move_storage", with: [[hash], filePath])
-            case .getHosts(_):
-                return paramsFor(method: "web.get_hosts", with: [])
-            case .getHostStatus(_, let host):
-                return paramsFor(method: "web.get_host_status", with: [host.id])
-            case .connect(_, let host):
-                return paramsFor(method: "web.connect", with: [host.id])
-            case .getSessionStatus(_):
-                return paramsFor(method: "core.get_session_status", with: [[
+            case .getOverview:
+                return params(for: "core.get_torrents_status",
+                                 with: [[], ["name", "hash", "upload_payload_rate",
+                                             "download_payload_rate", "ratio",
+                                             "progress", "total_wanted", "state",
+                                             "tracker_host", "label", "eta",
+                                             "total_size", "all_time_download",
+                                             "total_uploaded", "time_added", "paused"]])
+            case .getSessionStatus:
+                return params(for: "core.get_session_status", with: [[
                     "has_incoming_connections",
                     "upload_rate",
                     "download_rate",
@@ -269,10 +212,11 @@ enum DelugeRouter: URLRequestConvertible {
     private var id: UInt32 {
         return arc4random()
     }
-    
-    func asURLRequest() throws -> URLRequest {
-        let request = try URLRequest(url: baseURL, method: method)
-        let encoding = Alamofire.JSONEncoding.default
-        return try encoding.encode(request, with: parameters)
+    private func params(for method: String, with options: Any) -> Parameters {
+        return [
+            "id": id,
+            "method": method,
+            "params": options
+        ]
     }
 }
