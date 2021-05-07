@@ -44,39 +44,45 @@ fileprivate class MainSection: TableViewSection {
     
     init() {
         super.init()
-        cells.append(MenuCell(label: "Alamofire", icon: UIImage(named: "menu/github")) {
-            UIApplication.shared.open(URL(string: "https://github.com/Alamofire/Alamofire")!)
-        })
-        cells.append(MenuCell(label: "ActiveLabel", icon: UIImage(named: "menu/github")){
-            UIApplication.shared.open(URL(string: "https://github.com/optonaut/ActiveLabel.swift")!)
-        })
-        cells.append(MenuCell(label: "BarMagnet", icon: UIImage(named: "menu/github")){
-            UIApplication.shared.open(URL(string: "https://github.com/Qata/BarMagnet")!)
-        })
-        cells.append(MenuCell(label: "Eureka", icon: UIImage(named: "menu/github")){
-            UIApplication.shared.open(URL(string: "https://github.com/xmartlabs/Eureka")!)
-        })
-        cells.append(MenuCell(label: "ExpandableCollectionViewKit", icon: UIImage(named: "menu/github")){
-            UIApplication.shared.open(URL(string: "https://github.com/jVirus/expandable-collection-view-kit")!)
-        })
-        cells.append(MenuCell(label: "Houston", icon: UIImage(named: "menu/github")){
-            UIApplication.shared.open(URL(string: "https://github.com/RudyB/Houston")!)
-        })
-        cells.append(MenuCell(label: "IQKeyboardManager", icon: UIImage(named: "menu/github")){
-            UIApplication.shared.open(URL(string: "https://github.com/hackiftekhar/IQKeyboardManager")!)
-        })
-        cells.append(MenuCell(label: "MBProgressHUD", icon: UIImage(named: "menu/github")){
-            UIApplication.shared.open(URL(string: "https://github.com/jdg/MBProgressHUD")!)
-        })
-        cells.append(MenuCell(label: "NotificationBanner", icon: UIImage(named: "menu/github")){
-            UIApplication.shared.open(URL(string: "https://github.com/Daltron/NotificationBanner")!)
-        })
-        cells.append(MenuCell(label: "PromiseKit", icon: UIImage(named: "menu/github")){
-            UIApplication.shared.open(URL(string: "https://github.com/mxcl/PromiseKit")!)
-        })
-        cells.append(MenuCell(label: "Valet", icon: UIImage(named: "menu/github")){
-            UIApplication.shared.open(URL(string: "https://github.com/square/Valet")!)
-        })
+        
+        cells = [
+            MenuCell(label: "Alamofire", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/Alamofire/Alamofire")!)},
+            
+            MenuCell(label: "ActiveLabel", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/optonaut/ActiveLabel.swift")!)},
+            
+            MenuCell(label: "BarMagnet", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/Qata/BarMagnet")!)},
+            
+            MenuCell(label: "Eureka", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/xmartlabs/Eureka")!)},
+            
+            MenuCell(label: "ExpandableCollectionViewKit", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/jVirus/expandable-collection-view-kit")!)},
+            
+            MenuCell(label: "Houston", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/RudyB/Houston")!)},
+            
+            MenuCell(label: "IQKeyboardManager", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/hackiftekhar/IQKeyboardManager")!)},
+            
+            MenuCell(label: "MBProgressHUD", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/jdg/MBProgressHUD")!)},
+            
+            MenuCell(label: "NotificationBanner", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/Daltron/NotificationBanner")!)},
+            
+            MenuCell(label: "PromiseKit", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/mxcl/PromiseKit")!)},
+            
+            MenuCell(label: "SwipeableTabBarController", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/marcosgriselli/SwipeableTabBarController")!)},
+            
+            MenuCell(label: "Valet", icon: UIImage(named: "menu/github"))
+                { UIApplication.shared.open(URL(string: "https://github.com/square/Valet")!)}
+            
+        ].sorted {$0.label < $1.label}
     }
     
     override func didSelectRow(in tableView: UITableView, at indexPath: IndexPath) {

@@ -9,13 +9,14 @@
 import UIKit
 import Houston
 import NotificationBannerSwift
+import SwipeableTabBarController
 
 protocol TorrentDetailViewDelegate: AnyObject
 {
     func removeTorrent(with hash: String, removeData: Bool, onCompletion: ((_ onServerComplete: Result<Void, Error>, _ onClientComplete: @escaping ()->())->())?)
 }
 
-class TorrentDetailViewTabController: UITabBarController, Storyboarded {
+class TorrentDetailViewTabController: SwipeableTabBarController, Storyboarded {
     
     // MARK: - Lazy Computed Properties
     lazy fileprivate var infoVC: TorrentInfoTableViewController = {
@@ -140,10 +141,4 @@ class TorrentDetailViewTabController: UITabBarController, Storyboarded {
                 }
             }
     }
-    
-}
-
-// MARK: - UITabBarControllerDelegate
-extension TorrentDetailViewTabController: UITabBarControllerDelegate {
-    
 }
