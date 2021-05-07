@@ -45,6 +45,7 @@
 		477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7ADA21D3299300F78CE1 /* ClientConfig.swift */; };
 		477D7B3221D3EFE000F78CE1 /* ClientManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3121D3EFE000F78CE1 /* ClientManager.swift */; };
 		477D7B3621D605C200F78CE1 /* SessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3521D605C200F78CE1 /* SessionStatus.swift */; };
+		478B6F3A2645AA0B00A6CE7B /* SwipeableTabBarController in Frameworks */ = {isa = PBXBuildFile; productRef = 478B6F392645AA0B00A6CE7B /* SwipeableTabBarController */; };
 		47A3018D24954EF100AC5EED /* FileManagerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A3018C24954EF100AC5EED /* FileManagerHelper.swift */; };
 		47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */; };
 		47A716B221DEB7E200C7650C /* TorrentFile@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 47A716B121DEB7E200C7650C /* TorrentFile@3x.png */; };
@@ -153,6 +154,7 @@
 				47E68797259088AA008C2969 /* Houston in Frameworks */,
 				473CB8BD2595C9B700A4B3EF /* NotificationBannerSwift in Frameworks */,
 				47E685DF25907925008C2969 /* PromiseKit in Frameworks */,
+				478B6F3A2645AA0B00A6CE7B /* SwipeableTabBarController in Frameworks */,
 				47E685EB259079D0008C2969 /* IQKeyboardManagerSwift in Frameworks */,
 				47E685CF25907874008C2969 /* Alamofire in Frameworks */,
 				47E685E7259079B5008C2969 /* MBProgressHUD in Frameworks */,
@@ -402,6 +404,7 @@
 				470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */,
 				470F5D012594A14600B7155D /* FirebaseAnalytics */,
 				473CB8BC2595C9B700A4B3EF /* NotificationBannerSwift */,
+				478B6F392645AA0B00A6CE7B /* SwipeableTabBarController */,
 			);
 			productName = "Deluge Remote";
 			productReference = 4716022E1DD4305800727CBD /* Deluge Remote.app */;
@@ -452,6 +455,7 @@
 				47C801252592D09100A01831 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */,
 				470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				473CB8BB2595C9B700A4B3EF /* XCRemoteSwiftPackageReference "NotificationBanner" */,
+				478B6F382645AA0B00A6CE7B /* XCRemoteSwiftPackageReference "SwipeableTabBarController" */,
 			);
 			productRefGroup = 4716022F1DD4305800727CBD /* Products */;
 			projectDirPath = "";
@@ -724,7 +728,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "";
-				MARKETING_VERSION = 1.5.7;
+				MARKETING_VERSION = 1.5.8;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -756,7 +760,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "";
-				MARKETING_VERSION = 1.5.7;
+				MARKETING_VERSION = 1.5.8;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -805,6 +809,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 3.0.6;
+			};
+		};
+		478B6F382645AA0B00A6CE7B /* XCRemoteSwiftPackageReference "SwipeableTabBarController" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:marcosgriselli/SwipeableTabBarController.git";
+			requirement = {
+				branch = master;
+				kind = branch;
 			};
 		};
 		47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */ = {
@@ -896,6 +908,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 473CB8BB2595C9B700A4B3EF /* XCRemoteSwiftPackageReference "NotificationBanner" */;
 			productName = NotificationBannerSwift;
+		};
+		478B6F392645AA0B00A6CE7B /* SwipeableTabBarController */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 478B6F382645AA0B00A6CE7B /* XCRemoteSwiftPackageReference "SwipeableTabBarController" */;
+			productName = SwipeableTabBarController;
 		};
 		47C8011B259280F000A01831 /* ExpandableCollectionViewKit */ = {
 			isa = XCSwiftPackageProductDependency;

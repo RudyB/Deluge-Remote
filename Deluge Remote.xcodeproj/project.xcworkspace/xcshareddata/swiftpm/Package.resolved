@@ -173,6 +173,15 @@
         }
       },
       {
+        "package": "SwipeableTabBarController",
+        "repositoryURL": "git@github.com:marcosgriselli/SwipeableTabBarController.git",
+        "state": {
+          "branch": "master",
+          "revision": "e163a7a971e5ecf0c6167a24f1add17f8451c611",
+          "version": null
+        }
+      },
+      {
         "package": "Valet",
         "repositoryURL": "https://github.com/Square/Valet",
         "state": {
