@@ -1,10 +1,8 @@
 # Deluge Remote
 
-[![Build Status](https://travis-ci.com/RudyB/Deluge-Remote.svg?branch=master)](https://travis-ci.com/RudyB/Deluge-Remote)
 ![Swift Version](https://img.shields.io/badge/swift-5.0-brightgreen.svg)
 [![Gitter](https://badges.gitter.im/Deluge-Remote/community.svg)](https://gitter.im/Deluge-Remote/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-[![Beerpay](https://img.shields.io/beerpay/RudyB/Deluge-Remote)](https://beerpay.io/RudyB/Deluge-Remote)
-![HitCount](http://hits.dwyl.io/RudyB/Deluge-Remote.svg)
+
 
 ## Description
 Deluge Remote is a torrent remote controller for the Deluge Torrent Client (Written in Swift for iOS 12)  
