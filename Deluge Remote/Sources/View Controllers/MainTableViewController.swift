@@ -22,6 +22,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
     // swiftlint:disable:previous type_body_length
 
     enum SortKey: String, CaseIterable {
+        case Queue
         case Name
         case State
         case Size
@@ -190,13 +191,15 @@ class MainTableViewController: UITableViewController, Storyboarded {
         searchController.hidesNavigationBarDuringPresentation = true
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Filter Torrents"
-        navigationItem.searchController = searchController
         self.definesPresentationContext = true
 
         // Setup the Scope Bar
         searchController.searchBar.scopeButtonTitles = ["All", "Name", "Hash", "Tracker"]
         searchController.searchBar.delegate = self
 
+        if #available(iOS 15.0, *) {
+            self.tableView.sectionHeaderTopPadding = 0
+        }
         self.tableView.rowHeight = 60
         
         forceDataPollingUpdate()
@@ -223,6 +226,14 @@ class MainTableViewController: UITableViewController, Storyboarded {
                 forceDataPollingUpdate()
                 restoreSelectedRow()
             }
+        }
+    }
+  
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if navigationItem.searchController == nil {
+            navigationItem.searchController = searchController
         }
     }
 
@@ -723,6 +734,15 @@ extension Array where Iterator.Element == TorrentOverview {
         var sortedContent = [TorrentOverview]()
 
         switch sortKey {
+        case .Queue:
+            sortedContent = self.sorted {
+                let lhs = $0.queue == -1 ? Int.max : $0.queue
+                let rhs = $1.queue == -1 ? Int.max : $1.queue
+                if lhs == rhs {
+                    return ($0.time_added, $0.name.lowercased()) > ($1.time_added, $1.name.lowercased())
+                }
+                return lhs < rhs
+            }
         case .Name:
             sortedContent = self.sorted {
                 $0.name.lowercased() < $1.name.lowercased()

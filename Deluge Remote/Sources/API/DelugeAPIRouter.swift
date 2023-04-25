@@ -161,7 +161,7 @@ enum DelugeRoute {
                     ]])
             case .getOverview:
                 return params(for: "core.get_torrents_status",
-                                 with: [[], ["name", "hash", "upload_payload_rate",
+                                 with: [[], ["queue", "name", "hash", "upload_payload_rate",
                                              "download_payload_rate", "ratio",
                                              "progress", "total_wanted", "state",
                                              "tracker_host", "label", "eta",

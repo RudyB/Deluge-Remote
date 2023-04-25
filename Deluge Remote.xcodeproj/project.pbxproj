@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		470F5CF6259460D500B7155D /* MenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5CF5259460D500B7155D /* MenuTableViewCell.swift */; };
-		470F5CFE2594A0E700B7155D /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */; };
-		470F5D022594A14600B7155D /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 470F5D012594A14600B7155D /* FirebaseAnalytics */; };
-		470F5D092594A29400B7155D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 470F5D082594A29400B7155D /* GoogleService-Info.plist */; };
 		470F5D192595689100B7155D /* CrashReportingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5D182595689100B7155D /* CrashReportingViewController.swift */; };
 		470F5D1D2595701200B7155D /* AcknowledgementsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470F5D1C2595701200B7155D /* AcknowledgementsTableViewController.swift */; };
 		470F5D2625957DFB00B7155D /* MenuTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 470F5D2425957DFB00B7155D /* MenuTableViewCell.xib */; };
@@ -45,7 +42,6 @@
 		477D7ADB21D3299300F78CE1 /* ClientConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7ADA21D3299300F78CE1 /* ClientConfig.swift */; };
 		477D7B3221D3EFE000F78CE1 /* ClientManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3121D3EFE000F78CE1 /* ClientManager.swift */; };
 		477D7B3621D605C200F78CE1 /* SessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477D7B3521D605C200F78CE1 /* SessionStatus.swift */; };
-		478B6F3A2645AA0B00A6CE7B /* SwipeableTabBarController in Frameworks */ = {isa = PBXBuildFile; productRef = 478B6F392645AA0B00A6CE7B /* SwipeableTabBarController */; };
 		47A3018D24954EF100AC5EED /* FileManagerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A3018C24954EF100AC5EED /* FileManagerHelper.swift */; };
 		47A4EEAC1E07913500568D33 /* ClientsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A4EEAB1E07913500568D33 /* ClientsTableViewController.swift */; };
 		47A716B221DEB7E200C7650C /* TorrentFile@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 47A716B121DEB7E200C7650C /* TorrentFile@3x.png */; };
@@ -79,11 +75,14 @@
 		47F9C73321DC66790017281C /* TorrentConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F9C73221DC66790017281C /* TorrentConfig.swift */; };
 		47F9C73621DC6EB80017281C /* AddTorrentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */; };
 		7FD0633023848DC00087768F /* ColorCompatibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD0632F23848DC00087768F /* ColorCompatibility.swift */; };
+		CB0F7C9E29F82304004EFDA1 /* SwipeableTabBarController in Frameworks */ = {isa = PBXBuildFile; productRef = CB0F7C9D29F82304004EFDA1 /* SwipeableTabBarController */; };
+		CB0F7CA129F82900004EFDA1 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CB0F7CA029F82900004EFDA1 /* FirebaseAnalyticsSwift */; };
+		CB0F7CA329F82900004EFDA1 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = CB0F7CA229F82900004EFDA1 /* FirebaseCrashlytics */; };
+		CB0F7CA529F829A9004EFDA1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CB0F7CA429F829A9004EFDA1 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		470F5CF5259460D500B7155D /* MenuTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
-		470F5D082594A29400B7155D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		470F5D182595689100B7155D /* CrashReportingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashReportingViewController.swift; sourceTree = "<group>"; };
 		470F5D1C2595701200B7155D /* AcknowledgementsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsTableViewController.swift; sourceTree = "<group>"; };
 		470F5D2425957DFB00B7155D /* MenuTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MenuTableViewCell.xib; sourceTree = "<group>"; };
@@ -144,6 +143,7 @@
 		47F9C73221DC66790017281C /* TorrentConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentConfig.swift; sourceTree = "<group>"; };
 		47F9C73521DC6EB80017281C /* AddTorrentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTorrentViewController.swift; sourceTree = "<group>"; };
 		7FD0632F23848DC00087768F /* ColorCompatibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorCompatibility.swift; sourceTree = "<group>"; };
+		CB0F7CA429F829A9004EFDA1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,17 +151,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB0F7CA129F82900004EFDA1 /* FirebaseAnalyticsSwift in Frameworks */,
 				47E68797259088AA008C2969 /* Houston in Frameworks */,
 				473CB8BD2595C9B700A4B3EF /* NotificationBannerSwift in Frameworks */,
 				47E685DF25907925008C2969 /* PromiseKit in Frameworks */,
-				478B6F3A2645AA0B00A6CE7B /* SwipeableTabBarController in Frameworks */,
+				CB0F7C9E29F82304004EFDA1 /* SwipeableTabBarController in Frameworks */,
 				47E685EB259079D0008C2969 /* IQKeyboardManagerSwift in Frameworks */,
 				47E685CF25907874008C2969 /* Alamofire in Frameworks */,
 				47E685E7259079B5008C2969 /* MBProgressHUD in Frameworks */,
 				47E685E325907953008C2969 /* Valet in Frameworks */,
-				470F5D022594A14600B7155D /* FirebaseAnalytics in Frameworks */,
+				CB0F7CA329F82900004EFDA1 /* FirebaseCrashlytics in Frameworks */,
 				47C8011C259280F000A01831 /* ExpandableCollectionViewKit in Frameworks */,
-				470F5CFE2594A0E700B7155D /* FirebaseCrashlytics in Frameworks */,
 				47C801272592D09100A01831 /* ActiveLabel in Frameworks */,
 				47E685DB259078F2008C2969 /* Eureka in Frameworks */,
 			);
@@ -257,7 +257,7 @@
 		4716027F1DD433F400727CBD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				470F5D082594A29400B7155D /* GoogleService-Info.plist */,
+				CB0F7CA429F829A9004EFDA1 /* GoogleService-Info.plist */,
 				4716023A1DD4305800727CBD /* LaunchScreen.storyboard */,
 				471602351DD4305800727CBD /* Main.storyboard */,
 				4716023D1DD4305800727CBD /* Info.plist */,
@@ -401,10 +401,10 @@
 				47E68796259088AA008C2969 /* Houston */,
 				47C8011B259280F000A01831 /* ExpandableCollectionViewKit */,
 				47C801262592D09100A01831 /* ActiveLabel */,
-				470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */,
-				470F5D012594A14600B7155D /* FirebaseAnalytics */,
 				473CB8BC2595C9B700A4B3EF /* NotificationBannerSwift */,
-				478B6F392645AA0B00A6CE7B /* SwipeableTabBarController */,
+				CB0F7C9D29F82304004EFDA1 /* SwipeableTabBarController */,
+				CB0F7CA029F82900004EFDA1 /* FirebaseAnalyticsSwift */,
+				CB0F7CA229F82900004EFDA1 /* FirebaseCrashlytics */,
 			);
 			productName = "Deluge Remote";
 			productReference = 4716022E1DD4305800727CBD /* Deluge Remote.app */;
@@ -453,9 +453,9 @@
 				47E68795259088AA008C2969 /* XCRemoteSwiftPackageReference "Houston" */,
 				47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */,
 				47C801252592D09100A01831 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */,
-				470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				473CB8BB2595C9B700A4B3EF /* XCRemoteSwiftPackageReference "NotificationBanner" */,
-				478B6F382645AA0B00A6CE7B /* XCRemoteSwiftPackageReference "SwipeableTabBarController" */,
+				CB0F7C9C29F82304004EFDA1 /* XCRemoteSwiftPackageReference "SwipeableTabBarController" */,
+				CB0F7C9F29F82900004EFDA1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 4716022F1DD4305800727CBD /* Products */;
 			projectDirPath = "";
@@ -477,7 +477,7 @@
 				47A716B421DEB9B300C7650C /* FileIcon2@3X.png in Resources */,
 				47A716B221DEB7E200C7650C /* TorrentFile@3x.png in Resources */,
 				471602371DD4305800727CBD /* Main.storyboard in Resources */,
-				470F5D092594A29400B7155D /* GoogleService-Info.plist in Resources */,
+				CB0F7CA529F829A9004EFDA1 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -715,7 +715,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = NZ8449Y9W6;
+				DEVELOPMENT_TEAM = W8K3X4JZU5;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",
 					"$(SRCROOT)/NSBencodeSerialization/M13OrderedDictionary",
@@ -730,7 +730,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				MARKETING_VERSION = 1.5.8;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nixon506e.Deluge-Remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTS_MACCATALYST = NO;
@@ -747,7 +747,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = NZ8449Y9W6;
+				DEVELOPMENT_TEAM = W8K3X4JZU5;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NSBencodeSerialization/NSBencodeSerialization",
 					"$(SRCROOT)/NSBencodeSerialization/M13OrderedDictionary",
@@ -762,7 +762,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				MARKETING_VERSION = 1.5.8;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "io.rudybermudez.Deluge-Remote";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nixon506e.Deluge-Remote";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTS_MACCATALYST = NO;
@@ -795,28 +795,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 7.3.1;
-			};
-		};
 		473CB8BB2595C9B700A4B3EF /* XCRemoteSwiftPackageReference "NotificationBanner" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Daltron/NotificationBanner.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 3.0.6;
-			};
-		};
-		478B6F382645AA0B00A6CE7B /* XCRemoteSwiftPackageReference "SwipeableTabBarController" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:marcosgriselli/SwipeableTabBarController.git";
-			requirement = {
-				branch = master;
-				kind = branch;
 			};
 		};
 		47C8011A259280F000A01831 /* XCRemoteSwiftPackageReference "expandable-collection-view-kit" */ = {
@@ -887,32 +871,33 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RudyB/Houston.git";
 			requirement = {
+				kind = exactVersion;
+				version = 0.2.3;
+			};
+		};
+		CB0F7C9C29F82304004EFDA1 /* XCRemoteSwiftPackageReference "SwipeableTabBarController" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marcosgriselli/SwipeableTabBarController.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		CB0F7C9F29F82900004EFDA1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.3;
+				minimumVersion = 10.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		470F5CFD2594A0E700B7155D /* FirebaseCrashlytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCrashlytics;
-		};
-		470F5D012594A14600B7155D /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 470F5CFC2594A0E700B7155D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
 		473CB8BC2595C9B700A4B3EF /* NotificationBannerSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 473CB8BB2595C9B700A4B3EF /* XCRemoteSwiftPackageReference "NotificationBanner" */;
 			productName = NotificationBannerSwift;
-		};
-		478B6F392645AA0B00A6CE7B /* SwipeableTabBarController */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 478B6F382645AA0B00A6CE7B /* XCRemoteSwiftPackageReference "SwipeableTabBarController" */;
-			productName = SwipeableTabBarController;
 		};
 		47C8011B259280F000A01831 /* ExpandableCollectionViewKit */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -958,6 +943,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 47E68795259088AA008C2969 /* XCRemoteSwiftPackageReference "Houston" */;
 			productName = Houston;
+		};
+		CB0F7C9D29F82304004EFDA1 /* SwipeableTabBarController */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB0F7C9C29F82304004EFDA1 /* XCRemoteSwiftPackageReference "SwipeableTabBarController" */;
+			productName = SwipeableTabBarController;
+		};
+		CB0F7CA029F82900004EFDA1 /* FirebaseAnalyticsSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB0F7C9F29F82900004EFDA1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsSwift;
+		};
+		CB0F7CA229F82900004EFDA1 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB0F7C9F29F82900004EFDA1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

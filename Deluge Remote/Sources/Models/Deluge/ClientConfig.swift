@@ -48,7 +48,7 @@ struct ClientConfig: Codable, Comparable {
         
         print(url.absoluteString)
         
-        print( "\(sslConfig.rawValue)\(hostname):\(port)\(relativePath)/json")
+        print( "\(sslConfig.rawValue)://\(hostname):\(port)\(relativePath)/json")
     }
 
 }
