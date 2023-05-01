@@ -658,6 +658,83 @@ class DelugeClient {
             }
     }
     }
+  
+    func getLabels() -> Promise<[String]> { return Promise { seal in
+        Manager.request(DelugeRouter(.getLabels, clientConfig))
+            .validate().responseDecodable(of: DelugeResponse<[String]?>.self, queue: queue) { response in
+                    switch response.result {
+                    case .success(let data):
+                        if let result = data.result {
+                            seal.fulfill(result)
+                        } else {
+                            if let error = data.error {
+                                seal.reject(ClientError.apiError(error))
+                            } else {
+                                seal.reject(ClientError.unexpectedResponse)
+                            }
+                        }
+                    case .failure(let error):
+                        seal.reject(ClientError.other(error))
+                    }
+            }
+        }
+    }
+  
+    func setLabel(hash: String, id: String) -> Promise<Void> { return Promise { seal in
+        Manager.request(DelugeRouter(.setLabel(hash, id), clientConfig))
+            .validate().response { response in
+                if let error = response.error {
+                    seal.reject(error)
+                } else {
+                    seal.fulfill(())
+                }
+            }
+    }
+    }
+  
+    func queueTop(withHash hash: String) -> Promise<Void> { return Promise { seal in
+        Manager.request(DelugeRouter(.queueTop(hash), clientConfig))
+            .validate().response(queue: self.queue) { response in
+                switch response.result {
+                    case .success: seal.fulfill(())
+                    case .failure(let error): seal.reject(ClientError.other(error))
+                }
+            }
+        }
+    }
+    
+    func queueBottom(withHash hash: String) -> Promise<Void> { return Promise { seal in
+        Manager.request(DelugeRouter(.queueBottom(hash), clientConfig))
+            .validate().response(queue: self.queue) { response in
+                switch response.result {
+                    case .success: seal.fulfill(())
+                    case .failure(let error): seal.reject(ClientError.other(error))
+                }
+            }
+        }
+    }
+    
+    func queueUp(withHash hash: String) -> Promise<Void> { return Promise { seal in
+        Manager.request(DelugeRouter(.queueUp(hash), clientConfig))
+            .validate().response(queue: self.queue) { response in
+                switch response.result {
+                    case .success: seal.fulfill(())
+                    case .failure(let error): seal.reject(ClientError.other(error))
+                }
+            }
+        }
+    }
+    
+    func queueDown(withHash hash: String) -> Promise<Void> { return Promise { seal in
+        Manager.request(DelugeRouter(.queueDown(hash), clientConfig))
+            .validate().response(queue: self.queue) { response in
+                switch response.result {
+                    case .success: seal.fulfill(())
+                    case .failure(let error): seal.reject(ClientError.other(error))
+                }
+            }
+        }
+    }
     
     func recheckTorrent(hash: String) -> Promise<Void> { return Promise { seal in
         Manager.request(DelugeRouter(.forceRecheck(hash),clientConfig))

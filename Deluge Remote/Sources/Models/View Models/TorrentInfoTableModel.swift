@@ -26,6 +26,7 @@ class TorrentInfoBasicSection: TorrentInfoSection {
     
     private let nameCell = DefaultCell(label: "Name", detail: nil)
     private let stateCell = DefaultCell(label: "State", detail: nil)
+    private let labelCell = DefaultCell(label: "Labels", detail: nil)
     private let etaCell = DefaultCell(label: "ETA", detail: nil)
     private let completedCell = DefaultCell(label: "Completed", detail: nil)
     private let sizeCell = DefaultCell(label: "Size", detail: nil)
@@ -36,6 +37,7 @@ class TorrentInfoBasicSection: TorrentInfoSection {
         
         nameCell.detail = torrent.name
         stateCell.detail = torrent.state
+        labelCell.detail = torrent.label
         etaCell.detail = torrent.eta.timeRemainingString()
         completedCell.detail = String(format: "%.1f%%", torrent.progress)
         sizeCell.detail = torrent.total_size.sizeString()
@@ -44,6 +46,9 @@ class TorrentInfoBasicSection: TorrentInfoSection {
         if cells.isEmpty {
             cells.append(nameCell)
             cells.append(stateCell)
+            if !(torrent.label?.isEmpty ?? true) {
+              cells.append(labelCell)
+            }
             cells.append(sizeCell)
             if torrent.eta != 0 {
                 cells.append(etaCell)
@@ -55,16 +60,34 @@ class TorrentInfoBasicSection: TorrentInfoSection {
         }
         
         var defaultCells = cells.compactMap { $0 as? DefaultCell }
+        var containsLabel = defaultCells.enumerated().first { $0.element.label == labelCell.label }
         var containsETA = defaultCells.enumerated().first { $0.element.label == etaCell.label }
         var containsProgress = defaultCells.enumerated().first { $0.element.label == completedCell.label }
         
         var indexAdded: [Int] = []
         var indexRemoved: [Int] = []
+      
+        if !(torrent.label?.isEmpty ?? true) {
+            if containsLabel == nil {
+                cells.insert(labelCell, at: 3)
+                indexAdded.append(3)
+            }
+        } else {
+            if let eta = containsLabel {
+                cells.remove(at: eta.offset)
+                indexRemoved.append(eta.offset)
+            }
+        }
         
         if torrent.eta != 0 {
             if containsETA == nil {
-                cells.insert(etaCell, at: 3)
-                indexAdded.append(3)
+                if containsLabel == nil {
+                    cells.insert(etaCell, at: 3)
+                    indexAdded.append(3)
+                } else {
+                    cells.insert(etaCell, at: 4)
+                    indexAdded.append(4)
+                }
             }
         } else {
             if let eta = containsETA {

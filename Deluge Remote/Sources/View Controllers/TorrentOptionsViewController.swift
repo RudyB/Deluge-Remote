@@ -9,9 +9,15 @@
 import UIKit
 import Eureka
 import Houston
+import PromiseKit
 
 class TorrentOptionsViewController: FormViewController, Storyboarded {
     
+    // MARK: - Private
+    fileprivate var pickerView = UIPickerView()
+    fileprivate var selected: String?
+    fileprivate var labels = [String]()
+  
     // MARK: - Properties
     let hapticEngine = UINotificationFeedbackGenerator()
     weak var delegate: TorrentDetailViewDelegate?
@@ -38,6 +44,7 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
     // MARK: - ViewController Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        getClientLabels()
         createEurekaForm()
     }
     
@@ -109,7 +116,7 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
                   actionList: [deleteTorrent, deleteTorrentWithData, cancel] )
     }
     
-    fileprivate func deleteTorrentCallback(result: Result<Void, Error>, onGuiUpdatesComplete: @escaping ()->())
+    fileprivate func deleteTorrentCallback(result: Swift.Result<Void, Error>, onGuiUpdatesComplete: @escaping ()->())
     {
         switch result {
             case .success():
@@ -182,6 +189,45 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
         
         self.present(alert, animated: true, completion: nil)
     }
+  
+    func applyLabel() {
+        let alert = UIAlertController(title: "Apply Label", message: "\n\n\n\n\n\n",
+                                      preferredStyle: .alert)
+        
+        pickerView = UIPickerView(frame: CGRect(x: 5, y: 20, width: 250, height: 140))
+        alert.view.addSubview(pickerView)
+        pickerView.dataSource = self
+        pickerView.delegate = self
+        pickerView.selectRow((labels.firstIndex(of: torrentData?.label ?? "") ?? -1) + 1, inComponent: 0, animated: false)
+      
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        let applyAction = UIAlertAction(title: "Apply", style: .destructive) { [weak self] _ in
+            guard let labelId = self?.selected,
+                let torrentHash = self?.torrentData?.hash
+            else { return }
+            self?.hapticEngine.prepare()
+            ClientManager.shared.activeClient?.setLabel(hash: torrentHash, id: labelId)
+                .done { [weak self] _ in
+                    DispatchQueue.main.async {
+                        self?.hapticEngine.notificationOccurred(.success)
+                        self?.view.showHUD(title: "Label Applied", type: .success)
+                    }
+                    
+                }
+                .catch { [weak self] error -> Void in
+                    DispatchQueue.main.async {
+                        self?.hapticEngine.notificationOccurred(.error)
+                        self?.view.showHUD(title: "Failed to Apply Label", type: .failure)
+                    }
+                    Logger.error(error)
+                }
+        }
+        
+        alert.addAction(applyAction)
+        alert.addAction(cancelAction)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
     
     func playPauseTorrent() {
         guard
@@ -223,7 +269,30 @@ class TorrentOptionsViewController: FormViewController, Storyboarded {
     }
 }
 
-
+extension TorrentOptionsViewController: UIPickerViewDataSource, UIPickerViewDelegate {
+  func numberOfComponents(in pickerView: UIPickerView) -> Int {
+      return 1
+  }
+   
+  func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+      return labels.count + 1
+  }
+      
+  func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+      if row == 0 {
+          return ""
+      }
+      return labels[row - 1]
+  }
+      
+  func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+      if row == 0 {
+          self.selected = ""
+      } else if !labels.isEmpty {
+          self.selected = labels[row - 1]
+      }
+  }
+}
 
 extension TorrentOptionsViewController {
     enum TorrentOptionsCodingKeys: String {
@@ -241,6 +310,18 @@ extension TorrentOptionsViewController {
         case prioritizeFirstLastPieces = "prioritize_first_last_pieces"
         case downloadLocation = "download_location"
     }
+  
+    func getClientLabels() {
+        guard let client = ClientManager.shared.activeClient else { return }
+
+        firstly { client.authenticate() }
+        .then { client.getLabels() }
+        .done { [weak self] labels in
+            self?.labels = labels
+        }.catch { error in
+            Logger.error(error)
+        }
+    }
     
     func createEurekaForm() {
         form +++ Section("Controls")
@@ -257,6 +338,13 @@ extension TorrentOptionsViewController {
                 $0.disabled = Condition(booleanLiteral: torrentData == nil)
             }.onCellSelection { [weak self] _, _ in
                 self?.moveStorage()
+            }
+            <<< ButtonRow {
+                $0.title = "Apply Label"
+                $0.tag = "LabelBtn"
+                $0.disabled = Condition(booleanLiteral: torrentData == nil)
+            }.onCellSelection { [weak self] _, _ in
+                self?.applyLabel()
             }
             <<< ButtonRow {
                 $0.title = "Force Recheck"

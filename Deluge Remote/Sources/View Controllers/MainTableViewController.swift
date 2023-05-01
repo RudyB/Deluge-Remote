@@ -22,11 +22,11 @@ class MainTableViewController: UITableViewController, Storyboarded {
     // swiftlint:disable:previous type_body_length
 
     enum SortKey: String, CaseIterable {
-        case Queue
         case Name
         case State
         case Size
         case Ratio
+        case Queue
         case DownloadSpeed = "Download Speed"
         case UploadSpeed = "Upload Speed"
         case TotalDownload = "Total Download"
@@ -389,6 +389,24 @@ class MainTableViewController: UITableViewController, Storyboarded {
     
     // MARK: - Helper Functions
     
+    fileprivate func makeTargetedPreview(cell: MainTableViewCell) -> UITargetedPreview? {
+        guard
+            let snapshot = cell.contentView.snapshotView(afterScreenUpdates: false)
+        else {
+            return nil
+        }
+
+        let parameters = UIPreviewParameters()
+        parameters.visiblePath = UIBezierPath(roundedRect: cell.contentView.bounds, cornerRadius: cell.contentView.layer.cornerRadius)
+
+        let previewTarget = UIPreviewTarget(
+            container: cell.contentView,
+            center: CGPoint(x: cell.contentView.bounds.midX, y: cell.contentView.bounds.midY)
+        )
+
+        return UITargetedPreview(view: snapshot, parameters: parameters, target: previewTarget)
+    }
+  
     fileprivate func deletedTorrentCallbackHandler(indexPath: IndexPath, result: Swift.Result<Void, Error>, onGuiUpdatesComplete: ()->())
     {
         switch result {
@@ -530,6 +548,7 @@ class MainTableViewController: UITableViewController, Storyboarded {
             currentItem = tableViewDataSource[indexPath.row]
         }
 
+        cell.queue = currentItem.queue
         cell.paused = currentItem.paused
         cell.nameLabel.text = currentItem.name
         cell.progressBar.setProgress(Float(currentItem.progress/100), animated: false)
@@ -609,12 +628,8 @@ class MainTableViewController: UITableViewController, Storyboarded {
         // Get the actual cell instance for the index path
         guard let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell else { return nil }
         
-        // Instantiate the detail view controller
-        let vc  = TorrentDetailViewTabController.instantiate()
-        vc.torrentHash = cell.torrentHash
-        
         var actionList: [UIMenuElement] = []
-        
+      
         if cell.paused {
             let resume = UIAction( title: "Resume", image: UIImage(systemName: "play.fill")) { [weak self] _ in
                 ClientManager.shared.activeClient?.resumeTorrent(withHash: cell.torrentHash)
@@ -641,6 +656,52 @@ class MainTableViewController: UITableViewController, Storyboarded {
             actionList.append(pause)
         }
         
+        if cell.queue != -1 {
+            let queueTop = UIAction( title: "Queue Top", image: UIImage(systemName: "square.3.layers.3d.top.filled")) { [weak self] _ in
+                ClientManager.shared.activeClient?.queueTop(withHash: cell.torrentHash)
+                    .done { [weak self] _ in
+                        self?.hapticEngine.notificationOccurred(.success)
+                        self?.view.showHUD(title: "Successfully Queued Torrent")
+                    } .catch { [weak self] error in
+                        self?.hapticEngine.notificationOccurred(.error)
+                        self?.view.showHUD(title: "Failed To Queue Torrent", type: .failure)
+                    }
+            }
+            let queueUp = UIAction( title: "Queue Up", image: UIImage(systemName: "square.2.layers.3d.top.filled")) { [weak self] _ in
+                ClientManager.shared.activeClient?.queueUp(withHash: cell.torrentHash)
+                    .done { [weak self] _ in
+                        self?.hapticEngine.notificationOccurred(.success)
+                        self?.view.showHUD(title: "Successfully Queued Torrent")
+                    } .catch { [weak self] error in
+                        self?.hapticEngine.notificationOccurred(.error)
+                        self?.view.showHUD(title: "Failed To Queue Torrent", type: .failure)
+                    }
+            }
+            let queueDown = UIAction( title: "Queue Down", image: UIImage(systemName: "square.2.layers.3d.bottom.filled")) { [weak self] _ in
+                ClientManager.shared.activeClient?.queueDown(withHash: cell.torrentHash)
+                    .done { [weak self] _ in
+                        self?.hapticEngine.notificationOccurred(.success)
+                        self?.view.showHUD(title: "Successfully Queued Torrent")
+                    } .catch { [weak self] error in
+                        self?.hapticEngine.notificationOccurred(.error)
+                        self?.view.showHUD(title: "Failed To Queue Torrent", type: .failure)
+                    }
+            }
+            let queueBottom = UIAction( title: "Queue Bottom", image: UIImage(systemName: "square.3.layers.3d.bottom.filled")) { [weak self] _ in
+                ClientManager.shared.activeClient?.queueBottom(withHash: cell.torrentHash)
+                    .done { [weak self] _ in
+                        self?.hapticEngine.notificationOccurred(.success)
+                        self?.view.showHUD(title: "Successfully Queued Torrent")
+                    } .catch { [weak self] error in
+                        self?.hapticEngine.notificationOccurred(.error)
+                        self?.view.showHUD(title: "Failed To Queue Torrent", type: .failure)
+                    }
+            }
+          
+            let queueMenu = UIMenu(title: "Queue", image: UIImage(systemName: "square.3.layers.3d"), children: [queueTop, queueUp, queueDown, queueBottom])
+            actionList.append(queueMenu)
+        }
+        
         let delete = UIAction(title: "Delete Torrent", attributes: [.destructive]) { [weak self] _ in
             self?.delegate?.removeTorrent(with: cell.torrentHash, removeData: false) { [weak self] result, onClientComplete  in
                 self?.deletedTorrentCallbackHandler(indexPath: indexPath, result: result, onGuiUpdatesComplete: onClientComplete)
@@ -656,9 +717,9 @@ class MainTableViewController: UITableViewController, Storyboarded {
         let deleteMenu = UIMenu(title: "Delete", image: UIImage(systemName: "trash.fill"), options: [.destructive], children: [delete, deleteWithData])
         actionList.append(deleteMenu)
 
-        let menu = UIMenu(title: "Actions", children: actionList)
+        let menu = UIMenu(children: actionList)
         
-        return UIContextMenuConfiguration(identifier: indexPath as NSIndexPath, previewProvider: { vc }, actionProvider: { _ in menu })
+        return UIContextMenuConfiguration(identifier: indexPath as NSIndexPath, actionProvider: { _ in menu })
     }
     
     override func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
@@ -670,6 +731,24 @@ class MainTableViewController: UITableViewController, Storyboarded {
         
         selectedHash = cell.torrentHash
         delegate?.torrentSelected(torrentHash: cell.torrentHash)
+    }
+  
+    override func tableView(_: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        guard
+            let indexPath = configuration.identifier as? IndexPath,
+            let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell
+        else { return nil }
+
+        return makeTargetedPreview(cell: cell)
+    }
+  
+    override func tableView(_: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        guard
+            let indexPath = configuration.identifier as? IndexPath,
+            let cell = tableView.cellForRow(at: indexPath) as? MainTableViewCell
+        else { return nil }
+
+        return makeTargetedPreview(cell: cell)
     }
 }
 
@@ -734,6 +813,10 @@ extension Array where Iterator.Element == TorrentOverview {
         var sortedContent = [TorrentOverview]()
 
         switch sortKey {
+        case .Name:
+            sortedContent = self.sorted {
+                $0.name.lowercased() < $1.name.lowercased()
+            }
         case .Queue:
             sortedContent = self.sorted {
                 let lhs = $0.queue == -1 ? Int.max : $0.queue
@@ -742,10 +825,6 @@ extension Array where Iterator.Element == TorrentOverview {
                     return ($0.time_added, $0.name.lowercased()) > ($1.time_added, $1.name.lowercased())
                 }
                 return lhs < rhs
-            }
-        case .Name:
-            sortedContent = self.sorted {
-                $0.name.lowercased() < $1.name.lowercased()
             }
         case .DownloadSpeed:
             sortedContent = self.sorted {

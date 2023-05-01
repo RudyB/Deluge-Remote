@@ -41,6 +41,18 @@ enum DelugeRoute {
     
     /// Get `TorrentFileStructure`
     case getFiles(_ hash: String)
+  
+    /// Set Queue Top
+    case queueTop(_ hash: String)
+
+    /// Set Queue Bottom
+    case queueBottom(_ hash: String)
+    
+    /// Set Queue Up
+    case queueUp(_ hash: String)
+
+    /// Set Queue Down
+    case queueDown(_ hash: String)
     
     /// Get `TorrentOverview`
     case getOverview
@@ -105,6 +117,11 @@ enum DelugeRoute {
     /// Get sessus status
     case getSessionStatus
     
+    /// Get labels
+    case getLabels
+  
+    /// Set label
+    case setLabel(_ hash: String, _ label: String)
     
     // MARK:- Helpers
     fileprivate var method: HTTPMethod {
@@ -121,6 +138,10 @@ enum DelugeRoute {
             case .isConnected:              return params(for: "web.connected", with: [])
             case .getMetadata(let hash):    return params(for: "core.get_torrent_status", with: [hash, []])
             case .getFiles(let hash):       return params(for: "web.get_torrent_files", with: [hash])
+            case .queueTop(let hash):       return params(for: "core.queue_top", with: [[hash]])
+            case .queueBottom(let hash):    return params(for: "core.queue_bottom", with: [[hash]])
+            case .queueUp(let hash):        return params(for: "core.queue_up", with: [[hash]])
+            case .queueDown(let hash):      return params(for: "core.queue_down", with: [[hash]])
             case .pause(let hash):          return params(for: "core.pause_torrent", with: [[hash]])
             case .pauseAllTorrents:         return params(for: "core.pause_all_torrents", with: [])
             case .resumeAllTorrents:        return params(for: "core.resume_all_torrents", with: [])
@@ -206,6 +227,10 @@ enum DelugeRoute {
                     "dht_torrents",
                     "dht_total_allocations"
                 ]])
+            case .getLabels:
+                return params(for: "label.get_labels", with: [])
+            case .setLabel(let hash, let label):
+                return params(for: "label.set_torrent", with: [hash, label])
         }
     }
     
