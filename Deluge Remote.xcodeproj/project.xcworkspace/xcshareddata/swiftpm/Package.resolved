@@ -1,196 +1,194 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "abseil",
-        "repositoryURL": "https://github.com/firebase/abseil-cpp-SwiftPM.git",
-        "state": {
-          "branch": null,
-          "revision": "05d8107f2971a37e6c77245b7c4c6b0a7e97bc99",
-          "version": "0.20200225.0"
-        }
-      },
-      {
-        "package": "ActiveLabel",
-        "repositoryURL": "https://github.com/optonaut/ActiveLabel.swift.git",
-        "state": {
-          "branch": null,
-          "revision": "36949c1a69ef8b40574da20c9e24b115f387b1cf",
-          "version": "1.1.5"
-        }
-      },
-      {
-        "package": "Alamofire",
-        "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
-        "state": {
-          "branch": null,
-          "revision": "eaf6e622dd41b07b251d8f01752eab31bc811493",
-          "version": "5.4.1"
-        }
-      },
-      {
-        "package": "BoringSSL-GRPC",
-        "repositoryURL": "https://github.com/firebase/boringssl-SwiftPM.git",
-        "state": {
-          "branch": null,
-          "revision": "7bcafa2660bc58715c39637494550d1ed7cd7229",
-          "version": "0.0.7"
-        }
-      },
-      {
-        "package": "Eureka",
-        "repositoryURL": "https://github.com/xmartlabs/Eureka.git",
-        "state": {
-          "branch": null,
-          "revision": "81f3ea3d69dc99f8684b8bce1224908e101c679f",
-          "version": "5.3.2"
-        }
-      },
-      {
-        "package": "ExpandableCollectionViewKit",
-        "repositoryURL": "https://github.com/RudyB/expandable-collection-view-kit.git",
-        "state": {
-          "branch": null,
-          "revision": "7e0254b5cc1b4e9135e89fd88aeff0968913a503",
-          "version": "1.1.2"
-        }
-      },
-      {
-        "package": "Firebase",
-        "repositoryURL": "https://github.com/firebase/firebase-ios-sdk.git",
-        "state": {
-          "branch": null,
-          "revision": "c67d97dc802aafe5474042156dce828e1c4145ca",
-          "version": "7.3.1"
-        }
-      },
-      {
-        "package": "gRPC",
-        "repositoryURL": "https://github.com/firebase/grpc-SwiftPM.git",
-        "state": {
-          "branch": null,
-          "revision": "91b62619e6c83bc5f1b99d9d60fe46b2862d3a5a",
-          "version": "1.28.2"
-        }
-      },
-      {
-        "package": "GTMSessionFetcher",
-        "repositoryURL": "https://github.com/google/gtm-session-fetcher.git",
-        "state": {
-          "branch": null,
-          "revision": "91ed3d188eb95705fef3c249453b81f32dc557d1",
-          "version": "1.5.0"
-        }
-      },
-      {
-        "package": "Houston",
-        "repositoryURL": "https://github.com/RudyB/Houston.git",
-        "state": {
-          "branch": null,
-          "revision": "6a97179322d7b2017aed2e194f43a3cfbdf5d5f0",
-          "version": "0.2.3"
-        }
-      },
-      {
-        "package": "IQKeyboardManagerSwift",
-        "repositoryURL": "https://github.com/hackiftekhar/IQKeyboardManager.git",
-        "state": {
-          "branch": null,
-          "revision": "4dc6bc7d1c9747bd0c261c8c055903f9fdef91f7",
-          "version": "6.5.6"
-        }
-      },
-      {
-        "package": "leveldb",
-        "repositoryURL": "https://github.com/firebase/leveldb.git",
-        "state": {
-          "branch": null,
-          "revision": "fa1f25f296a766e5a789c4dacd4798dea798b2c2",
-          "version": "1.22.1"
-        }
-      },
-      {
-        "package": "MarqueeLabel",
-        "repositoryURL": "https://github.com/cbpowell/MarqueeLabel",
-        "state": {
-          "branch": null,
-          "revision": "d92fe1583dbf43fa3b70229a49fa7da6b36750d4",
-          "version": "4.0.5"
-        }
-      },
-      {
-        "package": "MBProgressHUD",
-        "repositoryURL": "https://github.com/jdg/MBProgressHUD.git",
-        "state": {
-          "branch": null,
-          "revision": "bca42b801100b2b3a4eda0ba8dd33d858c780b0d",
-          "version": "1.2.0"
-        }
-      },
-      {
-        "package": "nanopb",
-        "repositoryURL": "https://github.com/firebase/nanopb.git",
-        "state": {
-          "branch": null,
-          "revision": "8119dfe5631f2616d11e50ead95448d12e816062",
-          "version": "2.30906.0"
-        }
-      },
-      {
-        "package": "NotificationBannerSwift",
-        "repositoryURL": "https://github.com/Daltron/NotificationBanner.git",
-        "state": {
-          "branch": null,
-          "revision": "2ce5c49d8ee4865f01a3ce3bbe078664c78c7a3c",
-          "version": "3.0.6"
-        }
-      },
-      {
-        "package": "PromiseKit",
-        "repositoryURL": "https://github.com/mxcl/PromiseKit.git",
-        "state": {
-          "branch": null,
-          "revision": "aea48ea1855f5d82e2dffa6027afce3aab8f3dd7",
-          "version": "6.13.3"
-        }
-      },
-      {
-        "package": "Promises",
-        "repositoryURL": "https://github.com/google/promises.git",
-        "state": {
-          "branch": null,
-          "revision": "afa9a1ace74e116848d4f743599ab83e584ff8cb",
-          "version": "1.2.12"
-        }
-      },
-      {
-        "package": "SnapKit",
-        "repositoryURL": "https://github.com/SnapKit/SnapKit",
-        "state": {
-          "branch": null,
-          "revision": "d458564516e5676af9c70b4f4b2a9178294f1bc6",
-          "version": "5.0.1"
-        }
-      },
-      {
-        "package": "SwipeableTabBarController",
-        "repositoryURL": "git@github.com:marcosgriselli/SwipeableTabBarController.git",
-        "state": {
-          "branch": "master",
-          "revision": "e163a7a971e5ecf0c6167a24f1add17f8451c611",
-          "version": null
-        }
-      },
-      {
-        "package": "Valet",
-        "repositoryURL": "https://github.com/Square/Valet",
-        "state": {
-          "branch": null,
-          "revision": "c9e7a1e5e0cb73f07cafb403c53c4922e22e5357",
-          "version": "4.1.1"
-        }
+  "pins" : [
+    {
+      "identity" : "abseil-cpp-swiftpm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/firebase/abseil-cpp-SwiftPM.git",
+      "state" : {
+        "revision" : "05d8107f2971a37e6c77245b7c4c6b0a7e97bc99",
+        "version" : "0.20200225.0"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "activelabel.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/optonaut/ActiveLabel.swift.git",
+      "state" : {
+        "revision" : "36949c1a69ef8b40574da20c9e24b115f387b1cf",
+        "version" : "1.1.5"
+      }
+    },
+    {
+      "identity" : "alamofire",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Alamofire/Alamofire.git",
+      "state" : {
+        "revision" : "eaf6e622dd41b07b251d8f01752eab31bc811493",
+        "version" : "5.4.1"
+      }
+    },
+    {
+      "identity" : "boringssl-swiftpm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/firebase/boringssl-SwiftPM.git",
+      "state" : {
+        "revision" : "7bcafa2660bc58715c39637494550d1ed7cd7229",
+        "version" : "0.0.7"
+      }
+    },
+    {
+      "identity" : "eureka",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/xmartlabs/Eureka.git",
+      "state" : {
+        "revision" : "81f3ea3d69dc99f8684b8bce1224908e101c679f",
+        "version" : "5.3.2"
+      }
+    },
+    {
+      "identity" : "expandable-collection-view-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/RudyB/expandable-collection-view-kit.git",
+      "state" : {
+        "revision" : "7e0254b5cc1b4e9135e89fd88aeff0968913a503",
+        "version" : "1.1.2"
+      }
+    },
+    {
+      "identity" : "firebase-ios-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/firebase/firebase-ios-sdk.git",
+      "state" : {
+        "revision" : "c67d97dc802aafe5474042156dce828e1c4145ca",
+        "version" : "7.3.1"
+      }
+    },
+    {
+      "identity" : "grpc-swiftpm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/firebase/grpc-SwiftPM.git",
+      "state" : {
+        "revision" : "91b62619e6c83bc5f1b99d9d60fe46b2862d3a5a",
+        "version" : "1.28.2"
+      }
+    },
+    {
+      "identity" : "gtm-session-fetcher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/google/gtm-session-fetcher.git",
+      "state" : {
+        "revision" : "91ed3d188eb95705fef3c249453b81f32dc557d1",
+        "version" : "1.5.0"
+      }
+    },
+    {
+      "identity" : "houston",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/RudyB/Houston.git",
+      "state" : {
+        "revision" : "6a97179322d7b2017aed2e194f43a3cfbdf5d5f0",
+        "version" : "0.2.3"
+      }
+    },
+    {
+      "identity" : "iqkeyboardmanager",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hackiftekhar/IQKeyboardManager.git",
+      "state" : {
+        "revision" : "4dc6bc7d1c9747bd0c261c8c055903f9fdef91f7",
+        "version" : "6.5.6"
+      }
+    },
+    {
+      "identity" : "leveldb",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/firebase/leveldb.git",
+      "state" : {
+        "revision" : "fa1f25f296a766e5a789c4dacd4798dea798b2c2",
+        "version" : "1.22.1"
+      }
+    },
+    {
+      "identity" : "marqueelabel",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cbpowell/MarqueeLabel",
+      "state" : {
+        "revision" : "d92fe1583dbf43fa3b70229a49fa7da6b36750d4",
+        "version" : "4.0.5"
+      }
+    },
+    {
+      "identity" : "mbprogresshud",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jdg/MBProgressHUD.git",
+      "state" : {
+        "revision" : "bca42b801100b2b3a4eda0ba8dd33d858c780b0d",
+        "version" : "1.2.0"
+      }
+    },
+    {
+      "identity" : "nanopb",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/firebase/nanopb.git",
+      "state" : {
+        "revision" : "8119dfe5631f2616d11e50ead95448d12e816062",
+        "version" : "2.30906.0"
+      }
+    },
+    {
+      "identity" : "notificationbanner",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Daltron/NotificationBanner.git",
+      "state" : {
+        "revision" : "2ce5c49d8ee4865f01a3ce3bbe078664c78c7a3c",
+        "version" : "3.0.6"
+      }
+    },
+    {
+      "identity" : "promisekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mxcl/PromiseKit.git",
+      "state" : {
+        "revision" : "aea48ea1855f5d82e2dffa6027afce3aab8f3dd7",
+        "version" : "6.13.3"
+      }
+    },
+    {
+      "identity" : "promises",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/google/promises.git",
+      "state" : {
+        "revision" : "afa9a1ace74e116848d4f743599ab83e584ff8cb",
+        "version" : "1.2.12"
+      }
+    },
+    {
+      "identity" : "snapkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SnapKit/SnapKit",
+      "state" : {
+        "revision" : "d458564516e5676af9c70b4f4b2a9178294f1bc6",
+        "version" : "5.0.1"
+      }
+    },
+    {
+      "identity" : "swipeabletabbarcontroller",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/marcosgriselli/SwipeableTabBarController.git",
+      "state" : {
+        "revision" : "f90f5142a9cd119f8929cec1bfcf78aa0a2f2e8f",
+        "version" : "3.4.2"
+      }
+    },
+    {
+      "identity" : "valet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Square/Valet",
+      "state" : {
+        "revision" : "c9e7a1e5e0cb73f07cafb403c53c4922e22e5357",
+        "version" : "4.1.1"
+      }
+    }
+  ],
+  "version" : 2
 }
